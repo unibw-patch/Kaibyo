@@ -1,8 +1,17 @@
 package com.dat3m.dartagnan.expression;
 
+import com.microsoft.z3.BitVecExpr;
+import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
+import com.microsoft.z3.IntExpr;
 import com.microsoft.z3.Model;
+
+import static com.dat3m.dartagnan.expression.INonDetTypes.UCHAR;
+import static com.dat3m.dartagnan.expression.INonDetTypes.UINT;
+import static com.dat3m.dartagnan.expression.INonDetTypes.ULONG;
+import static com.dat3m.dartagnan.expression.INonDetTypes.USHORT;
+
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Event;
 import com.google.common.collect.ImmutableSet;
@@ -19,6 +28,10 @@ public class INonDet extends IExpr implements ExprInterface {
 		this.precision = precision;
 	}
 
+	public INonDetTypes getType() {
+		return type;
+	}
+	
 	@Override
 	public IConst reduce() {
         throw new UnsupportedOperationException("Reduce not supported for " + this);
@@ -76,7 +89,7 @@ public class INonDet extends IExpr implements ExprInterface {
         case UINT:
             return UnsignedInteger.ZERO.longValue();
 		case LONG:
-            return precision > 0 ? Integer.MIN_VALUE : Long.MIN_VALUE;
+            return Long.MIN_VALUE;
 		case ULONG:
             return UnsignedLong.ZERO.longValue();
 		case SHORT:
@@ -92,18 +105,17 @@ public class INonDet extends IExpr implements ExprInterface {
 	}
 
 	public long getMax() {
-		boolean bp = precision > 0;
         switch(type){
         case INT:
             return Integer.MAX_VALUE;
         case UINT:
-            return bp ? Integer.MAX_VALUE : UnsignedInteger.MAX_VALUE.longValue();
+            return UnsignedInteger.MAX_VALUE.longValue();
 		case LONG:
-            return bp ? Integer.MAX_VALUE : Long.MAX_VALUE;
+            return Long.MAX_VALUE;
 		case ULONG:
-            return bp ? Integer.MAX_VALUE : UnsignedLong.MAX_VALUE.longValue();
+            return UnsignedLong.MAX_VALUE.longValue();
 		case SHORT:
-            return bp ? Integer.MAX_VALUE : Short.MAX_VALUE;
+            return Short.MAX_VALUE;
 		case USHORT:
             return 65535;
 		case CHAR:
@@ -117,5 +129,24 @@ public class INonDet extends IExpr implements ExprInterface {
 	@Override
 	public int getPrecision() {
 		return precision;
+	}
+	
+	public BoolExpr encodeBounds(boolean bp, Context ctx) {
+		BoolExpr enc = ctx.mkTrue();
+		long min = getMin();
+		long max = getMax();
+		if(bp) {
+			if(type.equals(UINT) || type.equals(ULONG) || type.equals(USHORT) || type.equals(UCHAR)) {
+	        	enc = ctx.mkAnd(enc, ctx.mkBVUGE((BitVecExpr)toZ3Int(null,ctx), ctx.mkBV(min, precision)));
+	        	enc = ctx.mkAnd(enc, ctx.mkBVULE((BitVecExpr)toZ3Int(null,ctx), ctx.mkBV(max, precision)));					
+			} else {
+	        	enc = ctx.mkAnd(enc, ctx.mkBVSGE((BitVecExpr)toZ3Int(null,ctx), ctx.mkBV(min, precision)));
+	        	enc = ctx.mkAnd(enc, ctx.mkBVSLE((BitVecExpr)toZ3Int(null,ctx), ctx.mkBV(max, precision)));					
+			}
+		} else {
+        	enc = ctx.mkAnd(enc, ctx.mkGe((IntExpr)toZ3Int(null,ctx), ctx.mkInt(min)));
+        	enc = ctx.mkAnd(enc, ctx.mkLe((IntExpr)toZ3Int(null,ctx), ctx.mkInt(max)));
+		}
+		return enc;
 	}
 }

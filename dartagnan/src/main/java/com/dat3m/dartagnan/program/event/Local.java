@@ -6,6 +6,7 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.dat3m.dartagnan.expression.ExprInterface;
+import com.dat3m.dartagnan.expression.INonDet;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.utils.RegReaderData;
 import com.dat3m.dartagnan.program.event.utils.RegWriter;
@@ -64,7 +65,11 @@ public class Local extends Event implements RegWriter, RegReaderData {
 
 	@Override
 	protected BoolExpr encodeExec(Context ctx){
-		return ctx.mkAnd(super.encodeExec(ctx), ctx.mkEq(regResultExpr,  expr.toZ3Int(this, ctx)));
+		BoolExpr enc = super.encodeExec(ctx);
+		if(expr instanceof INonDet) {
+			enc = ctx.mkAnd(enc, ((INonDet)expr).encodeBounds(expr.toZ3Int(this, ctx).isBV(), ctx));
+		}
+		return ctx.mkAnd(enc, ctx.mkEq(regResultExpr,  expr.toZ3Int(this, ctx)));
 	}
 
 	// Unrolling
