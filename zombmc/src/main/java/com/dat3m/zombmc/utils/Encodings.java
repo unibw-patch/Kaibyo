@@ -7,7 +7,6 @@ import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Load;
 import com.dat3m.dartagnan.program.memory.Address;
 import com.dat3m.dartagnan.program.utils.EType;
-import com.dat3m.dartagnan.utils.EncodingConf;
 import com.dat3m.dartagnan.wmm.filter.FilterBasic;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
@@ -24,9 +23,7 @@ public class Encodings {
 		return ctx.mkFuncDecl(SEC_LEVEL_FUN, ctx.mkIntSort(), ctx.mkBoolSort());	
 	}
 
-    public static BoolExpr encodeSpectre(Program p, EncodingConf conf) {
-    	
-    	Context ctx = conf.getCtx();
+    public static BoolExpr encodeSpectre(Program p, Context ctx) {
     	
     	List<Address> addresses = p.getMemory().getAllAddresses().asList();
     	int size = addresses.size();
@@ -40,7 +37,7 @@ public class Encodings {
 		for (int j = 0; j < size ; j++) {
             types[j] = ctx.getIntSort();
             names[j] = ctx.mkSymbol("memory_" + addresses.get(j).hashCode());
-            xs[j] = addresses.get(j).toZ3Int(conf);
+            xs[j] = addresses.get(j).toZ3Int(ctx);
             body = ctx.mkAnd(body, ctx.mkImplies(ctx.mkNot(ctx.mkEq(ctx.mkIntConst("i"), xs[j])), ctx.mkNot((BoolExpr) ctx.mkApp(secLevel(ctx), ctx.mkIntConst("i")))));
             safe = ctx.mkAnd(safe, (BoolExpr)ctx.mkApp(secLevel(ctx), xs[j]));
         }

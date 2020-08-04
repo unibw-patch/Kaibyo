@@ -11,7 +11,6 @@ import org.apache.commons.cli.HelpFormatter;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.parsers.program.ProgramParser;
 import com.dat3m.dartagnan.program.Program;
-import com.dat3m.dartagnan.utils.EncodingConf;
 import com.dat3m.dartagnan.utils.Result;
 import com.dat3m.dartagnan.utils.Settings;
 import com.dat3m.dartagnan.wmm.Wmm;
@@ -51,24 +50,23 @@ public class ZomBMC {
             return;
         }
         
-        EncodingConf conf = new EncodingConf(new Context(), true);
-        Result result = testProgramSpeculatively(conf, p, mcm, target, options.getSettings());
+        Context ctx = new Context();
+        Result result = testProgramSpeculatively(ctx, p, mcm, target, options.getSettings());
         System.out.println(result);
-		conf.getCtx().close();
+		ctx.close();
     }
 
-    public static Result testProgramSpeculatively(EncodingConf conf, Program program, Wmm wmm, Arch target, Settings settings) {
-    	Context ctx = conf.getCtx();
+    public static Result testProgramSpeculatively(Context ctx, Program program, Wmm wmm, Arch target, Settings settings) {
         Solver solver = ctx.mkSolver();
 
     	program.unroll(settings.getBound(), 0);
         program.compile(target, 0);
         
-		solver.add(program.encodeUINonDet(conf));
-		solver.add(program.encodeCF(conf));
-		solver.add(wmm.encode(program, conf, settings));
+		solver.add(program.encodeUINonDet(ctx));
+		solver.add(program.encodeCF(ctx));
+		solver.add(wmm.encode(program, ctx, settings));
 		solver.add(wmm.consistent(program, ctx));
-		solver.add(encodeSpectre(program, conf));
+		solver.add(encodeSpectre(program, ctx));
 		
 		return solver.check() == Status.SATISFIABLE ? FAIL : PASS;
     }
