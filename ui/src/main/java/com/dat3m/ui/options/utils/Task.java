@@ -3,7 +3,8 @@ package com.dat3m.ui.options.utils;
 public enum Task {
 	
 	REACHABILITY, 
-	PORTABILITY; 
+	PORTABILITY,
+	SECURITY; 
 	
     @Override
     public String toString() {
@@ -12,6 +13,8 @@ public enum Task {
                 return "Reachability";
             case PORTABILITY:
                 return "Portability";
+            case SECURITY:
+                return "Security";
         }
         return super.toString();
     }

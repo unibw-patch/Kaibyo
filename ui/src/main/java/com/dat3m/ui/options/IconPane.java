@@ -22,7 +22,9 @@ public class IconPane extends JLabel implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         if(ControlCode.TASK.actionCommand().equals(event.getActionCommand())){
             JComboBox<?> selector = (JComboBox<?>)event.getSource();
-            if(selector.getModel().getSelectedItem().equals(Task.PORTABILITY)){
+            if(selector.getModel().getSelectedItem().equals(Task.SECURITY)){
+                setIcon(IconHelper.getIcon(IconCode.ZOMBMC, height));
+            } else if(selector.getModel().getSelectedItem().equals(Task.PORTABILITY)){
                 setIcon(IconHelper.getIcon(IconCode.PORTHOS, height));
             } else {
                 setIcon(IconHelper.getIcon(IconCode.DARTAGNAN, height));

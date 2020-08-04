@@ -2,7 +2,6 @@ package com.dat3m.zombmc;
 
 import static com.dat3m.dartagnan.utils.Result.FAIL;
 import static com.dat3m.dartagnan.utils.Result.PASS;
-import static com.dat3m.zombmc.utils.Encodings.encodeSpectre;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,11 +61,9 @@ public class ZomBMC {
     	program.unroll(settings.getBound(), 0);
         program.compile(target, 0);
         
-		solver.add(program.encodeUINonDet(ctx));
 		solver.add(program.encodeCF(ctx));
 		solver.add(wmm.encode(program, ctx, settings));
 		solver.add(wmm.consistent(program, ctx));
-		solver.add(encodeSpectre(program, ctx));
 		
 		return solver.check() == Status.SATISFIABLE ? FAIL : PASS;
     }
