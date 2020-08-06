@@ -38,17 +38,8 @@ public class ZomBMC {
         }
 
         Wmm mcm = new ParserCat().parse(new File("./cat/sc.cat"));
-		Program p = new ProgramParser().parse(new File(options.getProgramFilePath()));
-		
-        Arch target = p.getArch();
-        if(target == null){
-            target = options.getTarget();
-        }
-        if(target == null) {
-            System.out.println("Compilation target cannot be inferred");
-            System.exit(0);
-            return;
-        }
+		Program p = new ProgramParser().parse(new File(options.getProgramFilePath()));		
+        Arch target = Arch.NONE;
         
         Context ctx = new Context();
         Result result = testProgramSpeculatively(ctx, p, mcm, target, options.getSettings());
