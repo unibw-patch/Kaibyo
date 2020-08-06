@@ -7,18 +7,15 @@
 extern void abort(void);
 void reach_error(){}
 extern int __VERIFIER_nondet_int(void);
-void __VERIFIER_assert(int cond) {
-  if (!(cond)) {
-    ERROR: {reach_error();abort();}
-  }
-  return;
-}
 
 #define SIZE    (1)
 
 unsigned int array1_size = 16;
 uint8_t array1[16] = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 };
 uint8_t array2[256 * SIZE];
+
+char * secret = "The Magic Words are Squeamish Ossifrage.";
+
 uint8_t temp = 0; /* Used so compiler won't optimize out victim_function() */
 
 // ----------------------------------------------------------------------------------------
