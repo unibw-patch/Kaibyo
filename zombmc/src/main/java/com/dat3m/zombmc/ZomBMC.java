@@ -57,15 +57,15 @@ public class ZomBMC {
     }
 
     public static Result testProgramSpeculatively(Context ctx, Program program, Wmm wmm, Arch target, Settings settings) {
+
+        program.unroll(settings.getBound(), 0);
+    	program.compile(target, 0);
+        
         Solver solver = ctx.mkSolver();
-
-    	program.unroll(settings.getBound(), 0);
-        program.compile(target, 0);
-
-		solver.add(program.encodeSCF(ctx));
-		solver.add(wmm.encode(program, ctx, settings));
-		solver.add(wmm.consistent(program, ctx));
-		solver.add(encodeSpectre(program, ctx));
+        solver.add(program.encodeSCF(ctx));
+        solver.add(wmm.encode(program, ctx, settings));
+        solver.add(wmm.consistent(program, ctx));
+        solver.add(encodeSpectre(program, ctx));
 		
 		return solver.check() == Status.SATISFIABLE ? FAIL : PASS;
     }
