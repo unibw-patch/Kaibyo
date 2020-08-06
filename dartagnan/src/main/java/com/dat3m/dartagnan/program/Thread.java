@@ -131,4 +131,8 @@ public class Thread {
     public BoolExpr encodeCF(Context ctx){
         return entry.encodeCF(ctx, ctx.mkTrue());
     }
+
+    public BoolExpr encodeSCF(Context ctx){
+        return ctx.mkAnd(ctx.mkEq(entry.stepSE(), ctx.mkInt(-1)), entry.encodeSCF(ctx, ctx.mkTrue()));
+    }
 }

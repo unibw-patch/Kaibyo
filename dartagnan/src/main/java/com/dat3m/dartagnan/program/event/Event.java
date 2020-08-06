@@ -3,6 +3,7 @@ package com.dat3m.dartagnan.program.event;
 import com.dat3m.dartagnan.wmm.utils.Arch;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
+import com.microsoft.z3.IntExpr;
 
 import java.util.*;
 
@@ -23,6 +24,9 @@ public abstract class Event implements Comparable<Event> {
 
 	protected transient BoolExpr cfVar;
 	protected transient BoolExpr execVar;
+	
+	protected transient BoolExpr startSEVar;
+	protected transient IntExpr stepSEVar;
 
 	protected Set<Event> listeners = new HashSet<>();
 	
@@ -187,6 +191,8 @@ public abstract class Event implements Comparable<Event> {
 		}
 		execVar = ctx.mkBoolConst("exec(" + repr() + ")");
 		cfVar = ctx.mkBoolConst("cf(" + repr() + ")");
+		startSEVar = ctx.mkBoolConst("startSE(" + repr() + ")");
+		stepSEVar = ctx.mkIntConst("stepSE(" + repr() + ")");
 	}
 
 	public String repr() {
@@ -201,6 +207,14 @@ public abstract class Event implements Comparable<Event> {
 		return cfVar;
 	}
 
+	public BoolExpr startSE(){
+		return startSEVar;
+	}
+
+	public IntExpr stepSE(){
+		return stepSEVar;
+	}
+
 	public void addCfCond(Context ctx, BoolExpr cond){
 		cfCond = (cfCond == null) ? cond : ctx.mkOr(cfCond, cond);
 	}
@@ -212,6 +226,28 @@ public abstract class Event implements Comparable<Event> {
 			cfEnc = ctx.mkAnd(cfEnc, encodeExec(ctx));
 			if(successor != null){
 				cfEnc = ctx.mkAnd(cfEnc, successor.encodeCF(ctx, cfVar));
+			}
+		}
+		return cfEnc;
+	}
+
+	public BoolExpr encodeSCF(Context ctx, BoolExpr cond) {
+		if(cfEnc == null){
+			cfCond = (cfCond == null) ? cond : ctx.mkOr(cfCond, cond);
+			cfEnc = ctx.mkEq(cfVar, cfCond);
+			cfEnc = ctx.mkAnd(cfEnc, encodeExec(ctx));
+			// Only conditional jumps can start speculation
+			cfEnc = ctx.mkAnd(cfEnc, ctx.mkNot(startSEVar));
+            // If step = 0, then this event started speculation
+            cfEnc = ctx.mkAnd(cfEnc, ctx.mkImplies(ctx.mkEq(stepSEVar, ctx.mkInt(0)), startSEVar));
+            // Step >= -1
+			cfEnc = ctx.mkAnd(cfEnc, ctx.mkGe(stepSEVar, ctx.mkInt(-1)));
+			if(successor != null){
+				// If step = -1, then successor.step = -1 or 0
+				cfEnc = ctx.mkAnd(cfEnc, ctx.mkImplies(ctx.mkEq(stepSEVar, ctx.mkInt(-1)), ctx.mkLe(successor.stepSEVar, ctx.mkInt(0))));
+				// If step > -1 (i.e. there is speculation already), then successor.step = step + 1
+				cfEnc = ctx.mkAnd(cfEnc, ctx.mkImplies(ctx.mkGt(stepSEVar, ctx.mkInt(-1)), ctx.mkEq(successor.stepSEVar, ctx.mkAdd(stepSEVar, ctx.mkInt(1)))));
+				cfEnc = ctx.mkAnd(cfEnc, successor.encodeSCF(ctx, cfVar));
 			}
 		}
 		return cfEnc;

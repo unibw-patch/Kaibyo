@@ -178,6 +178,17 @@ public class Program {
         return enc;
     }
 
+    public BoolExpr encodeSCF(Context ctx) {
+        for(Event e : getEvents()){
+            e.initialise(ctx);
+        }
+        BoolExpr enc = memory.encode(ctx);
+        for(Thread t : threads){
+            enc = ctx.mkAnd(enc, t.encodeSCF(ctx));
+        }
+        return enc;
+    }
+
     public BoolExpr encodeFinalRegisterValues(Context ctx){
         Map<Register, List<Event>> eMap = new HashMap<>();
         for(Event e : getCache().getEvents(FilterBasic.get(EType.REG_WRITER))){
