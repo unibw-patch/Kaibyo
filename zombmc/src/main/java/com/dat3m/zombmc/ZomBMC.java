@@ -8,25 +8,15 @@ import java.io.File;
 import java.io.IOException;
 import org.apache.commons.cli.HelpFormatter;
 
-import com.dat3m.dartagnan.asserts.AbstractAssert;
-import com.dat3m.dartagnan.asserts.AssertTrue;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.parsers.program.ProgramParser;
 import com.dat3m.dartagnan.program.Program;
-import com.dat3m.dartagnan.program.event.Event;
-import com.dat3m.dartagnan.program.event.Init;
-import com.dat3m.dartagnan.program.event.Load;
-import com.dat3m.dartagnan.program.memory.Address;
-import com.dat3m.dartagnan.program.utils.EType;
 import com.dat3m.dartagnan.utils.Result;
 import com.dat3m.dartagnan.utils.Settings;
-import com.dat3m.dartagnan.utils.printer.Printer;
 import com.dat3m.dartagnan.wmm.Wmm;
-import com.dat3m.dartagnan.wmm.filter.FilterBasic;
 import com.dat3m.dartagnan.wmm.utils.Arch;
 import com.dat3m.zombmc.utils.options.ZomBMCOptions;
 import com.microsoft.z3.Context;
-import com.microsoft.z3.Model;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 
@@ -69,9 +59,6 @@ public class ZomBMC {
     public static Result testProgramSpeculatively(Context ctx, Program program, Wmm wmm, Arch target, Settings settings) {
         Solver solver = ctx.mkSolver();
 
-        Printer p = new Printer();
-        System.out.println(p.print(program));
-        
     	program.unroll(settings.getBound(), 0);
         program.compile(target, 0);
 
@@ -80,28 +67,6 @@ public class ZomBMC {
 		solver.add(wmm.consistent(program, ctx));
 		solver.add(encodeSpectre(program, ctx));
 		
-		System.out.println("Solving");
-		Result res = solver.check() == Status.SATISFIABLE ? FAIL : PASS;
-		System.out.println(res);
-		if(res == FAIL) {
-			Model m = solver.getModel();
-			
-			for(Address a : program.getMemory().getAllAddresses()) {
-				System.out.println(a);
-				System.out.println(m.getConstInterp(a.toZ3Int(ctx)));
-				System.out.println("===");
-			}
-			
-			for(Event e : program.getCache().getEvents(FilterBasic.get(EType.READ))) {
-				System.out.println(e.repr());
-				System.out.println(m.getConstInterp(((Load)e).getMemAddressExpr()));
-//				System.out.println(m.getConstInterp(((Load)e).getMemValueExpr()));
-				System.out.println("===");
-//				if(Integer.parseInt(m.getConstInterp(e.stepSE()).toString()) > -1) {
-//					System.out.println(e.repr());
-//					System.out.println(m.getConstInterp(e.stepSE()));
-			}
-		}		
-		return res;
+		return solver.check() == Status.SATISFIABLE ? FAIL : PASS;
     }
 }
