@@ -138,14 +138,6 @@ public class CondJump extends Event implements RegReaderData {
             	// Only conditional jumps can start speculation
             	cfEnc = ctx.mkAnd(cfEnc, ctx.mkNot(startSEVar));
             }
-            // If step = 0, then this event started speculation
-            cfEnc = ctx.mkAnd(cfEnc, ctx.mkImplies(ctx.mkEq(stepSEVar, ctx.mkInt(0)), startSEVar));
-            // Step >= -1
-			cfEnc = ctx.mkAnd(cfEnc, ctx.mkGe(stepSEVar, ctx.mkInt(-1)));
-			// If step = -1, then successor.step = -1 or 0
-			cfEnc = ctx.mkAnd(cfEnc, ctx.mkImplies(ctx.mkEq(stepSEVar, ctx.mkInt(-1)), ctx.mkLe(successor.stepSEVar, ctx.mkInt(0))));
-			// If step > -1 (i.e. there is speculation already), then successor.step = step + 1
-			cfEnc = ctx.mkAnd(cfEnc, ctx.mkImplies(ctx.mkGt(stepSEVar, ctx.mkInt(-1)), ctx.mkEq(successor.stepSEVar, ctx.mkAdd(stepSEVar, ctx.mkInt(1)))));
             cfEnc = ctx.mkAnd(cfEnc, successor.encodeSCF(ctx, ctx.mkAnd(cont, cfVar)));
         }
         return cfEnc;
