@@ -1,8 +1,9 @@
 package com.dat3m.dartagnan.program;
 
+import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.utils.ThreadCache;
-import com.dat3m.dartagnan.wmm.utils.Arch;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 
@@ -117,8 +118,8 @@ public class Thread {
     // Compilation
     // -----------------------------------------------------------------------------------------------------------------
 
-    public int compile(Arch target, int nextId) {
-        nextId = entry.compile(target, nextId, null);
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId) {
+        nextId = entry.compile(target, mitigations, nextId, null);
         updateExit(entry);
         cache = null;
         return nextId;
@@ -133,6 +134,6 @@ public class Thread {
     }
 
     public BoolExpr encodeSCF(Context ctx){
-        return ctx.mkAnd(ctx.mkEq(entry.stepSE(), ctx.mkInt(-1)), entry.encodeSCF(ctx, ctx.mkTrue()));
+        return entry.encodeSCF(ctx, ctx.mkTrue(), ctx.mkFalse());
     }
 }

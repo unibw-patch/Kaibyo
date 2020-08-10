@@ -2,7 +2,7 @@ package com.dat3m.dartagnan.program.atomic.event;
 
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Fence;
-import com.dat3m.dartagnan.wmm.utils.Arch;
+import com.dat3m.dartagnan.compiler.Arch;
 
 import static com.dat3m.dartagnan.program.atomic.utils.Mo.ACQUIRE;
 import static com.dat3m.dartagnan.program.atomic.utils.Mo.ACQ_REL;

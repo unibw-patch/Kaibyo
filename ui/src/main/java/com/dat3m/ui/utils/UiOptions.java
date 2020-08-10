@@ -1,7 +1,7 @@
 package com.dat3m.ui.utils;
 
+import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.utils.Settings;
-import com.dat3m.dartagnan.wmm.utils.Arch;
 import com.dat3m.dartagnan.wmm.utils.Mode;
 import com.dat3m.ui.options.utils.Task;
 

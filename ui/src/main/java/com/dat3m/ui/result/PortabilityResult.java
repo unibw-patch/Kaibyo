@@ -1,9 +1,9 @@
 package com.dat3m.ui.result;
 
+import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.utils.Graph;
 import com.dat3m.dartagnan.wmm.Wmm;
-import com.dat3m.dartagnan.wmm.utils.Arch;
 import com.dat3m.porthos.Porthos;
 import com.dat3m.porthos.PorthosResult;
 import com.dat3m.ui.utils.UiOptions;

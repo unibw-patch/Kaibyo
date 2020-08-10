@@ -1,6 +1,7 @@
 package com.dat3m.porthos;
 
 import com.dat3m.dartagnan.Dartagnan;
+import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.utils.Settings;
 import com.dat3m.porthos.utils.options.PorthosOptions;
 import com.microsoft.z3.*;
@@ -10,11 +11,12 @@ import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.utils.Graph;
 import com.dat3m.dartagnan.wmm.Wmm;
-import com.dat3m.dartagnan.wmm.utils.Arch;
+
 import org.apache.commons.cli.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static com.dat3m.porthos.Encodings.encodeCommonExecutions;
 import static com.dat3m.porthos.Encodings.encodeReachedState;
@@ -76,8 +78,8 @@ public class Porthos {
     	pSource.unroll(settings.getBound(), 0);
         pTarget.unroll(settings.getBound(), 0);
 
-        int nextId = pSource.compile(source, 0);
-        pTarget.compile(target, nextId);
+        int nextId = pSource.compile(source, new ArrayList<>(), 0);
+        pTarget.compile(target, new ArrayList<>(), nextId);
 
 		BoolExpr sourceCF = pSource.encodeCF(ctx);
         BoolExpr sourceFV = pSource.encodeFinalRegisterValues(ctx);

@@ -8,6 +8,7 @@ import static com.dat3m.dartagnan.utils.Result.BPASS;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.apache.commons.cli.HelpFormatter;
 
 import com.dat3m.dartagnan.asserts.AbstractAssert;
 import com.dat3m.dartagnan.asserts.AssertTrue;
+import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.parsers.program.ProgramParser;
 import com.dat3m.dartagnan.program.Program;
@@ -24,7 +26,6 @@ import com.dat3m.dartagnan.utils.Settings;
 import com.dat3m.dartagnan.utils.options.DartagnanOptions;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.dartagnan.wmm.axiom.Axiom;
-import com.dat3m.dartagnan.wmm.utils.Arch;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
@@ -100,7 +101,7 @@ public class Dartagnan {
 
     public static Result testProgram(Solver s1, Context ctx, Program program, Wmm wmm, Arch target, Settings settings) {
     	program.unroll(settings.getBound(), 0);
-        program.compile(target, 0);
+        program.compile(target, new ArrayList<>(), 0);
         // AssertionInline depends on compiled events (copies)
         // Thus we need to set the assertion after compilation
         if(program.getAss() == null){
@@ -159,7 +160,7 @@ public class Dartagnan {
     
     public static Result testProgramIncremental(Solver solver, Context ctx, Program program, Wmm wmm, Arch target, Settings settings) {
     	program.unroll(settings.getBound(), 0);
-        program.compile(target, 0);
+        program.compile(target, new ArrayList<>(), 0);
         // AssertionInline depends on compiled events (copies)
         // Thus we need to set the assertion after compilation
         if(program.getAss() == null){
@@ -206,7 +207,7 @@ public class Dartagnan {
     public static Result runCegar(Solver solver, Context ctx, Program program, Wmm wmm, Arch target, Settings settings, int cegar) {
     	Map<BoolExpr, BoolExpr> track = new HashMap<>();
     	program.unroll(settings.getBound(), 0);
-        program.compile(target, 0);
+        program.compile(target, new ArrayList<>(), 0);
         // AssertionInline depends on compiled events (copies)
         // Thus we need to set the assertion after compilation
         if(program.getAss() == null){

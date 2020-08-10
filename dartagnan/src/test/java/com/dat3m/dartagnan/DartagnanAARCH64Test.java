@@ -1,9 +1,10 @@
 package com.dat3m.dartagnan;
 
+import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.utils.Result;
 import com.dat3m.dartagnan.utils.Settings;
 import com.dat3m.dartagnan.wmm.Wmm;
-import com.dat3m.dartagnan.wmm.utils.Arch;
+
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 

@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,7 +89,7 @@ public class RelRfTest {
 
     	Program program = new ProgramParser().parse(new File(programPath));
         program.unroll(settings.getBound(), 0);
-        program.compile(program.getArch(), 0);
+        program.compile(program.getArch(), new ArrayList<>(), 0);
 
         Map<Integer, Event> events = new HashMap<Integer, Event>(){{
             put(2, null); put(5, null); put(8, null);
