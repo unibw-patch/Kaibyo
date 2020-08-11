@@ -15,7 +15,7 @@ public class Encodings {
     public static BoolExpr encodeSpectre(Program p, Context ctx) {
     	BoolExpr gadget = ctx.mkFalse();
     	try {
-        	Address secret = p.getMemory().getLocation("secret").getAddress();
+        	Address secret = p.getMemory().getLocation("spectre_secret").getAddress();
         	for(Event r : p.getCache().getEvents(FilterBasic.get(EType.READ))){
     			gadget = ctx.mkOr(gadget, ctx.mkAnd(ctx.mkEq(((Load)r).getMemAddressExpr(), secret.toZ3Int(ctx)), r.exec()));
         	}    		

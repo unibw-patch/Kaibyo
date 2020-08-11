@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors.boogie;
 
+import static com.dat3m.dartagnan.expression.INonDetTypes.INT;
 import static com.dat3m.dartagnan.expression.op.BOpUn.NOT;
 import static com.dat3m.dartagnan.expression.op.COpBin.EQ;
 import static com.dat3m.dartagnan.parsers.program.visitors.boogie.AtomicProcedures.ATOMICPROCEDURES;
@@ -37,6 +38,7 @@ import com.dat3m.dartagnan.expression.IConst;
 import com.dat3m.dartagnan.expression.IExpr;
 import com.dat3m.dartagnan.expression.IExprBin;
 import com.dat3m.dartagnan.expression.IExprUn;
+import com.dat3m.dartagnan.expression.INonDet;
 import com.dat3m.dartagnan.expression.IfExpr;
 import com.dat3m.dartagnan.expression.op.BOpUn;
 import com.dat3m.dartagnan.expression.op.IOpUn;
@@ -201,7 +203,7 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 		if(exp instanceof Atom && ((Atom)exp).getLHS() instanceof Address && ((Atom)exp).getOp().equals(EQ)) {
 			Address add = ((Address)((Atom)exp).getLHS());
 			int value = ((Atom)exp).getRHS().reduce().getValue();
-			add.setConstValue(Math.abs(value));
+			add.setConstValue(value);
 		}
 		return null;
 	}
@@ -704,7 +706,7 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 		// TODO this blows up when we have big arrays
 		if(name.contains("$store.")) {
 			IExpr address = (IExpr)ctx.expr(1).accept(this);
-			IExpr value = (IExpr)ctx.expr(2).accept(this);
+			IExpr value = ctx.expr(1).getText().equals("spectre_secret")? new INonDet(INT, address.getPrecision()) : (IExpr)ctx.expr(2).accept(this);
 			// This improves the blow-up
 			if(initMode && value instanceof IConst && ((IConst)value).getValue() == 0) {
 				return null;
