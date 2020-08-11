@@ -47,6 +47,10 @@ public abstract class MemEvent extends Event {
         throw new RuntimeException("Attempt to access not initialised address expression in " + this);
     }
 
+    public void setMemAddressExpr(Expr exp){
+        memAddressExpr = exp;
+    }
+
     public Expr getMemValueExpr(){
         if(memValueExpr != null){
             return memValueExpr;

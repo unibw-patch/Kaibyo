@@ -1,6 +1,7 @@
 package com.dat3m.zombmc;
 
 import static com.dat3m.dartagnan.compiler.Mitigation.LFENCE;
+import static com.dat3m.dartagnan.compiler.Mitigation.SLH;
 import static com.dat3m.dartagnan.utils.Result.FAIL;
 import static com.dat3m.dartagnan.utils.Result.PASS;
 import static com.dat3m.zombmc.utils.Encodings.encodeSpectre;
@@ -51,6 +52,9 @@ public class ZomBMC {
         if(options.getLfenceOption()) {
             mitigations.add(LFENCE);        	
         }
+        if(options.getSLHOption()) {
+            mitigations.add(SLH);        	
+        }
         Result result = testProgramSpeculatively(ctx, p, mcm, target, mitigations, options.getSettings());
         System.out.println(result);
 		ctx.close();
@@ -60,9 +64,12 @@ public class ZomBMC {
 
         program.unroll(settings.getBound(), 0);
     	program.compile(target, mitigations, 0);
-        
+    	
         Solver solver = ctx.mkSolver();
         solver.add(program.encodeSCF(ctx));
+        if(mitigations.contains(SLH)) {
+        	program.slh(ctx);
+        }
         solver.add(wmm.encode(program, ctx, settings));
         solver.add(wmm.consistent(program, ctx));
         solver.add(encodeSpectre(program, ctx));

@@ -13,12 +13,17 @@ public class ZomBMCOptions extends BaseOptions {
     protected Set<String> supportedFormats = ImmutableSet.copyOf(Arrays.asList("bpl"));
     
     private boolean lfence = false;
+    private boolean slh = false;
     
     public ZomBMCOptions(){
         super();
         Option lfenceOption = new Option("lfence", false,
-                "Full Speculative Execution Mitigation");
+                "Fence after every branch mitigation");
         addOption(lfenceOption);
+
+        Option slhOption = new Option("slh", false,
+                "Speculative Load Hardening mitigation");
+        addOption(slhOption);
     }
 
 	
@@ -28,10 +33,15 @@ public class ZomBMCOptions extends BaseOptions {
             throw new RuntimeException("Unrecognized program format");
         }
     	CommandLine cmd = new DefaultParser().parse(this, args);
-        lfence = cmd.hasOption("lfence");
+    	lfence = cmd.hasOption("lfence");
+    	slh = cmd.hasOption("slh");
     }
     
     public boolean getLfenceOption(){
         return lfence;
+    }
+
+    public boolean getSLHOption(){
+        return slh;
     }
 }
