@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include <stdatomic.h>
 
-extern void abort(void);
-void reach_error(){}
 extern size_t __VERIFIER_nondet_ulong(void);
 extern int __VERIFIER_nondet_int(void);
 extern uint8_t __VERIFIER_nondet_uchar(void);
@@ -67,10 +65,11 @@ void victim_function_v04(size_t x) {
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
 void victim_function_v05(size_t x) {
-     size_t i;
+     int i;
      if (x < array1_size) {
-          for (i = x - 1; i >= 0; i--)
+         for (i = x - 1; i >= 0; i--) {
                temp &= array2[array1[i] * SIZE];
+         }
      }
 }
 
