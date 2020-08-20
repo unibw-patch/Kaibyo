@@ -36,10 +36,10 @@ public class SVCOMPRunner {
 		String name = path.substring(path.lastIndexOf('/'), path.lastIndexOf('_'));
 		int bound = 2;
 
-		String output = "BPASS";
-		while((output.equals("BPASS") || output.equals("BFAIL"))) {
+		String output = "UNKNOWN";
+		while(output.equals("UNKNOWN")) {
 			try {
-				compile(file, options.getOptimization(), options.getBP());
+				compile(file, options.getOptimization(), options.useBP());
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
 				System.exit(0);
@@ -61,12 +61,12 @@ public class SVCOMPRunner {
 	    	cmd.add("none");
 	    	cmd.add("-unroll");
 	    	cmd.add(String.valueOf(bound));
-	    	if(options.getCegar() != null) {
+	    	if(options.getOverApproxPath() != null) {
 	    		cmd.add("-cegar");
-	    		cmd.add(String.valueOf(options.getCegar()));
+	    		cmd.add(String.valueOf(options.getOverApproxPath()));
 	    	}
-	    	if(options.getIncremental()) {
-	    		cmd.add("-incremental");
+	    	if(options.useISolver()) {
+	    		cmd.add("-incrementalSolver");
 	    	}
 	    	ProcessBuilder processBuilder = new ProcessBuilder(cmd); 
 

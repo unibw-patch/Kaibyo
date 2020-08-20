@@ -21,9 +21,9 @@ public class SVCOMPOptions extends BaseOptions {
     protected List<Integer> bounds = rangeClosed(1, 10000).boxed().collect(Collectors.toList());
     protected String optimization = "O0";
     protected boolean witness;
-    protected Integer cegar;
-    protected boolean incremental;
+    protected String overApproxFilePath;
     protected boolean bp;
+    protected boolean iSolver;
     
     public SVCOMPOptions(){
         super();
@@ -33,10 +33,10 @@ public class SVCOMPOptions extends BaseOptions {
         addOption(catOption);
 
         addOption(new Option("cegar", true,
-                "Use CEGAR"));
-
-        addOption(new Option("incremental", false,
-                "Use Incremental Solver"));
+                "Use CEGAR. Argument is the path to the over-approximation memory model"));
+        
+        addOption(new Option("incrementalSolver", false,
+        		"Use an incremental solver"));
 
         addOption(new Option("w", "witness", false,
                 "Creates a violation witness"));
@@ -59,10 +59,10 @@ public class SVCOMPOptions extends BaseOptions {
         	optimization = cmd.getOptionValue("optimization");
         }
         witness = cmd.hasOption("witness");
-        incremental = cmd.hasOption("incremental");
         if(cmd.hasOption("cegar")) {
-            cegar = Integer.parseInt(cmd.getOptionValue("cegar"));        	
+            overApproxFilePath = cmd.getOptionValue("cegar");
         }
+        iSolver = cmd.hasOption("incrementalSolver");
         bp = cmd.hasOption("bit-precise");
     }
 
@@ -70,20 +70,20 @@ public class SVCOMPOptions extends BaseOptions {
         return optimization;
     }
 
+    public boolean useISolver(){
+        return iSolver;
+    }
+
     public boolean getGenerateWitness(){
         return witness;
     }
 
-    public boolean getBP(){
+    public boolean useBP(){
         return bp;
     }
 
-    public boolean getIncremental(){
-        return incremental;
-    }
-
-    public Integer getCegar(){
-        return cegar;
+    public String getOverApproxPath(){
+        return overApproxFilePath;
     }
 
     public List<Integer> getBounds() {

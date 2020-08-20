@@ -10,8 +10,8 @@ import com.google.common.collect.ImmutableSet;
 public class DartagnanOptions extends BaseOptions {
 
     protected Set<String> supportedFormats = ImmutableSet.copyOf(Arrays.asList("litmus", "bpl"));
-    protected Integer cegar;
-    protected boolean incremental;
+    protected String overApproxFilePath;
+    protected boolean iSolver;
 	
     public DartagnanOptions(){
         super();
@@ -21,11 +21,11 @@ public class DartagnanOptions extends BaseOptions {
         addOption(catOption);
 
         addOption(new Option("cegar", true,
-                "Use CEGAR"));
-        
-        addOption(new Option("incremental", false,
-                "Use Incremental Solver"));
-    }
+        		"Use CEGAR. Argument is the path to the over-approximation memory model"));
+
+        addOption(new Option("incrementalSolver", false,
+        		"Use an incremental solver"));
+}
     
     public void parse(String[] args) throws ParseException, RuntimeException {
     	super.parse(args);
@@ -34,16 +34,16 @@ public class DartagnanOptions extends BaseOptions {
         }
         CommandLine cmd = new DefaultParser().parse(this, args);
         if(cmd.hasOption("cegar")) {
-            cegar = Integer.parseInt(cmd.getOptionValue("cegar")) - 1;        	
+            overApproxFilePath = cmd.getOptionValue("cegar");
         }
-        incremental = cmd.hasOption("incremental");
+        iSolver = cmd.hasOption("incrementalSolver");
     }
     
-    public Integer getCegar(){
-        return cegar;
+    public String getOverApproxPath(){
+        return overApproxFilePath;
     }
     
-    public boolean getIncremental(){
-        return incremental;
+    public boolean useISolver(){
+        return iSolver;
     }
 }
