@@ -44,7 +44,6 @@ public class ZomBMCResult implements Dat3mResult {
         if(validate()){
          	Context ctx = new Context();
          	List<Mitigation> mitigations = new ArrayList<Mitigation>();
-         	mitigations.add(Mitigation.LFENCE);
             Result result = testProgramSpeculatively(ctx, program, wmm, options.getTarget(), mitigations, options.getSettings());
             StringBuilder sb = new StringBuilder();
             sb.append(result).append("\n");

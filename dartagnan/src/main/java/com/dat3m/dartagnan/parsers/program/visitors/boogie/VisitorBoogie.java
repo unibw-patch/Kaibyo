@@ -1,6 +1,5 @@
 package com.dat3m.dartagnan.parsers.program.visitors.boogie;
 
-import static com.dat3m.dartagnan.expression.INonDetTypes.INT;
 import static com.dat3m.dartagnan.expression.op.BOpUn.NOT;
 import static com.dat3m.dartagnan.expression.op.COpBin.EQ;
 import static com.dat3m.dartagnan.parsers.program.visitors.boogie.AtomicProcedures.ATOMICPROCEDURES;
@@ -38,7 +37,6 @@ import com.dat3m.dartagnan.expression.IConst;
 import com.dat3m.dartagnan.expression.IExpr;
 import com.dat3m.dartagnan.expression.IExprBin;
 import com.dat3m.dartagnan.expression.IExprUn;
-import com.dat3m.dartagnan.expression.INonDet;
 import com.dat3m.dartagnan.expression.IfExpr;
 import com.dat3m.dartagnan.expression.op.BOpUn;
 import com.dat3m.dartagnan.expression.op.IOpUn;
@@ -137,7 +135,7 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 	protected BeginAtomic currentBeginAtomic = null;
 	private Call_cmdContext atomicMode = null;
 	 
-	private static List<String> smackDummyVariables = Arrays.asList("$GLOBALS_BOTTOM", "$EXTERNS_BOTTOM", "$MALLOC_TOP", "__SMACK_code", "__SMACK_decls", "__SMACK_top_decl", "$1024.ref", ".str.1", "env_value_str", ".str.1.3", ".str.19", "errno_global");
+	private List<String> smackDummyVariables = Arrays.asList("$GLOBALS_BOTTOM", "$EXTERNS_BOTTOM", "$MALLOC_TOP", "__SMACK_code", "__SMACK_decls", "__SMACK_top_decl", "$1024.ref", ".str.1", "env_value_str", ".str", ".str.1.3", ".str.19", "errno_global");
 
 	public VisitorBoogie(ProgramBuilder pb) {
 		this.programBuilder = pb;
@@ -701,7 +699,10 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 		}
 		if(name.contains("$store.")) {
 			IExpr address = (IExpr)ctx.expr(1).accept(this);
-			IExpr value = ctx.expr(1).getText().equals("spectre_secret")? new INonDet(INT, address.getPrecision()) : (IExpr)ctx.expr(2).accept(this);
+			if(ctx.expr(1).getText().equals("spectre_secret")) {
+				return null;
+			}
+			IExpr value = (IExpr)ctx.expr(2).accept(this);
 			// This improves the blow-up
 			if(initMode && value instanceof IConst && ((IConst)value).getValue() == 0) {
 				return null;
