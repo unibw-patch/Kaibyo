@@ -6,7 +6,6 @@ import com.dat3m.dartagnan.wmm.filter.FilterBasic;
 import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
-import com.microsoft.z3.Expr;
 import com.microsoft.z3.Model;
 import com.dat3m.dartagnan.asserts.AbstractAssert;
 import com.dat3m.dartagnan.asserts.AssertCompositeOr;
@@ -14,17 +13,12 @@ import com.dat3m.dartagnan.asserts.AssertInline;
 import com.dat3m.dartagnan.asserts.AssertTrue;
 import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.compiler.Mitigation;
-import com.dat3m.dartagnan.expression.IConst;
-import com.dat3m.dartagnan.expression.IExpr;
-import com.dat3m.dartagnan.expression.IExprBin;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Local;
-import com.dat3m.dartagnan.program.event.MemEvent;
 import com.dat3m.dartagnan.program.event.utils.RegWriter;
 import com.dat3m.dartagnan.program.memory.Location;
 import com.dat3m.dartagnan.program.memory.Memory;
 
-import static com.dat3m.dartagnan.expression.op.IOpBin.AND;
 import static com.dat3m.dartagnan.wmm.utils.Utils.edge;
 
 import java.util.*;
@@ -172,17 +166,6 @@ public class Program {
         return nextId;
     }
 
-    public void slh(Context ctx) {
-        for(Event e : getCache().getEvents(FilterBasic.get(EType.MEMORY))){
-        	MemEvent m = ((MemEvent)e);
-        	IExpr address = m.getAddress();
-        	Expr mask0 = new IExprBin(address, AND, new IConst(0, address.getPrecision())).toZ3Int(m, ctx);
-        	Expr mask1 = new IExprBin(address, AND, new IConst(1, address.getPrecision())).toZ3Int(m, ctx);
-            m.setMemAddressExpr(ctx.mkITE(m.cf(), mask0, mask1));
-        }
-    }
-
-    
     // Encoding
     // -----------------------------------------------------------------------------------------------------------------
 

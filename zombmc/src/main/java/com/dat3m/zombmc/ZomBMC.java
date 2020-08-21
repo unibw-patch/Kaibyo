@@ -2,6 +2,7 @@ package com.dat3m.zombmc;
 
 import static com.dat3m.dartagnan.compiler.Mitigation.LFENCE;
 import static com.dat3m.dartagnan.compiler.Mitigation.SLH;
+import static com.dat3m.dartagnan.compiler.Utils.slh;
 import static com.dat3m.dartagnan.utils.Result.FAIL;
 import static com.dat3m.dartagnan.utils.Result.PASS;
 import static com.dat3m.zombmc.utils.Encodings.encodeSpectre;
@@ -68,7 +69,7 @@ public class ZomBMC {
         Solver solver = ctx.mkSolver();
         solver.add(program.encodeSCF(ctx));
         if(mitigations.contains(SLH)) {
-        	program.slh(ctx);
+        	slh(program, ctx);
         }
         solver.add(wmm.encode(program, ctx, settings));
         solver.add(wmm.consistent(program, ctx));
