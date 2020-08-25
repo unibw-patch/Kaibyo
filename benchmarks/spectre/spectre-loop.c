@@ -21,6 +21,7 @@ char * spectre_secret = "The Magic Words are Squeamish Ossifrage.";
 
 uint8_t temp = 0; /* Used so compiler won’t optimize out victim_function() */
 
+#ifdef v01
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 1:  This is the sample function from the Spectre paper.
 // ----------------------------------------------------------------------------------------
@@ -29,7 +30,9 @@ void victim_function_v01(size_t x) {
           temp &= array2[array1[x] * SIZE];
      }
 }
+#endif
 
+#ifdef v02
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 2:  Moving the leak to a local function that can be inlined.
 // ----------------------------------------------------------------------------------------
@@ -39,7 +42,9 @@ void victim_function_v02(size_t x) {
           leakByteLocalFunction(array1[x]);
      }
 }
+#endif
 
+#ifdef v03
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 3:  Moving the leak to a function that cannot be inlined.
 //
@@ -51,7 +56,9 @@ void victim_function_v03(size_t x) {
      if (x < array1_size)
           leakByteNoinlineFunction(array1[x]);
 }
+#endif
 
+#ifdef v04
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 4:  Add a left shift by one on the index.
 //
@@ -61,7 +68,9 @@ void victim_function_v04(size_t x) {
      if (x < array1_size)
           temp &= array2[array1[x << 1] * SIZE];
 }
+#endif
 
+#ifdef v05
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 5:  Use x as the initial value in a for() loop.
 //
@@ -75,7 +84,9 @@ void victim_function_v05(size_t x) {
          }
      }
 }
+#endif
 
+#ifdef v06
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 6:  Check the bounds with an AND mask, rather than "<".
 //
@@ -86,7 +97,9 @@ void victim_function_v06(size_t x) {
      if ((x & array_size_mask) == x)
           temp &= array2[array1[x] * SIZE];
 }
+#endif
 
+#ifdef v07
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 7:  Compare against the last known-good value.
 //
@@ -99,14 +112,18 @@ void victim_function_v07(size_t x) {
      if (x < array1_size)
           last_x = x;
 }
+#endif
 
+#ifdef v08
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 8:  Use a ?: operator to check bounds.
 // ----------------------------------------------------------------------------------------
 void victim_function_v08(size_t x) {
      temp &= array2[array1[x < array1_size ? (x + 1) : 0] * SIZE];
 }
+#endif
 
+#ifdef v09
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 9:  Use a separate value to communicate the safety check status.
 //
@@ -116,7 +133,9 @@ void victim_function_v09(size_t x, int *x_is_safe) {
      if (*x_is_safe)
           temp &= array2[array1[x] * SIZE];
 }
+#endif
 
+#ifdef v10
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 10:  Leak a comparison result.
 //
@@ -131,7 +150,9 @@ void victim_function_v10(size_t x, uint8_t k) {
                temp &= array2[0];
      }
 }
+#endif
 
+#ifdef v11
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 11:  Use memcmp() to read the memory for the leak.
 //
@@ -153,7 +174,9 @@ void victim_function_v11(size_t x) {
      if (x < array1_size)
           temp = mymemcmp(&temp, array2 + (array1[x] * SIZE), 1);
 }
+#endif
 
+#ifdef v12
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 12:  Make the index be the sum of two input parameters.
 //
@@ -163,7 +186,9 @@ void victim_function_v12(size_t x, size_t y) {
      if ((x + y) < array1_size)
           temp &= array2[array1[x + y] * SIZE];
 }
+#endif
 
+#ifdef v13
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 13:  Do the safety check into an inline function
 //
@@ -179,7 +204,9 @@ void victim_function_v13(size_t x) {
      if (is_x_safe(x))
           temp &= array2[array1[x] * SIZE];
 }
+#endif
 
+#ifdef v14
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 14:  Invert the low bits of x
 //
@@ -189,7 +216,9 @@ void victim_function_v14(size_t x) {
      if (x < array1_size)
           temp &= array2[array1[x ^ 255] * SIZE];
 }
+#endif
 
+#ifdef v15
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 15:  Pass a pointer to the length
 //
@@ -199,7 +228,9 @@ void victim_function_v15(size_t *x) {
      if (*x < array1_size)
           temp &= array2[array1[*x] * SIZE];
 }
+#endif
 
+#ifndef spectector
 int main()
 {
     #ifndef spectector
@@ -266,3 +297,4 @@ int main()
     }
     return 0;
 }
+#endif
