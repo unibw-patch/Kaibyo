@@ -8,9 +8,9 @@ do
     do
         echo =========================================================
         echo Running $version.$mitigation.o0.s
-        timeout $timeout spectector benchmarks/spectre/$version.$mitigation.o0.s-e [victim_function_$version]
+        timeout $timeout spectector benchmarks/spectre/$version.$mitigation.o0.s -e [victim_function_$version] > output/logs/$version.$mitigation.o0.log
         echo Running $version.$mitigation.o2.s
-        timeout $timeout spectector benchmarks/spectre/$version.$mitigation.o2.s -e [victim_function_$version]
+        timeout $timeout spectector benchmarks/spectre/$version.$mitigation.o2.s -e [victim_function_$version] > output/logs/$version.$mitigation.o2.log
     done
     echo =========================================================
     echo
