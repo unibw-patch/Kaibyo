@@ -10,39 +10,39 @@ do
         echo Running $version.$mitigation.o0.s
         log=output/logs/$version.$mitigation.o0.log
         timeout $timeout spectector benchmarks/spectre/$version.$mitigation.o0.s -e [victim_function_$version] > $log
+        if tail -n 1 "$log" | grep unsafe; then
+            echo FAIL
+        else
+            echo PASS
+        fi
+        
+        echo Running $version.$mitigation.o2.s
+        log=output/logs/$version.$mitigation.o2.log
+        timeout $timeout spectector benchmarks/spectre/$version.$mitigation.o2.s -e [victim_function_$version] > $log
         if grep "[program is unsafe]" $log; then
             echo FAIL
         else
             echo PASS
         fi
 
-#        echo Running $version.$mitigation.o2.s
-#        log=output/logs/$version.$mitigation.o2.log
-#        timeout $timeout spectector benchmarks/spectre/$version.$mitigation.o2.s -e [victim_function_$version] > $log
-#        if grep "[program is unsafe]" $log; then
-#            echo FAIL
-#        else
-#            echo PASS
-#        fi
-#
-#        echo =========================================================
-#        echo Running $version-loop.$mitigation.o0.s
-#        log=output/logs/$version-loop.$mitigation.o0.log
-#        timeout $timeout spectector benchmarks/spectre/$version-loop.$mitigation.o0.s -e [victim_function_$version] > $log
-#        if grep "[program is unsafe]" $log; then
-#            echo FAIL
-#        else
-#            echo PASS
-#        fi
-#
-#        echo Running $version-loop.$mitigation.o2.s
-#        log=output/logs/$version-loop.$mitigation.o2.log
-#        timeout $timeout spectector benchmarks/spectre/$version-loop.$mitigation.o2.s -e [victim_function_$version] > $log
-#        if grep "[program is unsafe]" $log; then
-#            echo FAIL
-#        else
-#            echo PASS
-#        fi
+        echo =========================================================
+        echo Running $version-loop.$mitigation.o0.s
+        log=output/logs/$version-loop.$mitigation.o0.log
+        timeout $timeout spectector benchmarks/spectre/$version-loop.$mitigation.o0.s -e [victim_function_$version] > $log
+        if grep "[program is unsafe]" $log; then
+            echo FAIL
+        else
+            echo PASS
+        fi
+
+        echo Running $version-loop.$mitigation.o2.s
+        log=output/logs/$version-loop.$mitigation.o2.log
+        timeout $timeout spectector benchmarks/spectre/$version-loop.$mitigation.o2.s -e [victim_function_$version] > $log
+        if grep "[program is unsafe]" $log; then
+            echo FAIL
+        else
+            echo PASS
+        fi
     done
     echo =========================================================
     echo
