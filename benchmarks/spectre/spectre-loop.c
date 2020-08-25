@@ -273,7 +273,7 @@ int main()
             victim_function_v08(x);
             #endif
             #ifdef v09
-            victim_function_v09(x,x32);
+            victim_function_v09(x,xp);
             #endif
             #ifdef v10
             victim_function_v10(x,x8);
@@ -291,7 +291,7 @@ int main()
             victim_function_v14(x);
             #endif
             #ifdef v15
-            victim_function_v15(x);
+            victim_function_v15(xp);
             #endif
         }
     }
