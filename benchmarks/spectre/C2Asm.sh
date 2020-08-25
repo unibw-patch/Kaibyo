@@ -16,7 +16,7 @@ do
             flags="-S -fdeclspec -mllvm -x86-speculative-load-hardening";
         fi
 
-        clang $flags --Dspectector spectre.c -o $version.$mitigation.o0.s -D$version
+        clang $flags -Dspectector spectre.c -o $version.$mitigation.o0.s -D$version
         clang $flags -Dspectector spectre.c -o $version.$mitigation.o2.s -D$version -O2
 
         clang $flags -Dspectector spectre-loop.c -o $version-loop.$mitigation.o0.s -D$version
