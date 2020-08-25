@@ -11,6 +11,7 @@ extern void *__VERIFIER_nondet_pointer(void) ;
 #endif
 
 #define SIZE    (1)
+#define LOOP    (100)
 
 unsigned int array1_size = 16;
 uint8_t array1[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
@@ -207,56 +208,61 @@ int main()
     void *xp = __VERIFIER_nondet_pointer();
     uint8_t x8 = __VERIFIER_nondet_uchar();
     #else
+    // They won't be actually used
     size_t x;
     size_t y;
     void *xp;
     uint8_t x8;
     #endif
-    
-    #ifdef v01
-    victim_function_v01(x);
-    #endif
-    #ifdef v02
-    victim_function_v02(x);
-    #endif
-    #ifdef v03
-    victim_function_v03(x);
-    #endif
-    #ifdef v04
-    victim_function_v04(x);
-    #endif
-    #ifdef v05
-    victim_function_v05(x);
-    #endif
-    #ifdef v06
-    victim_function_v06(x);
-    #endif
-    #ifdef v07
-    victim_function_v07(x);
-    #endif
-    #ifdef v08
-    victim_function_v08(x);
-    #endif
-    #ifdef v09
-    victim_function_v09(x,xp);
-    #endif
-    #ifdef v10
-    victim_function_v10(x,x8);
-    #endif
-    #ifdef v11
-    victim_function_v11(x);
-    #endif
-    #ifdef v12
-    victim_function_v12(x,y);
-    #endif
-    #ifdef v13
-    victim_function_v13(x);
-    #endif
-    #ifdef v14
-    victim_function_v14(x);
-    #endif
-    #ifdef v15
-    victim_function_v15(xp);
-    #endif
+
+    for (int i = 1; i < LOOP; ++i) {
+        if(i == LOOP - 1) {
+            #ifdef v01
+            victim_function_v01(x);
+            #endif
+            #ifdef v02
+            victim_function_v02(x);
+            #endif
+            #ifdef v03
+            victim_function_v03(x);
+            #endif
+            #ifdef v04
+            victim_function_v04(x);
+            #endif
+            #ifdef v05
+            victim_function_v05(x);
+            #endif
+            #ifdef v06
+            victim_function_v06(x);
+            #endif
+            #ifdef v07
+            victim_function_v07(x);
+            #endif
+            #ifdef v08
+            victim_function_v08(x);
+            #endif
+            #ifdef v09
+            victim_function_v09(x,x32);
+            #endif
+            #ifdef v10
+            victim_function_v10(x,x8);
+            #endif
+            #ifdef v11
+            victim_function_v11(x);
+            #endif
+            #ifdef v12
+            victim_function_v12(x,y);
+            #endif
+            #ifdef v13
+            victim_function_v13(x);
+            #endif
+            #ifdef v14
+            victim_function_v14(x);
+            #endif
+            #ifdef v15
+            victim_function_v15(x);
+            #endif
+        }
+    }
     return 0;
 }

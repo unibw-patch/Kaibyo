@@ -36,7 +36,8 @@ public class SvcompProcedures {
 			"__VERIFIER_nondet_long",
 			"__VERIFIER_nondet_ulong",
 			"__VERIFIER_nondet_char",
-			"__VERIFIER_nondet_uchar");
+			"__VERIFIER_nondet_uchar",
+			"__VERIFIER_nondet_pointer");
 
 	public static void handleSvcompFunction(VisitorBoogie visitor, Call_cmdContext ctx) {
 		String name = ctx.call_params().Define() == null ? ctx.call_params().Ident(0).getText() : ctx.call_params().Ident(1).getText();
@@ -67,7 +68,8 @@ public class SvcompProcedures {
 		if(name.contains("__VERIFIER_nondet_int") || name.contains("__VERIFIER_nondet_uint") || name.contains("__VERIFIER_nondet_unsigned_int") || 
 		   name.contains("__VERIFIER_nondet_short") || name.contains("__VERIFIER_nondet_ushort") || 
 		   name.contains("__VERIFIER_nondet_long") || name.contains("__VERIFIER_nondet_ulong") || 
-		   name.contains("__VERIFIER_nondet_char") || name.contains("__VERIFIER_nondet_uchar")) {
+		   name.contains("__VERIFIER_nondet_char") || name.contains("__VERIFIER_nondet_uchar") ||
+		   name.contains("__VERIFIER_nondet_pointer")) {
 			__VERIFIER_nondet(visitor, ctx, name);
 			return;
 		}
@@ -120,7 +122,7 @@ public class SvcompProcedures {
 
 	private static void __VERIFIER_nondet(VisitorBoogie visitor, Call_cmdContext ctx, String name) {
 		INonDetTypes type = null;
-		if(name.equals("__VERIFIER_nondet_int")) {
+		if(name.equals("__VERIFIER_nondet_int") || name.equals("__VERIFIER_nondet_pointer")) {
 			type = INonDetTypes.INT;
 		} else if (name.equals("__VERIFIER_nondet_uint") || name.equals("__VERIFIER_nondet_unsigned_int")) {
 			type = INonDetTypes.UINT;
