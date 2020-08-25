@@ -230,7 +230,6 @@ void victim_function_v15(size_t *x) {
 }
 #endif
 
-#ifndef spectector
 int main()
 {
     #ifndef spectector
@@ -297,4 +296,3 @@ int main()
     }
     return 0;
 }
-#endif
