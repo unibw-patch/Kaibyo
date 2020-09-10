@@ -14,9 +14,11 @@ import com.dat3m.dartagnan.program.event.rmw.RMWStore;
 import com.dat3m.dartagnan.program.event.utils.RegReaderData;
 import com.dat3m.dartagnan.program.event.utils.RegWriter;
 import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 public class RMWOpReturn extends RMWAbstract implements RegWriter, RegReaderData {
 
@@ -50,7 +52,7 @@ public class RMWOpReturn extends RMWAbstract implements RegWriter, RegReaderData
     // -----------------------------------------------------------------------------------------------------------------
 
     @Override
-    public int compile(Arch target, int nextId, Event predecessor) {
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
         if(target == Arch.NONE) {
             Register dummy = new Register(null, resultRegister.getThreadId(), resultRegister.getPrecision());
             RMWLoad load = new RMWLoad(dummy, address, Mo.loadMO(mo));
@@ -62,8 +64,8 @@ public class RMWOpReturn extends RMWAbstract implements RegWriter, RegReaderData
                 events.addFirst(new Fence("Mb"));
                 events.addLast(new Fence("Mb"));
             }
-            return compileSequence(target, nextId, predecessor, events);
+            return compileSequence(target, mitigations, nextId, predecessor, events);
         }
-        return super.compile(target, nextId, predecessor);
+        return super.compile(target, mitigations, nextId, predecessor);
     }
 }

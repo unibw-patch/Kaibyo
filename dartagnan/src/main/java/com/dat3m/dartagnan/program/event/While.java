@@ -4,7 +4,11 @@ import com.dat3m.dartagnan.expression.ExprInterface;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.utils.RegReaderData;
 import com.dat3m.dartagnan.program.utils.EType;
+
+import java.util.List;
+
 import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
@@ -95,7 +99,7 @@ public class While extends Event implements RegReaderData {
     // -----------------------------------------------------------------------------------------------------------------
 
     @Override
-    public int compile(Arch target, int nextId, Event predecessor) {
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
         throw new RuntimeException("Event 'while' must be unrolled before compilation");
     }
 

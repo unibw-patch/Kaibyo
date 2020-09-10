@@ -10,8 +10,10 @@ import com.dat3m.dartagnan.program.event.MemEvent;
 import com.dat3m.dartagnan.program.event.utils.RegWriter;
 import com.dat3m.dartagnan.program.utils.EType;
 import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class Read extends MemEvent implements RegWriter {
 
@@ -55,7 +57,7 @@ public class Read extends MemEvent implements RegWriter {
     // -----------------------------------------------------------------------------------------------------------------
 
     @Override
-    public int compile(Arch target, int nextId, Event predecessor) {
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
         LinkedList<Event> events = new LinkedList<>();
         events.add(new Load(resultRegister, address, mo));
 
@@ -79,6 +81,6 @@ public class Read extends MemEvent implements RegWriter {
                     throw new UnsupportedOperationException("Compilation to " + target + " is not supported for " + this);
         }
 
-        return compileSequence(target, nextId, predecessor, events);
+        return compileSequence(target, mitigations, nextId, predecessor, events);
     }
 }

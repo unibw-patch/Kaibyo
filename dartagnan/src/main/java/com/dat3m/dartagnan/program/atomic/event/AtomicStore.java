@@ -2,6 +2,7 @@ package com.dat3m.dartagnan.program.atomic.event;
 
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 import com.google.common.collect.ImmutableSet;
 import com.dat3m.dartagnan.expression.ExprInterface;
 import com.dat3m.dartagnan.expression.IExpr;
@@ -16,6 +17,7 @@ import static com.dat3m.dartagnan.program.atomic.utils.Mo.RELEASE;
 import static com.dat3m.dartagnan.program.atomic.utils.Mo.SC;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class AtomicStore extends MemEvent implements RegReaderData {
 
@@ -60,7 +62,7 @@ public class AtomicStore extends MemEvent implements RegReaderData {
     // -----------------------------------------------------------------------------------------------------------------
 
     @Override
-    public int compile(Arch target, int nextId, Event predecessor) {
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
         LinkedList<Event> events = new LinkedList<>();
         events.add(new Store(address, value, mo));
 
@@ -90,6 +92,6 @@ public class AtomicStore extends MemEvent implements RegReaderData {
             default:
                 throw new UnsupportedOperationException("Compilation to " + target + " is not supported for " + this);
         }
-        return compileSequence(target, nextId, predecessor, events);
+        return compileSequence(target, mitigations, nextId, predecessor, events);
     }
 }

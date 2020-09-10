@@ -3,11 +3,13 @@ package com.dat3m.dartagnan.program.event;
 import static com.dat3m.dartagnan.expression.op.BOpUn.NOT;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import com.dat3m.dartagnan.expression.BExprUn;
 import com.dat3m.dartagnan.expression.ExprInterface;
 import com.dat3m.dartagnan.program.utils.EType;
 import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 
 public class Assume extends Event {
 
@@ -43,9 +45,9 @@ public class Assume extends Event {
     // -----------------------------------------------------------------------------------------------------------------
 
 	@Override
-    public int compile(Arch target, int nextId, Event predecessor) {
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
         LinkedList<Event> events = new LinkedList<>();
         events.add(new CondJump(new BExprUn(NOT, exp), label));
-		return compileSequence(target, nextId, predecessor, events);
+		return compileSequence(target, mitigations, nextId, predecessor, events);
 	}
 }

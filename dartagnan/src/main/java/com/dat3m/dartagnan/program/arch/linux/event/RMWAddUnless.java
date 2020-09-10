@@ -4,6 +4,7 @@ import com.dat3m.dartagnan.program.arch.linux.utils.Mo;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.rmw.cond.FenceCond;
 import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 import com.google.common.collect.ImmutableSet;
 import com.dat3m.dartagnan.expression.Atom;
 import com.dat3m.dartagnan.expression.ExprInterface;
@@ -20,6 +21,7 @@ import com.dat3m.dartagnan.program.event.utils.RegWriter;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 public class RMWAddUnless extends RMWAbstract implements RegWriter, RegReaderData {
 
@@ -54,7 +56,7 @@ public class RMWAddUnless extends RMWAbstract implements RegWriter, RegReaderDat
     // -----------------------------------------------------------------------------------------------------------------
 
     @Override
-    public int compile(Arch target, int nextId, Event predecessor) {
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
         if(target == Arch.NONE) {
             Register dummy = new Register(null, resultRegister.getThreadId(), resultRegister.getPrecision());
             RMWReadCondUnless load = new RMWReadCondUnless(dummy, cmp, address, Mo.RELAXED);
@@ -65,8 +67,8 @@ public class RMWAddUnless extends RMWAbstract implements RegWriter, RegReaderDat
             events.addFirst(new FenceCond(load, "Mb"));
             events.addLast(new FenceCond(load, "Mb"));
 
-            return compileSequence(target, nextId, predecessor, events);
+            return compileSequence(target, mitigations, nextId, predecessor, events);
         }
-        return super.compile(target, nextId, predecessor);
+        return super.compile(target, mitigations, nextId, predecessor);
     }
 }

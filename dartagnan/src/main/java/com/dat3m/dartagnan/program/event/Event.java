@@ -171,20 +171,12 @@ public abstract class Event implements Comparable<Event> {
     // Compilation
     // -----------------------------------------------------------------------------------------------------------------
 
-    public int compile(Arch target, int nextId, Event predecessor) {
-		return compile(target, new ArrayList<Mitigation>(), nextId, predecessor);
-    }
-
     public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
 		cId = nextId++;
 		if(successor != null){
 			return successor.compile(target, mitigations, nextId, this);
 		}
         return nextId;
-    }
-
-    protected int compileSequence(Arch target, int nextId, Event predecessor, LinkedList<Event> sequence){
-        return compileSequence(target, nextId, predecessor, sequence);
     }
 
     protected int compileSequence(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor, LinkedList<Event> sequence){

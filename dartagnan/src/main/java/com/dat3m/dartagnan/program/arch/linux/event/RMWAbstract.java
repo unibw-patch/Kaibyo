@@ -1,7 +1,11 @@
 package com.dat3m.dartagnan.program.arch.linux.event;
 
 import com.dat3m.dartagnan.program.event.Event;
+
+import java.util.List;
+
 import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 import com.google.common.collect.ImmutableSet;
 import com.dat3m.dartagnan.expression.ExprInterface;
 import com.dat3m.dartagnan.expression.IExpr;
@@ -48,7 +52,7 @@ public abstract class RMWAbstract extends MemEvent implements RegWriter, RegRead
     // -----------------------------------------------------------------------------------------------------------------
 
     @Override
-    public int compile(Arch target, int nextId, Event predecessor) {
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
         throw new RuntimeException("Compilation to " + target + " is not supported for " + getClass().getName() + " " + mo);
     }
 }
