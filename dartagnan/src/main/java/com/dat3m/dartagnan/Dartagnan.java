@@ -5,7 +5,6 @@ import static com.dat3m.dartagnan.analysis.Cegar.runAnalysis;
 import static com.dat3m.dartagnan.analysis.Base.runAnalysisIncrementalSolver;
 import static com.dat3m.dartagnan.analysis.Cegar.runAnalysisIncrementalSolver;
 import static com.dat3m.dartagnan.utils.Result.FAIL;
-import static com.dat3m.dartagnan.utils.Result.UNKNOWN;
 import static com.microsoft.z3.enumerations.Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL;
 
 import java.io.File;
@@ -21,6 +20,7 @@ import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.utils.Graph;
 import com.dat3m.dartagnan.utils.Result;
 import com.dat3m.dartagnan.utils.Settings;
+import com.dat3m.dartagnan.utils.Witness;
 import com.dat3m.dartagnan.utils.options.DartagnanOptions;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.microsoft.z3.Context;
@@ -61,13 +61,8 @@ public class Dartagnan {
         Context ctx = new Context();
         Solver s = ctx.mkSolver();
 
-        Result result = UNKNOWN;
-        if(options.useISolver()) {
-            result = overApprox != null ? runAnalysisIncrementalSolver(s, ctx, p, mcm, overApprox, target, settings) : runAnalysisIncrementalSolver(s, ctx, p, mcm, target, settings);        	
-        } else {
-            result = overApprox != null ? runAnalysis(s, ctx, p, mcm, overApprox, target, settings) : runAnalysis(s, ctx, p, mcm, target, settings);
-        }
-
+        Result result = selectAndRunAnalysis(options, mcm, overApprox, p, target, settings, ctx, s);
+ 
         if(options.getProgramFilePath().endsWith(".litmus")) {
             System.out.println("Settings: " + options.getSettings());
             if(p.getAssFilter() != null){
@@ -79,6 +74,10 @@ public class Dartagnan {
         	System.out.println(result);
         }
 
+        if(options.createWitness() != null && result.equals(FAIL)) {
+        	new Witness(p, ctx, s.getModel(), options.createWitness()).write();
+        }
+        
         if(settings.getDrawGraph() && canDrawGraph(p.getAss(), result.equals(FAIL))) {
         	ctx.setPrintMode(Z3_PRINT_SMTLIB_FULL);
             drawGraph(new Graph(s.getModel(), ctx, p, settings.getGraphRelations()), options.getGraphFilePath());
@@ -87,6 +86,21 @@ public class Dartagnan {
 
         ctx.close();
     }
+
+	private static Result selectAndRunAnalysis(DartagnanOptions options, Wmm mcm, Wmm overApprox, Program p,
+			Arch target, Settings settings, Context ctx, Solver s) {
+		// Testing for races
+        if(options.testRaces()) {
+        	return com.dat3m.dartagnan.analysis.DataRaces.runAnalysis(s, ctx, p, mcm, target, settings);
+        } else {
+        	// Testing reachability
+            if(options.useISolver()) {
+                return overApprox != null ? runAnalysisIncrementalSolver(s, ctx, p, mcm, overApprox, target, settings) : runAnalysisIncrementalSolver(s, ctx, p, mcm, target, settings);        	
+            } else {
+                return overApprox != null ? runAnalysis(s, ctx, p, mcm, overApprox, target, settings) : runAnalysis(s, ctx, p, mcm, target, settings);
+            }       	
+        }
+	}
 
     public static boolean canDrawGraph(AbstractAssert ass, boolean result){
         String type = ass.getType();

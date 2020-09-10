@@ -12,6 +12,8 @@ public class DartagnanOptions extends BaseOptions {
     protected Set<String> supportedFormats = ImmutableSet.copyOf(Arrays.asList("litmus", "bpl"));
     protected String overApproxFilePath;
     protected boolean iSolver;
+    protected String witness;
+    protected boolean races;
 	
     public DartagnanOptions(){
         super();
@@ -25,6 +27,12 @@ public class DartagnanOptions extends BaseOptions {
 
         addOption(new Option("incrementalSolver", false,
         		"Use an incremental solver"));
+        
+        addOption(new Option("w", "witness", true,
+                "Creates a violation witness. The argument is the original *.c file from which the Boogie code was generated."));
+
+        addOption(new Option("races", false,
+                "Checks if the program contains data races instead of checking reachability"));
 }
     
     public void parse(String[] args) throws ParseException, RuntimeException {
@@ -37,6 +45,10 @@ public class DartagnanOptions extends BaseOptions {
             overApproxFilePath = cmd.getOptionValue("cegar");
         }
         iSolver = cmd.hasOption("incrementalSolver");
+        races = cmd.hasOption("races");
+        if(cmd.hasOption("witness")) {
+        	witness = cmd.getOptionValue("witness");
+        }
     }
     
     public String getOverApproxPath(){
@@ -45,5 +57,13 @@ public class DartagnanOptions extends BaseOptions {
     
     public boolean useISolver(){
         return iSolver;
+    }
+
+    public boolean testRaces(){
+        return races;
+    }
+
+    public String createWitness(){
+        return witness;
     }
 }

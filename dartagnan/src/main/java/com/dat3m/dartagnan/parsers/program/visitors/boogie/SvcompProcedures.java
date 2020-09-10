@@ -81,7 +81,9 @@ public class SvcompProcedures {
        	Label label = visitor.programBuilder.getOrCreateLabel("END_OF_T" + visitor.threadCount);
        	ExprInterface c = (ExprInterface)ctx.call_params().exprs().accept(visitor);
 		if(c != null) {
-			visitor.programBuilder.addChild(visitor.threadCount, new Assume(c, label));	
+			Assume child = new Assume(c, label);
+			child.setCLine(visitor.currentLine);
+			visitor.programBuilder.addChild(visitor.threadCount, child);	
 		}
 	}
 
@@ -91,6 +93,7 @@ public class SvcompProcedures {
     	visitor.assertionIndex++;
     	Local event = new Local(ass, new BConst(false));
 		event.addFilters(EType.ASSERTION);
+		event.setCLine(visitor.currentLine);
 		visitor.programBuilder.addChild(visitor.threadCount, event);
 	}
 	
@@ -103,6 +106,7 @@ public class SvcompProcedures {
     	}
     	Local event = new Local(ass, expr);
 		event.addFilters(EType.ASSERTION);
+		event.setCLine(visitor.currentLine);
 		visitor.programBuilder.addChild(visitor.threadCount, event);
 	}
 	
@@ -144,7 +148,9 @@ public class SvcompProcedures {
 		String registerName = ctx.call_params().Ident(0).getText();
 		Register register = visitor.programBuilder.getRegister(visitor.threadCount, visitor.currentScope.getID() + ":" + registerName);
 	    if(register != null){
-	    	visitor.programBuilder.addChild(visitor.threadCount, new Local(register, new INonDet(type, register.getPrecision())));
+	    	Local child = new Local(register, new INonDet(type, register.getPrecision()));
+	    	child.setCLine(visitor.currentLine);
+			visitor.programBuilder.addChild(visitor.threadCount, child);
 	    }
 	}
 
@@ -152,7 +158,9 @@ public class SvcompProcedures {
 		String registerName = ctx.call_params().Ident(0).getText();
 		Register register = visitor.programBuilder.getRegister(visitor.threadCount, visitor.currentScope.getID() + ":" + registerName);
 	    if(register != null){
-	    	visitor.programBuilder.addChild(visitor.threadCount, new Local(register, new BNonDet(register.getPrecision())));
+	    	Local child = new Local(register, new BNonDet(register.getPrecision()));
+	    	child.setCLine(visitor.currentLine);
+			visitor.programBuilder.addChild(visitor.threadCount, child);
 	    }
 	}
 }
