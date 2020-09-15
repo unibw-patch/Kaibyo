@@ -106,9 +106,9 @@ public class ProgramBuilder {
         addChild(regThread, new Local(getOrCreateRegister(regThread, regName, iValue.getPrecision()), iValue));
     }
 
-    public void addDeclarationArray(String name, List<IConst> values){
+    public void addDeclarationArray(String name, List<IConst> values, int precision){
         int size = values.size();
-        List<Address> addresses = memory.malloc(name, size);
+        List<Address> addresses = memory.malloc(name, size, precision);
         for(int i = 0; i < size; i++){
             String varName = name + "[" + i + "]";
             Address address = addresses.get(i);
@@ -118,6 +118,10 @@ public class ProgramBuilder {
         pointers.put(name, addresses.get(0));
     }
 
+    public void addDeclarationArray(String name, List<IConst> values){
+    	addDeclarationArray(name, values, -1);
+    }
+    
     // ----------------------------------------------------------------------------------------------------------------
     // Utility
 

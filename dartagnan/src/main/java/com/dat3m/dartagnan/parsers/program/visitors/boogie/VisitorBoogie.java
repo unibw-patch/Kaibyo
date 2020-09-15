@@ -42,6 +42,7 @@ import com.dat3m.dartagnan.expression.IfExpr;
 import com.dat3m.dartagnan.expression.op.BOpUn;
 import com.dat3m.dartagnan.expression.op.IOpUn;
 import com.dat3m.dartagnan.parsers.BoogieBaseVisitor;
+import com.dat3m.dartagnan.parsers.BoogieParser;
 import com.dat3m.dartagnan.parsers.BoogieParser.And_exprContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.Assert_cmdContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.Assign_cmdContext;
@@ -74,6 +75,7 @@ import com.dat3m.dartagnan.parsers.BoogieParser.Proc_declContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.Rel_exprContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.Return_cmdContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.TermContext;
+import com.dat3m.dartagnan.parsers.BoogieParser.Type_declContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.Var_declContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.Var_exprContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.While_cmdContext;
@@ -138,6 +140,8 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 	
 	protected int assertionIndex = 0;
 	
+	private int refPrec = -1;
+	
 	protected BeginAtomic currentBeginAtomic = null;
 	private Call_cmdContext atomicMode = null;
 	 
@@ -149,6 +153,9 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 	
     @Override
     public Object visitMain(MainContext ctx) {
+    	for(Type_declContext typeDecContext : ctx.type_decl()) {
+    		visitType_decl(typeDecContext);
+    	}
     	for(Func_declContext funDecContext : ctx.func_decl()) {
     		visitFunc_decl(funDecContext);
     	}
@@ -189,7 +196,7 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
         	for(Attr_typed_idents_whereContext atiwC : ctx.proc_sign().proc_sign_in().attr_typed_idents_wheres().attr_typed_idents_where()) {
         		for(ParseTree ident : atiwC.typed_idents_where().typed_idents().idents().Ident()) {
         			String type = atiwC.typed_idents_where().typed_idents().type().getText();
-        			int precision = type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
+        			int precision = type.contains("ref") ? refPrec : type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
             		threadCallingValues.get(threadCount).add(programBuilder.getOrCreateRegister(threadCount, currentScope.getID() + ":" + ident.getText(), precision));
         		}
         	}
@@ -197,6 +204,14 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
     	procedures.put(name, ctx);
 	}
 
+	@Override
+	public Object visitType_decl(BoogieParser.Type_declContext ctx) {
+		if(ctx.getText().contains("ref")) {
+			refPrec = ctx.getText().contains("bv") ? Integer.parseInt(ctx.type(0).getText().split("bv")[1]) : -1;
+		}
+		return null;
+	}
+	
 	@Override
 	public Object visitAxiom_decl(Axiom_declContext ctx) {
 		ExprInterface exp = (ExprInterface)ctx.proposition().accept(this);
@@ -213,10 +228,10 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 		for(ParseTree ident : ctx.typed_idents().idents().Ident()) {
 			String name = ident.getText();
 			String type = ctx.typed_idents().type().getText();
-			int precision = type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
+			int precision = type.contains("ref") ? refPrec : type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
 			if(ctx.getText().contains("{:count")) {
 				int size = Integer.parseInt((ctx.getText().substring(0, ctx.getText().lastIndexOf("}")).split("count")[1]));
-				programBuilder.addDeclarationArray(name, Collections.nCopies(size, new IConst(0, precision)));
+				programBuilder.addDeclarationArray(name, Collections.nCopies(size, new IConst(0, precision)), precision);
 			} else if(ctx.getText().contains("ref;") && !procedures.containsKey(name) && !smackDummyVariables.contains(name)) {
 				programBuilder.getOrCreateLocation(name, precision);
 			} else {
@@ -239,7 +254,7 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
     		 for(ParseTree ident : atiwC.typed_idents_where().typed_idents().idents().Ident()) {
     			 String name = ident.getText();
     			 String type = atiwC.typed_idents_where().typed_idents().type().getText();
-    			 int precision = type.contains("bv") && !name.equals("$M.0") ? Integer.parseInt(type.split("bv")[1]) : -1;
+    			 int precision = type.contains("ref") ? refPrec : type.contains("bv") && !name.equals("$M.0") ? Integer.parseInt(type.split("bv")[1]) : -1;
     			 programBuilder.getOrCreateLocation(name, precision);
     		 }
     	 }
@@ -251,7 +266,7 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 			for(ParseTree ident : atiwC.typed_idents_where().typed_idents().idents().Ident()) {
 				String name = ident.getText();
 				String type = atiwC.typed_idents_where().typed_idents().type().getText();
-				int precision = type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
+				int precision = type.contains("ref") ? refPrec : type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
 				if(constantsTypeMap.containsKey(name)) {
 	                throw new ParsingException("Variable " + name + " is already defined as a constant");
 				}
@@ -303,7 +318,7 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
     				// To deal with references passed to created threads
     				if(index < callingValues.size()) {
     					String type = atiwC.typed_idents_where().typed_idents().type().getText();
-    					int precision = type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
+    					int precision = type.contains("ref") ? refPrec : type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
         				Register register = programBuilder.getOrCreateRegister(threadCount, currentScope.getID() + ":" + ident.getText(), precision);
         				ExprInterface value = callingValues.get(index);
         				Local child = new Local(register, value);
