@@ -121,7 +121,7 @@ public class ProgramBuilder {
     public void addDeclarationArray(String name, List<IConst> values){
     	addDeclarationArray(name, values, -1);
     }
-    
+
     // ----------------------------------------------------------------------------------------------------------------
     // Utility
 
