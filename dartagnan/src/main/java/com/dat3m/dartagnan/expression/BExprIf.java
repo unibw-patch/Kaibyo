@@ -8,13 +8,13 @@ import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Model;
 
-public class IfExpr implements ExprInterface {
+public class BExprIf extends BExpr implements ExprInterface {
 
 	private BExpr guard;
-	private ExprInterface tbranch;
-	private ExprInterface fbranch;
+	private BExpr tbranch;
+	private BExpr fbranch;
 	
-	public IfExpr(BExpr guard, ExprInterface tbranch, ExprInterface fbranch) {
+	public BExprIf(BExpr guard, BExpr tbranch, BExpr fbranch) {
 		this.guard =  guard;
 		this.tbranch = tbranch;
 		this.fbranch = fbranch;

@@ -2,7 +2,6 @@ package com.dat3m.zombmc;
 
 import static com.dat3m.dartagnan.compiler.Mitigation.LFENCE;
 import static com.dat3m.dartagnan.compiler.Mitigation.SLH;
-import static com.dat3m.dartagnan.compiler.Utils.slh;
 import static com.dat3m.dartagnan.utils.Result.FAIL;
 import static com.dat3m.dartagnan.utils.Result.PASS;
 import static com.dat3m.zombmc.utils.Encodings.encodeSpectre;
@@ -62,15 +61,11 @@ public class ZomBMC {
     }
 
     public static Result testProgramSpeculatively(Context ctx, Program program, Wmm wmm, Arch target, List<Mitigation> mitigations, Settings settings) {
-
         program.unroll(settings.getBound(), 0);
     	program.compile(target, mitigations, 0);
     	
         Solver solver = ctx.mkSolver();
         solver.add(program.encodeSCF(ctx));
-        if(mitigations.contains(SLH)) {
-        	slh(program, ctx);
-        }
         solver.add(wmm.encode(program, ctx, settings));
         solver.add(wmm.consistent(program, ctx));
         solver.add(encodeSpectre(program, ctx));

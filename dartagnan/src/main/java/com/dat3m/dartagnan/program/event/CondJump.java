@@ -113,7 +113,10 @@ public class CondJump extends Event implements RegReaderData {
             Fence mfence = new Fence("Mfence");
             mfence.setSuccessor(successor);
             successor = mfence;
-        }        
+        }
+        cf.add(expr);
+        label.cf.add(expr);        	
+        successor.cf.addAll(cf);
         return successor.compile(target, mitigations, nextId, this);
     }
 
