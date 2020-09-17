@@ -3,11 +3,14 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#ifdef klee
+#include <klee/klee.h>
+#endif
+
 #ifndef spectector
+#ifndef klee
 extern size_t __VERIFIER_nondet_ulong(void);
-extern int __VERIFIER_nondet_int(void);
-extern uint8_t __VERIFIER_nondet_uchar(void);
-extern void *__VERIFIER_nondet_pointer(void) ;
+#endif
 #endif
 
 #define SIZE    (1)
@@ -161,7 +164,7 @@ void victim_function_v08(size_t x) {
 //
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
-void victim_function_v09(size_t x, int *x_is_safe) {
+void victim_function_v09(size_t x, size_t *x_is_safe) {
     for (int i = 1; i < LOOP; ++i) {
         if(i == LOOP - 1) {
             if (*x_is_safe)
@@ -285,11 +288,13 @@ void victim_function_v15(size_t *x) {
 #ifndef spectector
 int main()
 {
+    #ifdef klee
+    size_t x;
+    klee_make_symbolic(&x, sizeof(x), "x");
+    #else
     size_t x = __VERIFIER_nondet_ulong();
-    size_t y = __VERIFIER_nondet_ulong();
-    void *xp = __VERIFIER_nondet_pointer();
-    uint8_t x8 = __VERIFIER_nondet_uchar();
-    
+    #endif
+
     #ifdef v01
     victim_function_v01(x);
     #endif
@@ -315,16 +320,16 @@ int main()
     victim_function_v08(x);
     #endif
     #ifdef v09
-    victim_function_v09(x,xp);
+    victim_function_v09(x,&x);
     #endif
     #ifdef v10
-    victim_function_v10(x,x8);
+    victim_function_v10(x,10);
     #endif
     #ifdef v11
     victim_function_v11(x);
     #endif
     #ifdef v12
-    victim_function_v12(x,y);
+    victim_function_v12(x,x);
     #endif
     #ifdef v13
     victim_function_v13(x);
@@ -333,7 +338,7 @@ int main()
     victim_function_v14(x);
     #endif
     #ifdef v15
-    victim_function_v15(xp);
+    victim_function_v15(&x);
     #endif
     return 0;
 }
