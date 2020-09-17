@@ -282,19 +282,13 @@ void victim_function_v15(size_t *x) {
 }
 #endif
 
+#ifndef spectector
 int main()
 {
-    #ifndef spectector
     size_t x = __VERIFIER_nondet_ulong();
     size_t y = __VERIFIER_nondet_ulong();
     void *xp = __VERIFIER_nondet_pointer();
     uint8_t x8 = __VERIFIER_nondet_uchar();
-    #else
-    size_t x;
-    size_t y;
-    void *xp;
-    uint8_t x8;
-    #endif
     
     #ifdef v01
     victim_function_v01(x);
@@ -343,3 +337,4 @@ int main()
     #endif
     return 0;
 }
+#endif
