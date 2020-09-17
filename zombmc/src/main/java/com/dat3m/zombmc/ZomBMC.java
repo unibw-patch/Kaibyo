@@ -2,9 +2,10 @@ package com.dat3m.zombmc;
 
 import static com.dat3m.dartagnan.compiler.Mitigation.LFENCE;
 import static com.dat3m.dartagnan.compiler.Mitigation.SLH;
-import static com.dat3m.dartagnan.utils.Result.FAIL;
-import static com.dat3m.dartagnan.utils.Result.PASS;
 import static com.dat3m.zombmc.utils.Encodings.encodeSpectre;
+import static com.dat3m.zombmc.utils.Result.SAFE;
+import static com.dat3m.zombmc.utils.Result.UNSAFE;
+import static com.microsoft.z3.Status.SATISFIABLE;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,13 +19,12 @@ import com.dat3m.dartagnan.compiler.Mitigation;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.parsers.program.ProgramParser;
 import com.dat3m.dartagnan.program.Program;
-import com.dat3m.dartagnan.utils.Result;
 import com.dat3m.dartagnan.utils.Settings;
 import com.dat3m.dartagnan.wmm.Wmm;
+import com.dat3m.zombmc.utils.Result;
 import com.dat3m.zombmc.utils.options.ZomBMCOptions;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
-import com.microsoft.z3.Status;
 
 public class ZomBMC {
 
@@ -70,6 +70,6 @@ public class ZomBMC {
         solver.add(wmm.consistent(program, ctx));
         solver.add(encodeSpectre(program, ctx));
 		
-		return solver.check() == Status.SATISFIABLE ? FAIL : PASS;
+		return solver.check() == SATISFIABLE ? UNSAFE : SAFE;
     }
 }

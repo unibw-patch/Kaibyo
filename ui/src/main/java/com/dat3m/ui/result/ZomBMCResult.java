@@ -10,10 +10,10 @@ import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.compiler.Mitigation;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.utils.Graph;
-import com.dat3m.dartagnan.utils.Result;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.ui.utils.UiOptions;
 import com.dat3m.ui.utils.Utils;
+import com.dat3m.zombmc.utils.Result;
 import com.microsoft.z3.Context;
 
 public class ZomBMCResult implements Dat3mResult {
@@ -44,7 +44,7 @@ public class ZomBMCResult implements Dat3mResult {
         if(validate()){
          	Context ctx = new Context();
          	List<Mitigation> mitigations = new ArrayList<Mitigation>();
-            Result result = testProgramSpeculatively(ctx, program, wmm, options.getTarget(), mitigations, options.getSettings());
+         	Result result = testProgramSpeculatively(ctx, program, wmm, options.getTarget(), mitigations, options.getSettings());
             StringBuilder sb = new StringBuilder();
             sb.append(result).append("\n");
             verdict = sb.toString();
