@@ -8,20 +8,20 @@ do
     do
         echo =========================================================
         echo Running $version.$mitigation.o0.s
-        log=output/logs/$version.$mitigation.o0.log
+        log=output/logs/spectector/$version.$mitigation.o0.log
         timeout $timeout spectector benchmarks/spectre/asm/$version.$mitigation.o0.s -e [victim_function_$version] > $log
         tail -n 1 "$log" | grep "program is"
         echo Running $version.$mitigation.o2.s
-        log=output/logs/$version.$mitigation.o2.log
+        log=output/logs/spectector/$version.$mitigation.o2.log
         timeout $timeout spectector benchmarks/spectre/asm/$version.$mitigation.o2.s -e [victim_function_$version] > $log
         tail -n 1 "$log" | grep "program is"
         echo =========================================================
         echo Running $version-loop.$mitigation.o0.s
-        log=output/logs/$version-loop.$mitigation.o0.log
+        log=output/logs/spectector/$version-loop.$mitigation.o0.log
         timeout $timeout spectector benchmarks/spectre/asm/$version-loop.$mitigation.o0.s -e [victim_function_$version] > $log
         tail -n 1 "$log" | grep "program is"
         echo Running $version-loop.$mitigation.o2.s
-        log=output/logs/$version-loop.$mitigation.o2.log
+        log=output/logs/spectector/$version-loop.$mitigation.o2.log
         timeout $timeout spectector benchmarks/spectre/asm/$version-loop.$mitigation.o2.s -e [victim_function_$version] > $log
         tail -n 1 "$log" | grep "program is"
     done
