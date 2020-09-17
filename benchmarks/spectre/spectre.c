@@ -8,7 +8,9 @@
 #endif
 
 #ifndef spectector
+#ifndef klee
 extern size_t __VERIFIER_nondet_ulong(void);
+#endif
 #endif
 
 #define SIZE    (1)

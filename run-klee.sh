@@ -8,20 +8,20 @@ do
     echo =========================================================
     echo Running $version.none.o0.s
     log=output/logs/klee/$version.none.o0.log
-    timeout $timeout $whereisklee/build/bin/klee benchmarks/spectre/bc/$version.none.o0.bc --search=randomsp --enable-speculative  > $log
+    timeout $timeout $whereisklee/build/bin/klee benchmarks/spectre/bc/$version.none.o0.bc --search=randomsp --enable-speculative 2> $log
     tail -n 1 "$log" | grep "program is"
     echo Running $version.none.o2.s
     log=output/logs/klee/$version.none.o2.log
-    timeout $timeout $whereisklee/build/bin/klee  benchmarks/spectre/bc/$version.none.o2.bc --search=randomsp --enable-speculative  > $log
+    timeout $timeout $whereisklee/build/bin/klee  benchmarks/spectre/bc/$version.none.o2.bc --search=randomsp --enable-speculative 2> $log
     tail -n 1 "$log" | grep "program is"
     echo =========================================================
     echo Running $version-loop.none.o0.s
     log=output/logs/klee/$version-loop.none.o0.log
-    timeout $timeout $whereisklee/build/bin/klee  benchmarks/spectre/bc/$version-loop.none.o0.bc --search=randomsp --enable-speculative  > $log
+    timeout $timeout $whereisklee/build/bin/klee  benchmarks/spectre/bc/$version-loop.none.o0.bc --search=randomsp --enable-speculative 2> $log
     tail -n 1 "$log" | grep "program is"
     echo Running $version-loop.none.o2.s
     log=output/logs/klee/$version-loop.none.o2.log
-    timeout $timeout $whereisklee/build/bin/klee  benchmarks/spectre/bc/$version-loop.none.o2.bc --search=randomsp --enable-speculative  > $log
+    timeout $timeout $whereisklee/build/bin/klee  benchmarks/spectre/bc/$version-loop.none.o2.bc --search=randomsp --enable-speculative 2> $log
     tail -n 1 "$log" | grep "program is"
     echo =========================================================
     echo
