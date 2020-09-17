@@ -129,7 +129,7 @@ void victim_function_v08(size_t x) {
 //
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
-void victim_function_v09(size_t x, int *x_is_safe) {
+void victim_function_v09(size_t x, size_t *x_is_safe) {
      if (*x_is_safe)
           temp &= array2[array1[x] * SIZE];
 }
