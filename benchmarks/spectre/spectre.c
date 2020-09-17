@@ -234,7 +234,7 @@ void victim_function_v15(size_t *x) {
 int main()
 {
     #ifdef klee
-    int x;
+    size_t x;
     klee_make_symbolic(&x, sizeof(x), "x");
     #else
     size_t x = __VERIFIER_nondet_ulong();
