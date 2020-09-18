@@ -9,7 +9,8 @@
 
 #ifndef spectector
 #ifndef klee
-extern size_t __VERIFIER_nondet_ulong(void);
+extern size_t __VERIFIER_nondet_long(void);
+extern int __VERIFIER_nondet_int(void);
 #endif
 #endif
 
@@ -131,7 +132,7 @@ void victim_function_v08(size_t x) {
 //
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
-void victim_function_v09(size_t x, size_t *x_is_safe) {
+void victim_function_v09(size_t x, int *x_is_safe) {
      if (*x_is_safe)
           temp &= array2[array1[x] * SIZE];
 }
@@ -238,8 +239,11 @@ int main()
     #ifdef klee
     size_t x;
     klee_make_symbolic(&x, sizeof(x), "x");
+    int y;
+    klee_make_symbolic(&y, sizeof(y), "y");
     #else
-    size_t x = __VERIFIER_nondet_ulong();
+    size_t x = __VERIFIER_nondet_long();
+    int y = __VERIFIER_nondet_int();
     #endif 
 
     #ifdef v01
@@ -267,7 +271,7 @@ int main()
     victim_function_v08(x);
     #endif
     #ifdef v09
-    victim_function_v09(x,&x);
+    victim_function_v09(x,&y);
     #endif
     #ifdef v10
     victim_function_v10(x,10);
