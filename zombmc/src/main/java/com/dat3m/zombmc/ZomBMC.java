@@ -43,7 +43,7 @@ public class ZomBMC {
             return;
         }
 
-        Wmm mcm = new ParserCat().parse(new File("./cat/sc.cat"));
+        Wmm mcm = new ParserCat().parse(new File("$DAT3M_HOME/cat/sc.cat"));
 		Program p = new ProgramParser().parse(new File(options.getProgramFilePath()));		
         Arch target = Arch.NONE;
         
