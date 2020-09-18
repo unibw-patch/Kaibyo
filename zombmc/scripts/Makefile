@@ -27,3 +27,15 @@ spectector:
 zombmc:
 	@echo "Running ZOMBMC"
 	@bash run-zombmc.sh
+
+clean: clean-asm clean-bc clean-bpl
+
+clean-asm:
+	@rm ../../output/logs/asm
+
+clean-bc:
+	@rm -r ../../output/logs/bc
+
+clean-bpl:
+	@rm ../../output/logs/bpl
+	
