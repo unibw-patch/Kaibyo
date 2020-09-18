@@ -15,13 +15,22 @@ do
     timeout $timeout $whereisklee/build/bin/klee --search=randomsp --enable-speculative benchmarks/spectre/bc/$version.none.o2.bc 2> $log
     grep "KLEE: Total Spectre found" $log
     echo =========================================================
-    echo Running $version-loop.none.o0.bc
-    log=output/logs/klee/$version-loop.none.o0.log
-    timeout $timeout $whereisklee/build/bin/klee --search=randomsp --enable-speculative  benchmarks/spectre/bc/$version-loop.none.o0.bc 2> $log
+    echo Running $version-cloop.none.o0.bc
+    log=output/logs/klee/$version-cloop.none.o0.log
+    timeout $timeout $whereisklee/build/bin/klee --search=randomsp --enable-speculative  benchmarks/spectre/bc/$version-cloop.none.o0.bc 2> $log
     grep "KLEE: Total Spectre found" $log
-    echo Running $version-loop.none.o2.bc
-    log=output/logs/klee/$version-loop.none.o2.log
-    timeout $timeout $whereisklee/build/bin/klee --search=randomsp --enable-speculative  benchmarks/spectre/bc/$version-loop.none.o2.bc 2> $log
+    echo Running $version-cloop.none.o2.bc
+    log=output/logs/klee/$version-cloop.none.o2.log
+    timeout $timeout $whereisklee/build/bin/klee --search=randomsp --enable-speculative  benchmarks/spectre/bc/$version-cloop.none.o2.bc 2> $log
+    grep "KLEE: Total Spectre found" $log
+    echo =========================================================
+    echo Running $version-sloop.none.o0.bc
+    log=output/logs/klee/$version-sloop.none.o0.log
+    timeout $timeout $whereisklee/build/bin/klee --search=randomsp --enable-speculative  benchmarks/spectre/bc/$version-sloop.none.o0.bc 2> $log
+    grep "KLEE: Total Spectre found" $log
+    echo Running $version-sloop.none.o2.bc
+    log=output/logs/klee/$version-sloop.none.o2.log
+    timeout $timeout $whereisklee/build/bin/klee --search=randomsp --enable-speculative  benchmarks/spectre/bc/$version-sloop.none.o2.bc 2> $log
     grep "KLEE: Total Spectre found" $log
     echo =========================================================
     echo
