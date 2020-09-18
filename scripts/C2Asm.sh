@@ -14,7 +14,7 @@ do
             flags+=" -mllvm -x86-speculative-load-hardening";
         fi
 
-        clang $flags -Dspectector -D$version $DAT3M_HOME/benchmarks/spectre/spectre.c -o $DAT3M_HOME/benchmarks/spectre/asm/$version.$mitigation.o0.s
+        clang $flags $DAT3M_HOME/benchmarks/spectre/spectre.c -o $DAT3M_HOME/benchmarks/spectre/asm/$version.$mitigation.o0.s
         clang $flags -Dspectector -D$version -O2 $DAT3M_HOME/benchmarks/spectre/spectre.c -o $DAT3M_HOME/benchmarks/spectre/asm/$version.$mitigation.o2.s
 
         clang $flags -Dspectector -D$version $DAT3M_HOME/benchmarks/spectre/spectre-cloop.c -o $DAT3M_HOME/benchmarks/spectre/asm/$version-cloop.$mitigation.o0.s
