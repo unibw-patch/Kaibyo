@@ -17,7 +17,10 @@ do
         clang $flags -Dspectector -D$version spectre.c -o asm/$version.$mitigation.o0.s
         clang $flags -Dspectector -D$version -O2 spectre.c -o asm/$version.$mitigation.o2.s
 
-        clang $flags -Dspectector -D$version spectre-loop.c -o asm/$version-loop.$mitigation.o0.s
-        clang $flags -Dspectector -D$version -O2 spectre-loop.c -o asm/$version-loop.$mitigation.o2.s
+        clang $flags -Dspectector -D$version spectre-cloop.c -o asm/$version-cloop.$mitigation.o0.s
+        clang $flags -Dspectector -D$version -O2 spectre-cloop.c -o asm/$version-cloop.$mitigation.o2.s
+
+        clang $flags -Dspectector -D$version spectre-sloop.c -o asm/$version-sloop.$mitigation.o0.s
+        clang $flags -Dspectector -D$version -O2 spectre-sloop.c -o asm/$version-sloop.$mitigation.o2.s
     done
 done

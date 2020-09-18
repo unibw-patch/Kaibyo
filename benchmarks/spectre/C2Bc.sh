@@ -9,6 +9,9 @@ do
     clang-6.0 $flags -Dklee -D$version spectre.c -o bc/$version.none.o0.bc
     clang-6.0 $flags -Dklee -D$version -O2 spectre.c -o bc/$version.none.o2.bc
 
-    clang-6.0 $flags -Dklee -D$version spectre-loop.c -o bc/$version-loop.none.o0.bc
-    clang-6.0 $flags -Dklee -D$version -O2 spectre-loop.c -o bc/$version-loop.none.o2.bc
+    clang-6.0 $flags -Dklee -D$version spectre-cloop.c -o bc/$version-cloop.none.o0.bc
+    clang-6.0 $flags -Dklee -D$version -O2 spectre-cloop.c -o bc/$version-cloop.none.o2.bc
+
+    clang-6.0 $flags -Dklee -D$version spectre-sloop.c -o bc/$version-sloop.none.o0.bc
+    clang-6.0 $flags -Dklee -D$version -O2 spectre-sloop.c -o bc/$version-sloop.none.o2.bc
 done
