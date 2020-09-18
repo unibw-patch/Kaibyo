@@ -1,13 +1,16 @@
 #!/bin/bash
 
- for flag in v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15
- do
-     smack -t $DAT3M_HOME/benchmarks/spectre/spectre.c --no-memory-splitting --clang-options="-D"$flag" -fms-extensions -I../../include/" -bpl $DAT3M_HOME/benchmarks/spectre/bpl/$flag.o0.bpl --integer-encoding bit-vector
-     smack -t $DAT3M_HOME/benchmarks/spectre/spectre.c --no-memory-splitting --clang-options="-O2 -D"$flag" -fms-extensions -I../../include/" -bpl $DAT3M_HOME/benchmarks/spectre/bpl/$flag.o2.bpl --integer-encoding bit-vector
+SMACKFLAGS="-t --no-memory-splitting --integer-encoding bit-vector"
+DIR=$DAT3M_HOME/benchmarks/spectre/
 
-     smack -t $DAT3M_HOME/benchmarks/spectre/spectre-cloop.c --no-memory-splitting --clang-options="-D"$flag" -fms-extensions -I../../include/" -bpl $DAT3M_HOME/benchmarks/spectre/bpl/$flag-cloop.o0.bpl --integer-encoding bit-vector
-     smack -t $DAT3M_HOME/benchmarks/spectre/spectre-cloop.c --no-memory-splitting --clang-options="-O2 -D"$flag" -fms-extensions -I../../include/" -bpl $DAT3M_HOME/benchmarks/spectre/bpl/$flag-cloop.o2.bpl --integer-encoding bit-vector
+for version in v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15
+do
+    smack $DIR/spectre.c $SMACKFLAGS --clang-options="-D"$version" -fms-extensions -I../../include/" -bpl $DIR/bpl/$version.o0.bpl
+    smack $DIR/spectre.c $SMACKFLAGS --clang-options="-O2 -D"$version" -fms-extensions -I../../include/" -bpl $DIR/bpl/$version.o2.bpl
 
-     smack -t $DAT3M_HOME/benchmarks/spectre/spectre-sloop.c --no-memory-splitting --clang-options="-D"$flag" -fms-extensions -I../../include/" -bpl $DAT3M_HOME/benchmarks/spectre/bpl/$flag-sloop.o0.bpl --integer-encoding bit-vector
-     smack -t $DAT3M_HOME/benchmarks/spectre/spectre-sloop.c --no-memory-splitting --clang-options="-O2 -D"$flag" -fms-extensions -I../../include/" -bpl $DAT3M_HOME/benchmarks/spectre/bpl/$flag-sloop.o2.bpl --integer-encoding bit-vector
- done
+    smack $DIR/spectre-cloop.c $SMACKFLAGS --clang-options="-D"$version" -fms-extensions -I../../include/" -bpl $DIR/bpl/$version-cloop.o0.bpl
+    smack $DIR/spectre-cloop.c $SMACKFLAGS --clang-options="-O2 -D"$version" -fms-extensions -I../../include/" -bpl $DIR/bpl/$version-cloop.o2.bpl
+
+    smack $DIR/spectre-sloop.c $SMACKFLAGS --clang-options="-D"$version" -fms-extensions -I../../include/" -bpl $DIR/bpl/$version-sloop.o0.bpl
+    smack $DIR/spectre-sloop.c $SMACKFLAGS --clang-options="-O2 -D"$version" -fms-extensions -I../../include/" -bpl $DIR/bpl/$version-sloop.o2.bpl
+done
