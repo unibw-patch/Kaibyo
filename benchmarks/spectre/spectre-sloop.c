@@ -276,8 +276,8 @@ void victim_function_v14(size_t x) {
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
 void victim_function_v15(size_t *x) {
-    for (int i = 1; i < x; ++i) {
-        if(i == x - 1) {
+    for (int i = 1; i < *x; ++i) {
+        if(i == *x - 1) {
             if (*x < array1_size)
                 temp &= array2[array1[*x] * SIZE];
         }
