@@ -1,6 +1,6 @@
 #!/bin/bash
 
-timeout=60
+timeout=120
 KLEE=$KLEE_HOME/build/bin/klee
 KLEEFLAGS="--search=randomsp --enable-speculative"
 
@@ -9,31 +9,31 @@ do
     echo =========================================================
     echo Running $version.none.o0.bc
     log=/$DAT3M_HOME/output/logs/klee/$version.none.o0.log
-    timeout $timeout $KLEE $DAT3M_HOME/benchmarks/spectre/bc/$version.none.o0.bc 2> $log
+    timeout $timeout $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$version.none.o0.bc 2> $log
     grep "Spectre found" $log
     echo Running $version.none.o2.bc
     log=/$DAT3M_HOME/output/logs/klee/$version.none.o2.log
-    timeout $timeout $KLEE $DAT3M_HOME/benchmarks/spectre/bc/$version.none.o2.bc 2> $log
+    timeout $timeout $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$version.none.o2.bc 2> $log
     grep "Spectre found" $log
 
     echo =========================================================
     echo Running $version-cloop.none.o0.bc
     log=/$DAT3M_HOME/output/logs/klee/$version-cloop.none.o0.log
-    timeout $timeout $KLEE $DAT3M_HOME/benchmarks/spectre/bc/$version-cloop.none.o0.bc 2> $log
+    timeout $timeout $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$version-cloop.none.o0.bc 2> $log
     grep "Spectre found" $log
     echo Running $version-cloop.none.o2.bc
     log=/$DAT3M_HOME/output/logs/klee/$version-cloop.none.o2.log
-    timeout $timeout $KLEE $DAT3M_HOME/benchmarks/spectre/bc/$version-cloop.none.o2.bc 2> $log
+    timeout $timeout $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$version-cloop.none.o2.bc 2> $log
     grep "Spectre found" $log
 
     echo =========================================================
     echo Running $version-sloop.none.o0.bc
     log=/$DAT3M_HOME/output/logs/klee/$version-sloop.none.o0.log
-    timeout $timeout $KLEE $DAT3M_HOME/benchmarks/spectre/bc/$version-sloop.none.o0.bc 2> $log
+    timeout $timeout $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$version-sloop.none.o0.bc 2> $log
     grep "Spectre found" $log
     echo Running $version-sloop.none.o2.bc
     log=/$DAT3M_HOME/output/logs/klee/$version-sloop.none.o2.log
-    timeout $timeout $KLEE $DAT3M_HOME/benchmarks/spectre/bc/$version-sloop.none.o2.bc 2> $log
+    timeout $timeout $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$version-sloop.none.o2.bc 2> $log
     grep "Spectre found" $log
     echo =========================================================
     echo
