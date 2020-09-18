@@ -28,14 +28,18 @@ zombmc:
 	@echo "Running ZOMBMC"
 	@bash run-zombmc.sh
 
-clean: clean-asm clean-bc clean-bpl
+clean: clean-asm clean-bc clean-bpl clean-logs
 
 clean-asm:
-	@rm ../../output/logs/asm
+	@rm ../../benmarks/spectre/asm/*
 
 clean-bc:
-	@rm -r ../../output/logs/bc
+	@rm -r ../../benmarks/spectre/bc/*
 
 clean-bpl:
-	@rm ../../output/logs/bpl
-	
+	@rm ../../benmarks/spectre/bpl/*
+
+clean-logs:
+	@rm ../../output/logs/klee/*.log
+	@rm ../../output/logs/spectector/*.log
+
