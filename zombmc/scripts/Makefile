@@ -31,15 +31,14 @@ zombmc:
 clean: clean-asm clean-bc clean-bpl clean-logs
 
 clean-asm:
-	@rm ../../benmarks/spectre/asm/*
+	@find ../../benchmarks/spectre/asm/ -type f ! -name '*.md' -delete
 
 clean-bc:
-	@rm -r ../../benmarks/spectre/bc/*
+	@find ../../benchmarks/spectre/bc/ -type f ! -name '*.md' -delete
 
 clean-bpl:
-	@rm ../../benmarks/spectre/bpl/*
+	@find ../../benchmarks/spectre/bpl/ -type f ! -name '*.md' -delete
 
 clean-logs:
-	@rm ../../output/logs/klee/*.log
-	@rm ../../output/logs/spectector/*.log
-
+	@find ../../output/logs/klee/ -type f ! -name '*.md' -delete
+	@find ../../output/logs/spectector/ -type f ! -name '*.md' -delete
