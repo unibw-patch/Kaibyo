@@ -18,19 +18,19 @@ do
         
         echo =========================================================
         echo Running $version.o0.bpl
-        timeout $timeout time java -jar zombmc/target/zombmc-2.0.6-jar-with-dependencies.jar -i benchmarks/spectre/bpl/$version.o0.bpl $flag
+        timeout $timeout java -jar zombmc/target/zombmc-2.0.6-jar-with-dependencies.jar -i benchmarks/spectre/bpl/$version.o0.bpl $flag
         echo Running $version.o2.bpl
-        timeout $timeout time java -jar zombmc/target/zombmc-2.0.6-jar-with-dependencies.jar -i benchmarks/spectre/bpl/$version.o2.bpl $flag
+        timeout $timeout java -jar zombmc/target/zombmc-2.0.6-jar-with-dependencies.jar -i benchmarks/spectre/bpl/$version.o2.bpl $flag
         echo =========================================================
         echo Running $version-cloop.o0.bpl
-        timeout $timeout time java -jar zombmc/target/zombmc-2.0.6-jar-with-dependencies.jar -i benchmarks/spectre/bpl/$version-cloop.o0.bpl $flag
+        timeout $timeout java -jar zombmc/target/zombmc-2.0.6-jar-with-dependencies.jar -i benchmarks/spectre/bpl/$version-cloop.o0.bpl $flag
         echo Running $version-cloop.o2.bpl
-        timeout $timeout time java -jar zombmc/target/zombmc-2.0.6-jar-with-dependencies.jar -i benchmarks/spectre/bpl/$version-cloop.o2.bpl $flag
+        timeout $timeout java -jar zombmc/target/zombmc-2.0.6-jar-with-dependencies.jar -i benchmarks/spectre/bpl/$version-cloop.o2.bpl $flag
         echo =========================================================
         echo Running $version-sloop.o0.bpl
-        timeout $timeout time java -jar zombmc/target/zombmc-2.0.6-jar-with-dependencies.jar -i benchmarks/spectre/bpl/$version-sloop.o0.bpl $flag
+        timeout $timeout java -jar zombmc/target/zombmc-2.0.6-jar-with-dependencies.jar -i benchmarks/spectre/bpl/$version-sloop.o0.bpl $flag
         echo Running $version-sloop.o2.bpl
-        timeout $timeout time java -jar zombmc/target/zombmc-2.0.6-jar-with-dependencies.jar -i benchmarks/spectre/bpl/$version-sloop.o2.bpl $flag
+        timeout $timeout java -jar zombmc/target/zombmc-2.0.6-jar-with-dependencies.jar -i benchmarks/spectre/bpl/$version-sloop.o2.bpl $flag
         echo =========================================================
         echo
         echo
