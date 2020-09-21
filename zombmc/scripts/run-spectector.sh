@@ -13,38 +13,68 @@ do
         name=$version.$mitigation.o0
         log=$DAT3M_HOME/output/logs/spectector/$name.log
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
-        safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
-        echo $name, $safe >> $CSV
+        to=$(grep "finished, no more conditions to negate" $log | wc -l)
+        if [ $to -eq 0 ]; then
+            echo $name, -1 >> $CSV
+        else
+            safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
+            echo $name, $safe >> $CSV
+        fi
 
         name=$version.$mitigation.o2
         log=$DAT3M_HOME/output/logs/spectector/$name.log
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
-        safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
-        echo $name, $safe >> $CSV
+        to=$(grep "finished, no more conditions to negate" $log | wc -l)
+        if [ $to -eq 0 ]; then
+            echo $name, -1 >> $CSV
+        else
+            safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
+            echo $name, $safe >> $CSV
+        fi
 
         name=$version-cloop.$mitigation.o0
         log=$DAT3M_HOME/output/logs/spectector/$name.log
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
-        safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
-        echo $name, $safe >> $CSV
+        to=$(grep "finished, no more conditions to negate" $log | wc -l)
+        if [ $to -eq 0 ]; then
+            echo $name, -1 >> $CSV
+        else
+            safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
+            echo $name, $safe >> $CSV
+        fi
 
         name=$version-cloop.$mitigation.o2
         log=$DAT3M_HOME/output/logs/spectector/$name.log
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
-        safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
-        echo $name, $safe >> $CSV
+        to=$(grep "finished, no more conditions to negate" $log | wc -l)
+        if [ $to -eq 0 ]; then
+            echo $name, -1 >> $CSV
+        else
+            safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
+            echo $name, $safe >> $CSV
+        fi
 
         name=$version-sloop.$mitigation.o0
         log=$DAT3M_HOME/output/logs/spectector/$name.log
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
-        safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
-        echo $name, $safe >> $CSV
+        to=$(grep "finished, no more conditions to negate" $log | wc -l)
+        if [ $to -eq 0 ]; then
+            echo $name, -1 >> $CSV
+        else
+            safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
+            echo $name, $safe >> $CSV
+        fi
 
         name=$version-sloop.$mitigation.o2
         log=$DAT3M_HOME/output/logs/spectector/$name.log
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
-        safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
-        echo $name, $safe >> $CSV
+        to=$(grep "finished, no more conditions to negate" $log | wc -l)
+        if [ $to -eq 0 ]; then
+            echo $name, -1 >> $CSV
+        else
+            safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
+            echo $name, $safe >> $CSV
+        fi
 
     done
 done
