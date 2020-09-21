@@ -25,7 +25,7 @@ klee:
 	@bash run-klee.sh
 
 zombmc:
-	@echo "Running ZOMBMC"
+	@echo "Running Zom-B-MC"
 	@bash run-zombmc.sh
 
 clean: clean-asm clean-bc clean-bpl clean-logs
