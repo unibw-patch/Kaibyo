@@ -13,7 +13,7 @@ do
         name=$version.$mitigation.o0
         log=$DAT3M_HOME/output/logs/spectector/$name.log
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
-        to=$(grep "finished, no more conditions to negate" $log | wc -l)
+        to=$(grep "program is" $log | wc -l)
         if [ $to -eq 0 ]; then
             echo $name, -1 >> $CSV
         else
@@ -24,7 +24,7 @@ do
         name=$version.$mitigation.o2
         log=$DAT3M_HOME/output/logs/spectector/$name.log
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
-        to=$(grep "finished, no more conditions to negate" $log | wc -l)
+        to=$(grep "program is" $log | wc -l)
         if [ $to -eq 0 ]; then
             echo $name, -1 >> $CSV
         else
@@ -35,7 +35,7 @@ do
         name=$version-cloop.$mitigation.o0
         log=$DAT3M_HOME/output/logs/spectector/$name.log
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
-        to=$(grep "finished, no more conditions to negate" $log | wc -l)
+        to=$(grep "program is" $log | wc -l)
         if [ $to -eq 0 ]; then
             echo $name, -1 >> $CSV
         else
@@ -46,7 +46,7 @@ do
         name=$version-cloop.$mitigation.o2
         log=$DAT3M_HOME/output/logs/spectector/$name.log
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
-        to=$(grep "finished, no more conditions to negate" $log | wc -l)
+        to=$(grep "program is" $log | wc -l)
         if [ $to -eq 0 ]; then
             echo $name, -1 >> $CSV
         else
@@ -57,7 +57,7 @@ do
         name=$version-sloop.$mitigation.o0
         log=$DAT3M_HOME/output/logs/spectector/$name.log
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
-        to=$(grep "finished, no more conditions to negate" $log | wc -l)
+        to=$(grep "program is" $log | wc -l)
         if [ $to -eq 0 ]; then
             echo $name, -1 >> $CSV
         else
@@ -68,7 +68,7 @@ do
         name=$version-sloop.$mitigation.o2
         log=$DAT3M_HOME/output/logs/spectector/$name.log
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
-        to=$(grep "finished, no more conditions to negate" $log | wc -l)
+        to=$(grep "program is" $log | wc -l)
         if [ $to -eq 0 ]; then
             echo $name, -1 >> $CSV
         else
