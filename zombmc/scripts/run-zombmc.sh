@@ -15,57 +15,40 @@ do
             flag+="-slh";
         fi
 
-        echo =========================================================
-        
         name=$version.o0
         log=/$DAT3M_HOME/output/logs/zombmc/$name.log
-        echo Running $name.bpl
         timeout $TIMEOUT $ZOMBMC -i $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag 2> $log
         unsafe=$(grep "UNSAFE" $log | wc -l)
-        echo $name, $(1 - $unsafe) >> $CSV
+        echo $name, $(( 1 - $unsafe )) >> $CSV
 
         name=$version.o2
         log=/$DAT3M_HOME/output/logs/zombmc/$name.log
-        echo Running $name.bpl
         timeout $TIMEOUT $ZOMBMC -i $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag 2> $log
         unsafe=$(grep "UNSAFE" $log | wc -l)
-        echo $name, $(1 - $unsafe) >> $CSV
+        echo $name, $(( 1 - $unsafe )) >> $CSV
 
-        echo =========================================================
-        
         name=$version-cloop.o0
         log=/$DAT3M_HOME/output/logs/zombmc/$name.log
-        echo Running $name.bpl
         timeout $TIMEOUT $ZOMBMC -i $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag 2> $log
         unsafe=$(grep "UNSAFE" $log | wc -l)
-        echo $name, $(1 - $unsafe) >> $CSV
+        echo $name, $(( 1 - $unsafe )) >> $CSV
 
         name=$version-cloop.o2
         log=/$DAT3M_HOME/output/logs/zombmc/$name.log
-        echo Running $name.bpl
         timeout $TIMEOUT $ZOMBMC -i $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag 2> $log
         unsafe=$(grep "UNSAFE" $log | wc -l)
-        echo $name, $(1 - $unsafe) >> $CSV
+        echo $name, $(( 1 - $unsafe )) >> $CSV
 
-        echo =========================================================
-        
         name=$version-sloop.o0
         log=/$DAT3M_HOME/output/logs/zombmc/$name.log
-        echo Running $name.bpl
         timeout $TIMEOUT $ZOMBMC -i $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag 2> $log
         unsafe=$(grep "UNSAFE" $log | wc -l)
-        echo $name, $(1 - $unsafe) >> $CSV
+        echo $name, $(( 1 - $unsafe )) >> $CSV
 
         name=$version-sloop.o2
         log=/$DAT3M_HOME/output/logs/zombmc/$name.log
-        echo Running $name.bpl
         timeout $TIMEOUT $ZOMBMC -i $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag 2> $log
         unsafe=$(grep "UNSAFE" $log | wc -l)
-        echo $name, $(1 - $unsafe) >> $CSV
-
-        echo =========================================================
-        echo
-        echo
-        echo
+        echo $name, $(( 1 - $unsafe )) >> $CSV
     done
 done
