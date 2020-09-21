@@ -4,6 +4,7 @@ TIMEOUT=120
 
 CSV=$DAT3M_HOME/output/klee.csv
 [ -e $CSV ] && rm $CSV
+echo benchmark, safe >> $CSV
 
 KLEE=$KLEE_HOME/build/bin/klee
 KLEEFLAGS="--search=randomsp --enable-speculative"
