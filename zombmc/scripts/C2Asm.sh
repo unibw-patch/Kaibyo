@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DIR=$DAT3M_HOME/benchmarks/spectre
+
 for version in v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15
 do
     for mitigation in none lfence slh
@@ -14,13 +16,13 @@ do
             flags+=" -mllvm -x86-speculative-load-hardening";
         fi
 
-        clang $flags $DAT3M_HOME/benchmarks/spectre/spectre.c -o $DAT3M_HOME/benchmarks/spectre/asm/$version.$mitigation.o0.s
-        clang $flags -O2 $DAT3M_HOME/benchmarks/spectre/spectre.c -o $DAT3M_HOME/benchmarks/spectre/asm/$version.$mitigation.o2.s
+        clang $flags $DIR/spectre.c -o $DIR/asm/$version.$mitigation.o0.s
+        clang $flags -O2 $DIR/spectre.c -o $DIR/asm/$version.$mitigation.o2.s
 
-        clang $flags $DAT3M_HOME/benchmarks/spectre/spectre-cloop.c -o $DAT3M_HOME/benchmarks/spectre/asm/$version-cloop.$mitigation.o0.s
-        clang $flags -O2 $DAT3M_HOME/benchmarks/spectre/spectre-cloop.c -o $DAT3M_HOME/benchmarks/spectre/asm/$version-cloop.$mitigation.o2.s
+        clang $flags $DIR/spectre-cloop.c -o $DIR/asm/$version-cloop.$mitigation.o0.s
+        clang $flags -O2 $DIR/spectre-cloop.c -o $DIR/asm/$version-cloop.$mitigation.o2.s
 
-        clang $flags $DAT3M_HOME/benchmarks/spectre/spectre-sloop.c -o $DAT3M_HOME/benchmarks/spectre/asm/$version-sloop.$mitigation.o0.s
-        clang $flags -O2 $DAT3M_HOME/benchmarks/spectre/spectre-sloop.c -o $DAT3M_HOME/benchmarks/spectre/asm/$version-sloop.$mitigation.o2.s
+        clang $flags $DIR/spectre-sloop.c -o $DIR/asm/$version-sloop.$mitigation.o0.s
+        clang $flags -O2 $DIR/spectre-sloop.c -o $DIR/asm/$version-sloop.$mitigation.o2.s
     done
 done
