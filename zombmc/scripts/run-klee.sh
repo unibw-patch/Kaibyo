@@ -14,50 +14,50 @@ do
     echo =========================================================
 
     name=$version.none.o0
-    echo Running $name.bc
     log=/$DAT3M_HOME/output/logs/klee/$name.log
+    echo Running $name.bc
     timeout $TIMEOUT $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$name.bc 2> $log
-    gadget=$(grep "Spectre found" $log | wc -l)
-    echo $name, $gadget >> $CSV
+    safe=$(grep "Spectre found: 0" $log | wc -l)
+    echo $name, $safe >> $CSV
 
-    yname=$version.none.o2
-    echo Running $name.bc
+    name=$version.none.o2
     log=/$DAT3M_HOME/output/logs/klee/$name.log
+    echo Running $name.bc
     timeout $TIMEOUT $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$name.bc 2> $log
-    gadget=$(grep "Spectre found" $log | wc -l)
-    echo $name, $gadget >> $CSV
+    safe=$(grep "Spectre found: 0" $log | wc -l)
+    echo $name, $safe >> $CSV
 
     echo =========================================================
 
     name=$version-cloop.none.o0
-    echo Running $name.bc
     log=/$DAT3M_HOME/output/logs/klee/$name.log
+    echo Running $name.bc
     timeout $TIMEOUT $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$name.bc 2> $log
-    gadget=$(grep "Spectre found" $log | wc -l)
-    echo $name, $gadget >> $CSV
+    safe=$(grep "Spectre found: 0" $log | wc -l)
+    echo $name, $safe >> $CSV
 
     name=$version-cloop.none.o2
-    echo Running $name.bc
     log=/$DAT3M_HOME/output/logs/klee/$name.log
+    echo Running $name.bc
     timeout $TIMEOUT $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$name.bc 2> $log
-    gadget=$(grep "Spectre found" $log | wc -l)
-    echo $name, $gadget >> $CSV
+    safe=$(grep "Spectre found: 0" $log | wc -l)
+    echo $name, $safe >> $CSV
 
     echo =========================================================
 
     name=$version-sloop.none.o0
-    echo Running $name.bc
     log=/$DAT3M_HOME/output/logs/klee/$name.log
+    echo Running $name.bc
     timeout $TIMEOUT $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$name.bc 2> $log
-    gadget=$(grep "Spectre found" $log | wc -l)
-    echo $name, $gadget >> $CSV
+    safe=$(grep "Spectre found: 0" $log | wc -l)
+    echo $name, $safe >> $CSV
 
     name=$version-sloop.none.o2
-    echo Running $name.bc
     log=/$DAT3M_HOME/output/logs/klee/$name.log
+    echo Running $name.bc
     timeout $TIMEOUT $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$name.bc 2> $log
-    gadget=$(grep "Spectre found" $log | wc -l)
-    echo $name, $gadget >> $CSV
+    safe=$(grep "Spectre found: 0" $log | wc -l)
+    echo $name, $safe >> $CSV
 
     echo =========================================================
     echo
