@@ -23,84 +23,78 @@ do
         name=$version.o0
         result=$(timeout $TIMEOUT $ZOMBMC $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag)
         echo $result > $DAT3M_HOME/output/logs/zombmc/$name.log
-        to=$(grep "SAFE" $log | wc -l)
-        if [ $to -eq 0 ]; then
+        if [ $(grep "SAFE" $log | wc -l) -eq 0 ]; then
             echo $name, -1 >> $CSV
         else
-            if [[ $result == *"UNSAFE"* ]]; then
-                echo $name, 0 >> $CSV
-            else
+            if [ $(grep "UNSAFE" $log | wc -l) -eq 0 ]; then
                 echo $name, 1 >> $CSV
+            else
+                echo $name, 0 >> $CSV
             fi
         fi
 
         name=$version.o2
         result=$(timeout $TIMEOUT $ZOMBMC $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag)
         echo $result > $DAT3M_HOME/output/logs/zombmc/$name.log
-        to=$(grep "SAFE" $log | wc -l)
-        if [ $to -eq 0 ]; then
+        if [ $(grep "SAFE" $log | wc -l) -eq 0 ]; then
             echo $name, -1 >> $CSV
         else
-            if [[ $result == *"UNSAFE"* ]]; then
-                echo $name, 0 >> $CSV
-            else
+            if [ $(grep "UNSAFE" $log | wc -l) -eq 0 ]; then
                 echo $name, 1 >> $CSV
+            else
+                echo $name, 0 >> $CSV
             fi
         fi
 
         name=$version-cloop.o0
         result=$(timeout $TIMEOUT $ZOMBMC $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag)
         echo $result > $DAT3M_HOME/output/logs/zombmc/$name.log
-        to=$(grep "SAFE" $log | wc -l)
-        if [ $to -eq 0 ]; then
+        if [ $(grep "SAFE" $log | wc -l) -eq 0 ]; then
             echo $name, -1 >> $CSV
         else
-            if [[ $result == *"UNSAFE"* ]]; then
-                echo $name, 0 >> $CSV
-            else
+            if [ $(grep "UNSAFE" $log | wc -l) -eq 0 ]; then
                 echo $name, 1 >> $CSV
+            else
+                echo $name, 0 >> $CSV
             fi
         fi
 
         name=$version-cloop.o2
         result=$(timeout $TIMEOUT $ZOMBMC $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag)
         echo $result > $DAT3M_HOME/output/logs/zombmc/$name.log
-        to=$(grep "SAFE" $log | wc -l)
-        if [ $to -eq 0 ]; then
+        if [ $(grep "SAFE" $log | wc -l) -eq 0 ]; then
             echo $name, -1 >> $CSV
         else
-            if [[ $result == *"UNSAFE"* ]]; then
-                echo $name, 0 >> $CSV
-            else
+            if [ $(grep "UNSAFE" $log | wc -l) -eq 0 ]; then
                 echo $name, 1 >> $CSV
+            else
+                echo $name, 0 >> $CSV
             fi
         fi
 
         name=$version-sloop.o0
         result=$(timeout $TIMEOUT $ZOMBMC $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag)
         echo $result > $DAT3M_HOME/output/logs/zombmc/$name.log
-        to=$(grep "SAFE" $log | wc -l)
-        if [ $to -eq 0 ]; then
+        if [ $(grep "SAFE" $log | wc -l) -eq 0 ]; then
             echo $name, -1 >> $CSV
         else
-            if [[ $result == *"UNSAFE"* ]]; then
-                echo $name, 0 >> $CSV
-            else
+            if [ $(grep "UNSAFE" $log | wc -l) -eq 0 ]; then
                 echo $name, 1 >> $CSV
+            else
+                echo $name, 0 >> $CSV
             fi
         fi
 
         name=$version-sloop.o2
         result=$(timeout $TIMEOUT $ZOMBMC $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag)
         echo $result > $DAT3M_HOME/output/logs/zombmc/$name.log
-        to=$(grep "SAFE" $log | wc -l)
-        if [ $to -eq 0 ]; then
+        if [ $(grep "SAFE" $log | wc -l) -eq 0 ]; then
             echo $name, -1 >> $CSV
         else
-            if [[ $result == *"UNSAFE"* ]]; then
-                echo $name, 0 >> $CSV
-            else
+            if [ $(grep "UNSAFE" $log | wc -l) -eq 0 ]; then
                 echo $name, 1 >> $CSV
+            else
+                echo $name, 0 >> $CSV
             fi
         fi
 
