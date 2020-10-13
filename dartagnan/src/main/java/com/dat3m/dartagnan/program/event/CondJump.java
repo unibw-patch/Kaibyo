@@ -152,7 +152,7 @@ public class CondJump extends Event implements RegReaderData {
             // Jump if (cond /\ !spec) 
             label.addCfCond(ctx, ctx.mkAnd(ifCond, ctx.mkNot(startSEVar), cfVar));
             // Jump speculatively if (!cond /\ spec) 
-            label.addCfCond(ctx, ctx.mkAnd(ctx.mkNot(ifCond), startSEVar, cfVar));
+            label.addSeCond(ctx, ctx.mkAnd(ctx.mkNot(ifCond), startSEVar, cfVar));
             // Continue if (!cond /\ !spec)
             BoolExpr cont = ctx.mkAnd(ctx.mkNot(ifCond), ctx.mkNot(startSEVar));
             cfEnc = ctx.mkAnd(cfEnc, successor.encodeSCF(ctx, ctx.mkAnd(cont, cfVar), seVar));            
