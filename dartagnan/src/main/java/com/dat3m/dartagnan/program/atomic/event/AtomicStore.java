@@ -64,7 +64,9 @@ public class AtomicStore extends MemEvent implements RegReaderData {
     @Override
     public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
         LinkedList<Event> events = new LinkedList<>();
-        events.add(new Store(address, value, mo));
+        Store store = new Store(address, value, mo);
+        store.setCLine(cLine);
+		events.add(store);
 
         switch (target){
             case NONE:

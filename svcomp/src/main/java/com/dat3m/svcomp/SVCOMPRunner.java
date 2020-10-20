@@ -31,7 +31,7 @@ public class SVCOMPRunner {
 		String path = file.getAbsolutePath();
 		// File name contains "_tmp.c"
 		String name = path.substring(path.lastIndexOf('/'), path.lastIndexOf('_'));
-		int bound = 2;
+		int bound = 1;
 
 		String output = "UNKNOWN";
 		while(output.equals("UNKNOWN")) {
@@ -49,7 +49,7 @@ public class SVCOMPRunner {
 	    	ArrayList<String> cmd = new ArrayList<String>();
 	    	cmd.add("java");
 	    	cmd.add("-jar");
-	    	cmd.add("dartagnan/target/dartagnan-2.0.6-jar-with-dependencies.jar");
+	    	cmd.add("dartagnan/target/dartagnan-2.0.7-jar-with-dependencies.jar");
 	    	cmd.add("-i");
 	    	cmd.add("./output/" + name + "-" + options.getOptimization() + ".bpl");
 	    	cmd.add("-cat");
@@ -58,15 +58,14 @@ public class SVCOMPRunner {
 	    	cmd.add("none");
 	    	cmd.add("-unroll");
 	    	cmd.add(String.valueOf(bound));
+	    	cmd.add("-analysis");
+	    	cmd.add(options.getAnalysis().toString());
 	    	if(options.getOverApproxPath() != null) {
 	    		cmd.add("-cegar");
 	    		cmd.add(String.valueOf(options.getOverApproxPath()));
 	    	}
 	    	if(options.useISolver()) {
 	    		cmd.add("-incrementalSolver");
-	    	}
-	    	if(options.testRaces()) {
-	    		cmd.add("-races");
 	    	}
 	    	if(options.createWitness()) {
 	    		cmd.add("-w");

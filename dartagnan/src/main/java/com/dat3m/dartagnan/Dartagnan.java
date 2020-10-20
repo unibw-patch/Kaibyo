@@ -1,9 +1,12 @@
 package com.dat3m.dartagnan;
 
+import static com.dat3m.dartagnan.analysis.AnalysisTypes.RACES;
+import static com.dat3m.dartagnan.analysis.AnalysisTypes.TERMINATION;
 import static com.dat3m.dartagnan.analysis.Base.runAnalysis;
 import static com.dat3m.dartagnan.analysis.Cegar.runAnalysis;
 import static com.dat3m.dartagnan.analysis.Base.runAnalysisIncrementalSolver;
 import static com.dat3m.dartagnan.analysis.Cegar.runAnalysisIncrementalSolver;
+import static com.dat3m.dartagnan.analysis.DataRaces.checkForRaces;
 import static com.dat3m.dartagnan.utils.Result.FAIL;
 import static com.microsoft.z3.enumerations.Z3_ast_print_mode.Z3_PRINT_SMTLIB_FULL;
 
@@ -12,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import org.apache.commons.cli.HelpFormatter;
 
+import com.dat3m.dartagnan.analysis.Termination;
 import com.dat3m.dartagnan.asserts.AbstractAssert;
 import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
@@ -87,11 +91,13 @@ public class Dartagnan {
         ctx.close();
     }
 
-	private static Result selectAndRunAnalysis(DartagnanOptions options, Wmm mcm, Wmm overApprox, Program p,
-			Arch target, Settings settings, Context ctx, Solver s) {
+	private static Result selectAndRunAnalysis(DartagnanOptions options, Wmm mcm, Wmm overApprox, Program p, Arch target, Settings settings, Context ctx, Solver s) {
 		// Testing for races
-        if(options.testRaces()) {
-        	return com.dat3m.dartagnan.analysis.DataRaces.runAnalysis(s, ctx, p, mcm, target, settings);
+        if(options.getAnalysis().equals(RACES)) {
+        	return checkForRaces(s, ctx, p, mcm, target, settings);
+        } else if(options.getAnalysis().equals(TERMINATION)) {
+        	// Testing termination
+        	return Termination.runAnalysis(s, ctx, p, mcm, target, settings);
         } else {
         	// Testing reachability
             if(options.useISolver()) {
