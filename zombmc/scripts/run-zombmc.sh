@@ -6,7 +6,7 @@ CSV=$DAT3M_HOME/output/zombmc.csv
 [ -e $CSV ] && rm $CSV
 echo benchmark, safe >> $CSV
             
-ZOMBMC="java -jar $DAT3M_HOME/zombmc/target/zombmc-2.0.6-jar-with-dependencies.jar -i"
+ZOMBMC="java -jar $DAT3M_HOME/zombmc/target/zombmc-2.0.7-jar-with-dependencies.jar -i"
 
 for version in v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15
 do
