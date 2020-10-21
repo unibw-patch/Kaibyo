@@ -14,6 +14,26 @@ bpl:
 	@echo "Compiling to Boogie"
 	@bash C2Bpl.sh
 
+docker-asm: asm save-asm
+
+docker-bc: bc save-bc
+
+docker-bpl: bpl save-bpl
+
+docker-benchmarks: docker-asm docker-bc docker-bpl
+
+save-asm:
+	@echo "Saving *.asm files"
+	@cp -r ${DAT3M_HOME}/benchmarks/spectre/asm /data
+
+save-bc:
+	@echo "Saving *.bc files"
+	@cp -r ${DAT3M_HOME}/benchmarks/spectre/bc /data
+
+save-bpl:
+	@echo "Saving *.bpl files"
+	@cp -r ${DAT3M_HOME}/benchmarks/spectre/bpl /data
+
 tools: spectector klee zombmc
 
 spectector:
@@ -27,6 +47,30 @@ klee:
 zombmc:
 	@echo "Running Zom-B-MC"
 	@bash run-zombmc.sh
+
+docker-spectector: spectector save-spectector
+
+docker-klee: klee save-klee
+
+docker-zombmc: zombmc save-zombmc
+
+docker-tools: docker-spectector docker-klee docker-zombmc
+
+save-logs:
+	@echo "Saving logs"
+	@cp -r ${DAT3M_HOME}/output/logs /data
+
+save-spectector:
+	@echo "Saving Spectector results"
+	@cp ${DAT3M_HOME}/output/spectector.csv /data
+
+save-klee:
+	@echo "Saving KLEE results"
+	@cp ${DAT3M_HOME}/output/klee.csv /data
+
+save-zombmc:
+	@echo "Saving Zom-B-MC results"
+	@cp ${DAT3M_HOME}/output/zombmc.csv /data
 
 clean: clean-asm clean-bc clean-bpl clean-logs
 
