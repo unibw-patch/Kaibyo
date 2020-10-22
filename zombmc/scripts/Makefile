@@ -20,7 +20,7 @@ docker-bc: bc save-bc
 
 docker-bpl: bpl save-bpl
 
-docker-benchmarks: docker-asm docker-bc docker-bpl
+docker-benchmarks: docker-asm docker-bc docker-bpl save-logs
 
 save-asm:
 	@echo "Saving *.asm files"
