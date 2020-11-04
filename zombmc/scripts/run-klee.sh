@@ -2,12 +2,11 @@
 
 TIMEOUT=120
 
-CSV=$DAT3M_HOME/output/klee.csv
-[ -e $CSV ] && rm $CSV
-
 KLEE=$KLEE_HOME/build/bin/klee
 KLEEFLAGS="--search=randomsp --enable-speculative"
 
+CSV=$DAT3M_HOME/output/klee.csv
+[ -e $CSV ] && rm $CSV
 echo benchmark, o0-none, o2-none >> $CSV
 for version in v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15
 do
@@ -33,6 +32,7 @@ do
 done
 
 CSV=$DAT3M_HOME/output/klee-cloop.csv
+[ -e $CSV ] && rm $CSV
 echo benchmark, o0-none, o2-none >> $CSV
 for version in v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15
 do
@@ -58,6 +58,7 @@ do
 done
 
 CSV=$DAT3M_HOME/output/klee-sloop.csv
+[ -e $CSV ] && rm $CSV
 echo benchmark, o0-none, o2-none >> $CSV
 for version in v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15
 do
