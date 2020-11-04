@@ -20,7 +20,7 @@ docker-bc: bc save-bc
 
 docker-bpl: bpl save-bpl
 
-docker-benchmarks: docker-asm docker-bc docker-bpl save-logs
+docker-benchmarks: docker-asm docker-bc docker-bpl
 
 save-asm:
 	@echo "Saving *.asm files"
@@ -54,7 +54,7 @@ docker-klee: klee save-klee
 
 docker-zombmc: zombmc save-zombmc
 
-docker-tools: docker-spectector docker-klee docker-zombmc
+docker-tools: docker-spectector docker-klee docker-zombmc save-logs
 
 docker-all: docker-benchmarks docker-tools
 
