@@ -99,9 +99,9 @@ do
                 line=$line", \VarClock"
             else
                 if [ $(grep "UNSAFE" $log | wc -l) -eq 0 ]; then
-                    line=$line", \redcross"
-                else
                     line=$line", \gtick"
+                else
+                    line=$line", \redcross"
                 fi
             fi
 
