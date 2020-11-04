@@ -15,10 +15,13 @@ do
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
         to=$(grep "program is" $log | wc -l)
         if [ $to -eq 0 ]; then
-            echo $name, -1 >> $CSV
+            echo $name, \VarClock >> $CSV
         else
             safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
-            echo $name, $safe >> $CSV
+            if [ $safe -eq 0 ]; then
+                echo $name, \redcross >> $CSV
+            else
+                echo $name, \gtick >> $CSV
         fi
 
         name=$version.$mitigation.o2
@@ -26,10 +29,13 @@ do
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
         to=$(grep "program is" $log | wc -l)
         if [ $to -eq 0 ]; then
-            echo $name, -1 >> $CSV
+            echo $name, \VarClock >> $CSV
         else
             safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
-            echo $name, $safe >> $CSV
+            if [ $safe -eq 0 ]; then
+                echo $name, \redcross >> $CSV
+            else
+                echo $name, \gtick >> $CSV
         fi
 
         name=$version-cloop.$mitigation.o0
@@ -37,10 +43,13 @@ do
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
         to=$(grep "program is" $log | wc -l)
         if [ $to -eq 0 ]; then
-            echo $name, -1 >> $CSV
+            echo $name, \VarClock >> $CSV
         else
             safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
-            echo $name, $safe >> $CSV
+            if [ $safe -eq 0 ]; then
+                echo $name, \redcross >> $CSV
+            else
+                echo $name, \gtick >> $CSV
         fi
 
         name=$version-cloop.$mitigation.o2
@@ -48,10 +57,13 @@ do
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
         to=$(grep "program is" $log | wc -l)
         if [ $to -eq 0 ]; then
-            echo $name, -1 >> $CSV
+            echo $name, \VarClock >> $CSV
         else
             safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
-            echo $name, $safe >> $CSV
+            if [ $safe -eq 0 ]; then
+                echo $name, \redcross >> $CSV
+            else
+                echo $name, \gtick >> $CSV
         fi
 
         name=$version-sloop.$mitigation.o0
@@ -59,10 +71,13 @@ do
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
         to=$(grep "program is" $log | wc -l)
         if [ $to -eq 0 ]; then
-            echo $name, -1 >> $CSV
+            echo $name, \VarClock >> $CSV
         else
             safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
-            echo $name, $safe >> $CSV
+            if [ $safe -eq 0 ]; then
+                echo $name, \redcross >> $CSV
+            else
+                echo $name, \gtick >> $CSV
         fi
 
         name=$version-sloop.$mitigation.o2
@@ -70,10 +85,13 @@ do
         timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
         to=$(grep "program is" $log | wc -l)
         if [ $to -eq 0 ]; then
-            echo $name, -1 >> $CSV
+            echo $name, \VarClock >> $CSV
         else
             safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
-            echo $name, $safe >> $CSV
+            if [ $safe -eq 0 ]; then
+                echo $name, \redcross >> $CSV
+            else
+                echo $name, \gtick >> $CSV
         fi
 
     done
