@@ -56,6 +56,8 @@ docker-zombmc: zombmc save-zombmc
 
 docker-tools: docker-spectector docker-klee docker-zombmc
 
+docker-all: docker-benchmarks docker-tools
+
 save-logs:
 	@echo "Saving logs"
 	@cp -r ${DAT3M_HOME}/output/logs /data
