@@ -30,9 +30,9 @@ do
                 line=$line", \VarClock"
             else
                 if [ $(grep "UNSAFE" $log | wc -l) -eq 0 ]; then
-                    line=$line", \gtick"
-                else
                     line=$line", \redcross"
+                else
+                    line=$line", \gtick"
                 fi
             fi
         done
@@ -63,9 +63,9 @@ do
                 line=$line", \VarClock"
             else
                 if [ $(grep "UNSAFE" $log | wc -l) -eq 0 ]; then
-                    line=$line", \gtick"
-                else
                     line=$line", \redcross"
+                else
+                    line=$line", \gtick"
                 fi
             fi
 
@@ -97,9 +97,9 @@ do
                 line=$line", \VarClock"
             else
                 if [ $(grep "UNSAFE" $log | wc -l) -eq 0 ]; then
-                    line=$line", \gtick"
-                else
                     line=$line", \redcross"
+                else
+                    line=$line", \gtick"
                 fi
             fi
 
