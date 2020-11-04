@@ -32,7 +32,8 @@ do
     echo $line >> $CSV
 done
 
-echo benchmark, o0-none, o0-lfence, o0-slh, o2-none, o2-lfence, o2-slh >> $CSV-cloop
+CSV=$DAT3M_HOME/output/spectector-cloop.csv
+echo benchmark, o0-none, o0-lfence, o0-slh, o2-none, o2-lfence, o2-slh >> $CSV
 for version in v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15
 do
     for mitigation in none lfence slh
@@ -55,10 +56,11 @@ do
             fi
         done
     done
-    echo $line >> $CSV-cloop
+    echo $line >> $CSV
 done
 
-echo benchmark, o0-none, o0-lfence, o0-slh, o2-none, o2-lfence, o2-slh >> $CSV-sloop
+CSV=$DAT3M_HOME/output/spectector-sloop.csv
+echo benchmark, o0-none, o0-lfence, o0-slh, o2-none, o2-lfence, o2-slh >> $CSV
 for version in v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15
 do
     for mitigation in none lfence slh
@@ -81,5 +83,5 @@ do
             fi
         done
     done
-    echo $line >> $CSV-sloop
+    echo $line >> $CSV
 done
