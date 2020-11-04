@@ -22,6 +22,7 @@ do
                 echo $name, \redcross >> $CSV
             else
                 echo $name, \gtick >> $CSV
+            fi
         fi
 
         name=$version.$mitigation.o2
@@ -36,6 +37,7 @@ do
                 echo $name, \redcross >> $CSV
             else
                 echo $name, \gtick >> $CSV
+            fi
         fi
 
         name=$version-cloop.$mitigation.o0
@@ -50,6 +52,7 @@ do
                 echo $name, \redcross >> $CSV
             else
                 echo $name, \gtick >> $CSV
+            fi
         fi
 
         name=$version-cloop.$mitigation.o2
@@ -64,6 +67,7 @@ do
                 echo $name, \redcross >> $CSV
             else
                 echo $name, \gtick >> $CSV
+            fi
         fi
 
         name=$version-sloop.$mitigation.o0
@@ -78,6 +82,7 @@ do
                 echo $name, \redcross >> $CSV
             else
                 echo $name, \gtick >> $CSV
+            fi
         fi
 
         name=$version-sloop.$mitigation.o2
@@ -92,6 +97,7 @@ do
                 echo $name, \redcross >> $CSV
             else
                 echo $name, \gtick >> $CSV
+            fi
         fi
 
     done

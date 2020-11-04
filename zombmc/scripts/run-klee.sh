@@ -23,6 +23,7 @@ do
             echo $name, \redcross >> $CSV
         else
             echo $name, \gtick >> $CSV
+        fi
     fi
 
     name=$version.none.o2
@@ -37,6 +38,7 @@ do
             echo $name, \redcross >> $CSV
         else
             echo $name, \gtick >> $CSV
+        fi
     fi
 
     name=$version-cloop.none.o0
@@ -51,6 +53,7 @@ do
             echo $name, \redcross >> $CSV
         else
             echo $name, \gtick >> $CSV
+        fi
     fi
 
     name=$version-cloop.none.o2
@@ -65,6 +68,7 @@ do
             echo $name, \redcross >> $CSV
         else
             echo $name, \gtick >> $CSV
+        fi
     fi
 
     name=$version-sloop.none.o0
@@ -79,6 +83,7 @@ do
             echo $name, \redcross >> $CSV
         else
             echo $name, \gtick >> $CSV
+        fi
     fi
 
     name=$version-sloop.none.o2
@@ -93,6 +98,7 @@ do
             echo $name, \redcross >> $CSV
         else
             echo $name, \gtick >> $CSV
+        fi
     fi
 
 done
