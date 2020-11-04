@@ -63,14 +63,20 @@ save-logs:
 save-spectector:
 	@echo "Saving Spectector results"
 	@cp ${DAT3M_HOME}/output/spectector.csv /data
+	@cp ${DAT3M_HOME}/output/spectector-cloop.csv /data
+	@cp ${DAT3M_HOME}/output/spectector-sloop.csv /data
 
 save-klee:
 	@echo "Saving KLEE results"
 	@cp ${DAT3M_HOME}/output/klee.csv /data
+	@cp ${DAT3M_HOME}/output/klee-cloop.csv /data
+	@cp ${DAT3M_HOME}/output/klee-sloop.csv /data
 
 save-zombmc:
 	@echo "Saving Zom-B-MC results"
 	@cp ${DAT3M_HOME}/output/zombmc.csv /data
+	@cp ${DAT3M_HOME}/output/zombmc-cloop.csv /data
+	@cp ${DAT3M_HOME}/output/zombmc-sloop.csv /data
 
 clean: clean-asm clean-bc clean-bpl clean-logs
 
