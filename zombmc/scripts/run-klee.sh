@@ -22,9 +22,9 @@ do
         else
             safe=$(grep "Spectre found: 0" $log | wc -l)
             if [ $safe -eq 0 ]; then
-                line=$line", \gtick"
-            else
                 line=$line", \redcross"
+            else
+                line=$line", \gtick"
             fi
         fi
     done
@@ -48,9 +48,9 @@ do
         else
             safe=$(grep "Spectre found: 0" $log | wc -l)
             if [ $safe -eq 0 ]; then
-                line=$line", \gtick"
-            else
                 line=$line", \redcross"
+            else
+                line=$line", \gtick"
             fi
         fi
     done
@@ -74,9 +74,9 @@ do
         else
             safe=$(grep "Spectre found: 0" $log | wc -l)
             if [ $safe -eq 0 ]; then
-                line=$line", \gtick"
-            else
                 line=$line", \redcross"
+            else
+                line=$line", \gtick"
             fi
         fi
     done
