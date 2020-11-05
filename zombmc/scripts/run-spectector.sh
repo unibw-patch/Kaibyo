@@ -2,6 +2,9 @@
 
 TIMEOUT=120
 
+LOGFOLDER=$DAT3M_HOME/output/logs/spectector-$(date +%Y-%m-%d_%H:%M)
+mkdir $LOGFOLDER
+
 CSV=$DAT3M_HOME/output/spectector.csv
 [ -e $CSV ] && rm $CSV
 echo benchmark, o0-none, o0-lfence, o0-slh, o2-none, o2-lfence, o2-slh >> $CSV
@@ -13,7 +16,7 @@ do
         for opt in o0 o2
         do
             name=$version.$mitigation.$opt
-            log=$DAT3M_HOME/output/logs/spectector/$name.log
+            log=$LOGFOLDER/$name.log
             timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
             to=$(grep "program is" $log | wc -l)
             if [ $to -eq 0 ]; then
@@ -42,7 +45,7 @@ do
         for opt in o0 o2
         do
             name=$version-cloop.$mitigation.$opt
-            log=$DAT3M_HOME/output/logs/spectector/$name.log
+            log=$LOGFOLDER/$name.log
             timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
             to=$(grep "program is" $log | wc -l)
             if [ $to -eq 0 ]; then
@@ -71,7 +74,7 @@ do
         for opt in o0 o2
         do
             name=$version-sloop.$mitigation.$opt
-            log=$DAT3M_HOME/output/logs/spectector/$name.log
+            log=$LOGFOLDER/$name.log
             timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version] > $log
             to=$(grep "program is" $log | wc -l)
             if [ $to -eq 0 ]; then

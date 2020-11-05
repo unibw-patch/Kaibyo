@@ -5,6 +5,9 @@ TIMEOUT=120
 KLEE=$KLEE_HOME/build/bin/klee
 KLEEFLAGS="--search=randomsp --enable-speculative"
 
+LOGFOLDER=$DAT3M_HOME/output/logs/klee-$(date +%Y-%m-%d_%H:%M)
+mkdir $LOGFOLDER
+
 CSV=$DAT3M_HOME/output/klee.csv
 [ -e $CSV ] && rm $CSV
 echo benchmark, o0-none, o2-none >> $CSV
@@ -14,7 +17,7 @@ do
     for opt in o0 o2
     do
         name=$version.none.$opt
-        log=$DAT3M_HOME/output/logs/klee/$name.log
+        log=$LOGFOLDER/$name.log
         timeout $TIMEOUT $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$name.bc 2> $log
         to=$(grep "Spectre found" $log | wc -l)
         if [ $to -eq 0 ]; then
@@ -40,7 +43,7 @@ do
     for opt in o0 o2
     do
         name=$version-cloop.none.$opt
-        log=$DAT3M_HOME/output/logs/klee/$name.log
+        log=$LOGFOLDER/$name.log
         timeout $TIMEOUT $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$name.bc 2> $log
         to=$(grep "Spectre found" $log | wc -l)
         if [ $to -eq 0 ]; then
@@ -66,7 +69,7 @@ do
     for opt in o0 o2
     do
         name=$version-sloop.none.$opt
-        log=$DAT3M_HOME/output/logs/klee/$name.log
+        log=$LOGFOLDER/$name.log
         timeout $TIMEOUT $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$name.bc 2> $log
         to=$(grep "Spectre found" $log | wc -l)
         if [ $to -eq 0 ]; then

@@ -4,6 +4,9 @@ TIMEOUT=120
 
 ZOMBMC="java -jar $DAT3M_HOME/zombmc/target/zombmc-2.0.7-jar-with-dependencies.jar -i"
 
+LOGFOLDER=$DAT3M_HOME/output/logs/zombmc-$(date +%Y-%m-%d_%H:%M)
+mkdir $LOGFOLDER
+
 CSV=$DAT3M_HOME/output/zombmc.csv
 [ -e $CSV ] && rm $CSV
 echo benchmark, o0-none, o0-lfence, o0-slh, o2-none, o2-lfence, o2-slh >> $CSV
@@ -23,7 +26,7 @@ do
             fi
 
             name=$version.$opt
-            log=$DAT3M_HOME/output/logs/zombmc/$name.log
+            log=$LOGFOLDER/$name.log
             timeout $TIMEOUT $ZOMBMC $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag > $log
             if [ $(grep "SAFE" $log | wc -l) -eq 0 ]; then
                 line=$line", \VarClock"
@@ -58,7 +61,7 @@ do
             fi
 
             name=$version-cloop.$opt
-            log=$DAT3M_HOME/output/logs/zombmc/$name.log
+            log=$LOGFOLDER/$name.log
             timeout $TIMEOUT $ZOMBMC $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag > $log
             if [ $(grep "SAFE" $log | wc -l) -eq 0 ]; then
                 line=$line", \VarClock"
@@ -94,7 +97,7 @@ do
             fi
 
             name=$version-sloop.$opt
-            log=$DAT3M_HOME/output/logs/zombmc/$name.log
+            log=$LOGFOLDER/$name.log
             timeout $TIMEOUT $ZOMBMC $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag > $log
             if [ $(grep "SAFE" $log | wc -l) -eq 0 ]; then
                 line=$line", \VarClock"
