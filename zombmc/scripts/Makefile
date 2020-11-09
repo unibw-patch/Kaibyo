@@ -80,7 +80,7 @@ save-zombmc:
 	@cp ${DAT3M_HOME}/output/zombmc-cloop.csv /data
 	@cp ${DAT3M_HOME}/output/zombmc-sloop.csv /data
 
-clean: clean-asm clean-bc clean-bpl clean-logs
+clean: clean-asm clean-bc clean-bpl
 
 clean-asm:
 	@echo "Removing *.asm files"
@@ -93,11 +93,3 @@ clean-bc:
 clean-bpl:
 	@echo "Removing *.bpl files"
 	@find ../../benchmarks/spectre/bpl/ -type f ! -name '*.md' -delete
-
-clean-logs:
-	@echo "Cleaning Spectector logs"
-	@find ../../output/logs/spectector/ -type f ! -name '*.md' -delete
-	@echo "Cleaning KLEE logs"
-	@find ../../output/logs/klee/ -type f ! -name '*.md' -delete
-	@echo "Cleaning Zom-B-MC logs"
-	@find ../../output/logs/zombmc/ -type f ! -name '*.md' -delete
