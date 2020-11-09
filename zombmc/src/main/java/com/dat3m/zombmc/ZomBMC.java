@@ -43,6 +43,10 @@ public class ZomBMC {
             return;
         }
 
+        if(System.getenv().get("DAT3M_HOME") == null) {
+        	throw new RuntimeException("DAT3M_HOME variable is not set");
+        }
+        
         Wmm mcm = new ParserCat().parse(new File(System.getenv().get("DAT3M_HOME") + "/cat/sc.cat"));
 		Program p = new ProgramParser().parse(new File(options.getProgramFilePath()));		
         Arch target = Arch.NONE;
