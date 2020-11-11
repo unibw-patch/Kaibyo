@@ -26,7 +26,7 @@ do
             fi
 
             name=$version.$opt
-            log=$LOGFOLDER/$name.log
+            log=$LOGFOLDER/$version.$mitigation.$opt.log
             timeout $TIMEOUT $ZOMBMC $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag > $log
             if [ $(grep "SAFE" $log | wc -l) -eq 0 ]; then
                 line=$line", \VarClock"
@@ -61,7 +61,7 @@ do
             fi
 
             name=$version-cloop.$opt
-            log=$LOGFOLDER/$name.log
+            log=$LOGFOLDER/$version-cloop.$mitigation.$opt.log
             timeout $TIMEOUT $ZOMBMC $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag > $log
             if [ $(grep "SAFE" $log | wc -l) -eq 0 ]; then
                 line=$line", \VarClock"
@@ -97,7 +97,7 @@ do
             fi
 
             name=$version-sloop.$opt
-            log=$LOGFOLDER/$name.log
+            log=$LOGFOLDER/$version-sloop.$mitigation.$opt.log
             timeout $TIMEOUT $ZOMBMC $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag > $log
             if [ $(grep "SAFE" $log | wc -l) -eq 0 ]; then
                 line=$line", \VarClock"
