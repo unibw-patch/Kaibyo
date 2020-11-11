@@ -2,7 +2,6 @@ package com.dat3m.dartagnan.program.event;
 
 import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.compiler.Mitigation;
-import com.dat3m.dartagnan.expression.ExprInterface;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 
@@ -34,8 +33,6 @@ public abstract class Event implements Comparable<Event> {
 	protected transient BoolExpr startSEVar;
 
 	protected Set<Event> listeners = new HashSet<>();
-	
-	protected Set<ExprInterface> cf = new HashSet<>();
 	
 	protected Event(){
 		filter = new HashSet<>();
@@ -181,7 +178,6 @@ public abstract class Event implements Comparable<Event> {
     public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
 		cId = nextId++;
 		if(successor != null){
-			successor.cf.addAll(cf);
 			return successor.compile(target, mitigations, nextId, this);
 		}
         return nextId;
@@ -197,7 +193,6 @@ public abstract class Event implements Comparable<Event> {
         }
         if(successor != null){
             predecessor.successor = successor;
-            successor.cf.addAll(cf);
             return successor.compile(target, mitigations, nextId, predecessor);
         }
         return nextId;
