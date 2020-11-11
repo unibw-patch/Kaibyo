@@ -76,39 +76,12 @@ public class ZomBMC {
         program.unroll(settings.getBound(), 0);
     	program.compile(target, mitigations, 0);
     	
-    	Printer p = new Printer();
-    	System.out.println(p.print(program));
-    	
         Solver solver = ctx.mkSolver();
         solver.add(program.encodeSCF(ctx));
         solver.add(wmm.encode(program, ctx, settings));
         solver.add(wmm.consistent(program, ctx));
         solver.add(encodeSpectre(program, ctx, "spectre_secret"));
-		solver.check();
-		Model m = solver.getModel();
-		for(Event e : program.getCache().getEvents(FilterBasic.get(EType.LOCAL))) {
-			if(m.getConstInterp(e.cf()).isTrue() && ((Local)e).getExpr() instanceof INonDet) {
-				System.out.println(e);
-				System.out.println(m.getConstInterp(((Local)e).getResultRegisterExpr()));
-				System.out.println();
-			}
-		}
-		for(Event e : program.getCache().getEvents(FilterBasic.get(EType.LOCAL))) {
-			if(m.getConstInterp(e.cf()).isTrue()) {
-				if(((Local)e).getResultRegister().getName().contains("4:$i0") || ((Local)e).getResultRegister().getName().contains("$p4")) {
-					System.out.println(e);
-					System.out.println(m.getConstInterp(((Local)e).getResultRegisterExpr()));
-					System.out.println();
-				}
-			}
-		}
-		for(Address a : program.getMemory().getAllAddresses()) {
-			if(a.getValue() == 1 || a.getValue() == 17) {
-				System.out.println(a);
-				System.out.println(m.getConstInterp(a.toZ3Int(ctx)));
-				System.out.println();				
-			}
-		}
-		return solver.check() == SATISFIABLE ? UNSAFE : SAFE;
+
+        return solver.check() == SATISFIABLE ? UNSAFE : SAFE;
     }
 }
