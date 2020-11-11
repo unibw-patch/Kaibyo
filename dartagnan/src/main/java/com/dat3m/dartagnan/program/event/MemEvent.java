@@ -41,7 +41,7 @@ public abstract class MemEvent extends Event {
     @Override
     public void initialise(Context ctx) {
         super.initialise(ctx);
-        memAddressExpr = ctx.mkITE(cfVar, address.toZ3Int(this, ctx), ctx.mkInt(0));
+        memAddressExpr = address.toZ3Int(this, ctx);
     }
 
     public Expr getMemAddressExpr(){
