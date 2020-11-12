@@ -212,6 +212,10 @@ public abstract class Event implements Comparable<Event> {
 		startSEVar = ctx.mkBoolConst("startSE(" + repr() + ")");
 	}
 
+	public void initialise(Context ctx, boolean slh){
+		initialise(ctx);
+	}
+
 	public String repr() {
 		return "E" + cId;
 	}

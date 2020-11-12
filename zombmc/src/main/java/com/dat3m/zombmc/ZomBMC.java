@@ -69,7 +69,7 @@ public class ZomBMC {
         program.compile(target, mitigations, 0);
 
         Solver solver = ctx.mkSolver();
-        solver.add(program.encodeSCF(ctx));
+        solver.add(program.encodeSCF(ctx, mitigations));
         solver.add(wmm.encode(program, ctx, settings));
         solver.add(wmm.consistent(program, ctx));
         solver.add(encodeSpectre(program, ctx, "spectre_secret"));

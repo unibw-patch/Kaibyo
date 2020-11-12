@@ -19,6 +19,7 @@ import com.dat3m.dartagnan.program.event.utils.RegWriter;
 import com.dat3m.dartagnan.program.memory.Location;
 import com.dat3m.dartagnan.program.memory.Memory;
 
+import static com.dat3m.dartagnan.compiler.Mitigation.SLH;
 import static com.dat3m.dartagnan.wmm.utils.Utils.edge;
 
 import java.util.*;
@@ -180,9 +181,9 @@ public class Program {
         return enc;
     }
 
-    public BoolExpr encodeSCF(Context ctx) {
+    public BoolExpr encodeSCF(Context ctx, List<Mitigation> mitigations) {
         for(Event e : getEvents()){
-            e.initialise(ctx);
+            e.initialise(ctx, mitigations.contains(SLH));
         }
         BoolExpr enc = memory.encode(ctx);
         for(Thread t : threads){
