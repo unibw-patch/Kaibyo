@@ -24,15 +24,15 @@ docker-benchmarks: docker-asm docker-bc docker-bpl
 
 save-asm:
 	@echo "Saving *.asm files"
-	@cp -r ${DAT3M_HOME}/benchmarks/spectre/asm /data
+	@cp -r ${DAT3M_HOME}/benchmarks/spectre/asm/*.s /data
 
 save-bc:
 	@echo "Saving *.bc files"
-	@cp -r ${DAT3M_HOME}/benchmarks/spectre/bc /data
+	@cp -r ${DAT3M_HOME}/benchmarks/spectre/bc/*.bc /data
 
 save-bpl:
 	@echo "Saving *.bpl files"
-	@cp -r ${DAT3M_HOME}/benchmarks/spectre/bpl /data
+	@cp -r ${DAT3M_HOME}/benchmarks/spectre/bpl/*.bpl /data
 
 tools: spectector klee zombmc
 
