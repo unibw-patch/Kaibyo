@@ -11,31 +11,44 @@
 #ifndef klee
 extern size_t __VERIFIER_nondet_long(void);
 extern int __VERIFIER_nondet_int(void);
+extern _Bool __VERIFIER_nondet_bool(void);
 #endif
 #endif
-
-#define SIZE    (1)
-#define LOOP    (10)
 
 unsigned int array1_size = 16;
 uint8_t array1[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-uint8_t array2[256 * SIZE];
+uint8_t array2[256];
+_Bool a[10];
 
 char * spectre_secret = "The Magic Words are Squeamish Ossifrage.";
 
 uint8_t temp = 0; /* Used so compiler won’t optimize out victim_function() */
+
+int pathExplosion() {
+    int count =0;
+    if(a[0]) {count++;}
+    if(a[1]) {count++;}
+    if(a[2]) {count++;}
+    if(a[3]) {count++;}
+    if(a[4]) {count++;}
+    if(a[5]) {count++;}
+    if(a[6]) {count++;}
+    if(a[7]) {count++;}
+    if(a[8]) {count++;}
+    if(a[9]) {count++;}
+    return count;
+}
 
 #ifdef v01
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 1:  This is the sample function from the Spectre paper.
 // ----------------------------------------------------------------------------------------
 void victim_function_v01(size_t x) {
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            if (x < array1_size) {
-                temp &= array2[array1[x] * SIZE];
-            }
-        }
+    if(pathExplosion() != 10) {
+        return;
+    }
+    if (x < array1_size) {
+        temp &= array2[array1[x]];
     }
 }
 #endif
@@ -44,14 +57,13 @@ void victim_function_v01(size_t x) {
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 2:  Moving the leak to a local function that can be inlined.
 // ----------------------------------------------------------------------------------------
-void leakByteLocalFunction(uint8_t k) { temp &= array2[(k)* SIZE]; }
+void leakByteLocalFunction(uint8_t k) { temp &= array2[k]; }
 void victim_function_v02(size_t x) {
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            if (x < array1_size) {
-                leakByteLocalFunction(array1[x]);
-            }
-        }
+    if(pathExplosion() != 10) {
+        return;
+    }
+    if (x < array1_size) {
+        leakByteLocalFunction(array1[x]);
     }
 }
 #endif
@@ -63,13 +75,10 @@ void victim_function_v02(size_t x) {
 // Comments: Output is unsafe.  The same results occur if leakByteNoinlineFunction()
 // is in another source module.
 // ----------------------------------------------------------------------------------------
-__declspec(noinline) void leakByteNoinlineFunction(uint8_t k) { temp &= array2[(k)* SIZE]; }
+__declspec(noinline) void leakByteNoinlineFunction(uint8_t k) { temp &= array2[k]; }
 void victim_function_v03(size_t x) {
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            if (x < array1_size)
-                leakByteNoinlineFunction(array1[x]);
-        }
+    if (x < array1_size) {
+        leakByteNoinlineFunction(array1[x]);
     }
 }
 #endif
@@ -81,11 +90,11 @@ void victim_function_v03(size_t x) {
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
 void victim_function_v04(size_t x) {
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            if (x < array1_size)
-                temp &= array2[array1[x << 1] * SIZE];
-        }
+    if(pathExplosion() != 10) {
+        return;
+    }
+    if (x < array1_size) {
+        temp &= array2[array1[x << 1]];
     }
 }
 #endif
@@ -97,14 +106,13 @@ void victim_function_v04(size_t x) {
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
 void victim_function_v05(size_t x) {
+    if(pathExplosion() != 10) {
+        return;
+    }
     int i;
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            if (x < array1_size) {
-                for (i = x - 1; i >= 0; i--) {
-                    temp &= array2[array1[i] * SIZE];
-                }
-            }
+    if (x < array1_size) {
+        for (i = x - 1; i >= 0; i--) {
+            temp &= array2[array1[i]];
         }
     }
 }
@@ -118,11 +126,11 @@ void victim_function_v05(size_t x) {
 // ----------------------------------------------------------------------------------------
 int array_size_mask = 15;
 void victim_function_v06(size_t x) {
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            if ((x & array_size_mask) == x)
-                temp &= array2[array1[x] * SIZE];
-        }
+    if(pathExplosion() != 10) {
+        return;
+    }
+    if ((x & array_size_mask) == x) {
+        temp &= array2[array1[x]];
     }
 }
 #endif
@@ -134,14 +142,15 @@ void victim_function_v06(size_t x) {
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
 void victim_function_v07(size_t x) {
+    if(pathExplosion() != 10) {
+        return;
+    }
     static size_t last_x = 0;
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            if (x == last_x)
-                temp &= array2[array1[x] * SIZE];
-            if (x < array1_size)
-                last_x = x;
-        }
+    if (x == last_x) {
+        temp &= array2[array1[x]];
+    }
+    if (x < array1_size) {
+        last_x = x;
     }
 }
 #endif
@@ -151,11 +160,10 @@ void victim_function_v07(size_t x) {
 // EXAMPLE 8:  Use a ?: operator to check bounds.
 // ----------------------------------------------------------------------------------------
 void victim_function_v08(size_t x) {
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            temp &= array2[array1[x < array1_size ? (x + 1) : 0] * SIZE];
-        }
+    if(pathExplosion() != 10) {
+        return;
     }
+    temp &= array2[array1[x < array1_size ? (x + 1) : 0]];
 }
 #endif
 
@@ -166,11 +174,11 @@ void victim_function_v08(size_t x) {
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
 void victim_function_v09(size_t x, int *x_is_safe) {
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            if (*x_is_safe)
-                temp &= array2[array1[x] * SIZE];
+    if (*x_is_safe) {
+        if(pathExplosion() != 10) {
+            return;
         }
+        temp &= array2[array1[x]];
     }
 }
 #endif
@@ -185,13 +193,12 @@ void victim_function_v09(size_t x, int *x_is_safe) {
 // values for k until finding the one that causes array2[0] to get brought into the cache.
 // ----------------------------------------------------------------------------------------
 void victim_function_v10(size_t x, uint8_t k) {
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            if (x < array1_size) {
-                if (array1[x] == k)
-                    temp &= array2[0];
-            }
-        }
+    if(pathExplosion() != 10) {
+        return;
+    }
+    if (x < array1_size) {
+        if (array1[x] == k)
+            temp &= array2[0];
     }
 }
 #endif
@@ -215,11 +222,11 @@ int mymemcmp(const void *cs, const void *ct, int count)
     return res;
 }
 void victim_function_v11(size_t x) {
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            if (x < array1_size)
-                temp = mymemcmp(&temp, array2 + (array1[x] * SIZE), 1);
-        }
+    if(pathExplosion() != 10) {
+        return;
+    }
+    if (x < array1_size) {
+        temp = mymemcmp(&temp, array2 + (array1[x]), 1);
     }
 }
 #endif
@@ -231,11 +238,11 @@ void victim_function_v11(size_t x) {
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
 void victim_function_v12(size_t x, size_t y) {
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            if ((x + y) < array1_size)
-                 temp &= array2[array1[x + y] * SIZE];
-        }
+    if(pathExplosion() != 10) {
+        return;
+    }
+    if ((x + y) < array1_size) {
+        temp &= array2[array1[x + y]];
     }
 }
 #endif
@@ -253,11 +260,11 @@ int is_x_safe(size_t x) {
     return 0;
 }
 void victim_function_v13(size_t x) {
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            if (is_x_safe(x))
-                temp &= array2[array1[x] * SIZE];
-        }
+    if(pathExplosion() != 10) {
+        return;
+    }
+    if (is_x_safe(x)) {
+        temp &= array2[array1[x]];
     }
 }
 #endif
@@ -269,11 +276,11 @@ void victim_function_v13(size_t x) {
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
 void victim_function_v14(size_t x) {
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            if (x < array1_size)
-                 temp &= array2[array1[x ^ 255] * SIZE];
-        }
+    if(pathExplosion() != 10) {
+        return;
+    }
+    if (x < array1_size) {
+        temp &= array2[array1[x ^ 255]];
     }
 }
 #endif
@@ -285,11 +292,11 @@ void victim_function_v14(size_t x) {
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
 void victim_function_v15(size_t *x) {
-    for (int j = 1; j < LOOP; ++j) {
-        if(j == LOOP - 1) {
-            if (*x < array1_size)
-                temp &= array2[array1[*x] * SIZE];
-        }
+    if(pathExplosion() != 10) {
+        return;
+    }
+    if (*x < array1_size) {
+        temp &= array2[array1[*x]];
     }
 }
 #endif
@@ -302,9 +309,29 @@ int main()
     klee_make_symbolic(&x, sizeof(x), "x");
     int y;
     klee_make_symbolic(&y, sizeof(y), "y");
+    klee_make_symbolic(&a[0], sizeof(a[0]), "a[0]");
+    klee_make_symbolic(&a[1], sizeof(a[1]), "a[1]");
+    klee_make_symbolic(&a[2], sizeof(a[2]), "a[2]");
+    klee_make_symbolic(&a[3], sizeof(a[3]), "a[3]");
+    klee_make_symbolic(&a[4], sizeof(a[4]), "a[4]");
+    klee_make_symbolic(&a[5], sizeof(a[5]), "a[5]");
+    klee_make_symbolic(&a[6], sizeof(a[6]), "a[6]");
+    klee_make_symbolic(&a[7], sizeof(a[7]), "a[7]");
+    klee_make_symbolic(&a[8], sizeof(a[8]), "a[8]");
+    klee_make_symbolic(&a[9], sizeof(a[9]), "a[9]");
     #else
     size_t x = __VERIFIER_nondet_long();
     int y = __VERIFIER_nondet_int();
+    a[0] = __VERIFIER_nondet_bool();
+    a[1] = __VERIFIER_nondet_bool();
+    a[2] = __VERIFIER_nondet_bool();
+    a[3] = __VERIFIER_nondet_bool();
+    a[4] = __VERIFIER_nondet_bool();
+    a[5] = __VERIFIER_nondet_bool();
+    a[6] = __VERIFIER_nondet_bool();
+    a[7] = __VERIFIER_nondet_bool();
+    a[8] = __VERIFIER_nondet_bool();
+    a[9] = __VERIFIER_nondet_bool();
     #endif
 
     #ifdef v01
@@ -355,3 +382,4 @@ int main()
     return 0;
 }
 #endif
+

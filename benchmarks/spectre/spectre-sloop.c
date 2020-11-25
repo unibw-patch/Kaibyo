@@ -137,7 +137,7 @@ void victim_function_v07(size_t x) {
 // ----------------------------------------------------------------------------------------
 void victim_function_v08(size_t x) {
     for (int j = 1; j <= x; ++j) {
-        temp &= array2[array1[j < array1_size ? (x + 1) : 0] * SIZE];
+        temp &= array2[array1[j < array1_size ? (j + 1) : 0] * SIZE];
     }
 }
 #endif
