@@ -25,7 +25,7 @@ char * spectre_secret = "The Magic Words are Squeamish Ossifrage.";
 uint8_t temp = 0; /* Used so compiler won’t optimize out victim_function() */
 
 int pathExplosion() {
-    int count =0;
+    volatile int count =0;
     if(a[0]) {count++;}
     if(a[1]) {count++;}
     if(a[2]) {count++;}
