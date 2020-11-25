@@ -18,34 +18,34 @@ extern _Bool __VERIFIER_nondet_bool(void);
 unsigned int array1_size = 16;
 uint8_t array1[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 uint8_t array2[256];
-_Bool a[20];
+_Bool a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20;
 
 char * spectre_secret = "The Magic Words are Squeamish Ossifrage.";
 
 uint8_t temp = 0; /* Used so compiler won’t optimize out victim_function() */
 
 int pathExplosion() {
-    volatile int count =0;
-    if(a[0]) {count++;}
-    if(a[1]) {count++;}
-    if(a[2]) {count++;}
-    if(a[3]) {count++;}
-    if(a[4]) {count++;}
-    if(a[5]) {count++;}
-    if(a[6]) {count++;}
-    if(a[7]) {count++;}
-    if(a[8]) {count++;}
-    if(a[9]) {count++;}
-    if(a[10]) {count++;}
-    if(a[11]) {count++;}
-    if(a[12]) {count++;}
-    if(a[13]) {count++;}
-    if(a[14]) {count++;}
-    if(a[15]) {count++;}
-    if(a[16]) {count++;}
-    if(a[17]) {count++;}
-    if(a[18]) {count++;}
-    if(a[19]) {count++;}
+    volatile int count = 0;
+    if(a1) {count++;}
+    if(a2) {count++;}
+    if(a3) {count++;}
+    if(a4) {count++;}
+    if(a5) {count++;}
+    if(a6) {count++;}
+    if(a7) {count++;}
+    if(a8) {count++;}
+    if(a9) {count++;}
+    if(a10) {count++;}
+    if(a11) {count++;}
+    if(a12) {count++;}
+    if(a13) {count++;}
+    if(a14) {count++;}
+    if(a15) {count++;}
+    if(a16) {count++;}
+    if(a17) {count++;}
+    if(a18) {count++;}
+    if(a19) {count++;}
+    if(a20) {count++;}
     return count;
 }
 
@@ -319,30 +319,49 @@ int main()
     klee_make_symbolic(&x, sizeof(x), "x");
     int y;
     klee_make_symbolic(&y, sizeof(y), "y");
-    klee_make_symbolic(a, sizeof(a), "a");
+    klee_make_symbolic(a1, sizeof(a1), "a1");
+    klee_make_symbolic(a2, sizeof(a2), "a2");
+    klee_make_symbolic(a3, sizeof(a3), "a3");
+    klee_make_symbolic(a4, sizeof(a4), "a4");
+    klee_make_symbolic(a5, sizeof(a5), "a5");
+    klee_make_symbolic(a6, sizeof(a6), "a6");
+    klee_make_symbolic(a7, sizeof(a7), "a7");
+    klee_make_symbolic(a8, sizeof(a8), "a8");
+    klee_make_symbolic(a9, sizeof(a9), "a9");
+    klee_make_symbolic(a10, sizeof(a10), "a10");
+    klee_make_symbolic(a11, sizeof(a11), "a11");
+    klee_make_symbolic(a12, sizeof(a12), "a12");
+    klee_make_symbolic(a13, sizeof(a13), "a13");
+    klee_make_symbolic(a14, sizeof(a14), "a14");
+    klee_make_symbolic(a15, sizeof(a15), "a15");
+    klee_make_symbolic(a16, sizeof(a16), "a16");
+    klee_make_symbolic(a17, sizeof(a17), "a17");
+    klee_make_symbolic(a18, sizeof(a18), "a18");
+    klee_make_symbolic(a19, sizeof(a19), "a19");
+    klee_make_symbolic(a20, sizeof(a20), "a20");
     #else
     size_t x = __VERIFIER_nondet_long();
     int y = __VERIFIER_nondet_int();
-    a[0] = __VERIFIER_nondet_bool();
-    a[1] = __VERIFIER_nondet_bool();
-    a[2] = __VERIFIER_nondet_bool();
-    a[3] = __VERIFIER_nondet_bool();
-    a[4] = __VERIFIER_nondet_bool();
-    a[5] = __VERIFIER_nondet_bool();
-    a[6] = __VERIFIER_nondet_bool();
-    a[7] = __VERIFIER_nondet_bool();
-    a[8] = __VERIFIER_nondet_bool();
-    a[9] = __VERIFIER_nondet_bool();
-    a[10] = __VERIFIER_nondet_bool();
-    a[11] = __VERIFIER_nondet_bool();
-    a[12] = __VERIFIER_nondet_bool();
-    a[13] = __VERIFIER_nondet_bool();
-    a[14] = __VERIFIER_nondet_bool();
-    a[15] = __VERIFIER_nondet_bool();
-    a[16] = __VERIFIER_nondet_bool();
-    a[17] = __VERIFIER_nondet_bool();
-    a[18] = __VERIFIER_nondet_bool();
-    a[19] = __VERIFIER_nondet_bool();
+    a1 = __VERIFIER_nondet_bool();
+    a2 = __VERIFIER_nondet_bool();
+    a3 = __VERIFIER_nondet_bool();
+    a4 = __VERIFIER_nondet_bool();
+    a5 = __VERIFIER_nondet_bool();
+    a6 = __VERIFIER_nondet_bool();
+    a7 = __VERIFIER_nondet_bool();
+    a8 = __VERIFIER_nondet_bool();
+    a9 = __VERIFIER_nondet_bool();
+    a10 = __VERIFIER_nondet_bool();
+    a11 = __VERIFIER_nondet_bool();
+    a12 = __VERIFIER_nondet_bool();
+    a13 = __VERIFIER_nondet_bool();
+    a14 = __VERIFIER_nondet_bool();
+    a15 = __VERIFIER_nondet_bool();
+    a16 = __VERIFIER_nondet_bool();
+    a17 = __VERIFIER_nondet_bool();
+    a18 = __VERIFIER_nondet_bool();
+    a19 = __VERIFIER_nondet_bool();
+    a20 = __VERIFIER_nondet_bool();
     #endif
 
     #ifdef v01
