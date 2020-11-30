@@ -1,9 +1,11 @@
 package com.dat3m.zombmc;
 
 import static com.dat3m.dartagnan.compiler.Mitigation.LFENCE;
+import static com.dat3m.dartagnan.compiler.Mitigation.NOSPECULATION;
 import static com.dat3m.dartagnan.compiler.Mitigation.SLH;
 import static com.dat3m.zombmc.utils.Encodings.encodeSpectre;
 import static com.dat3m.zombmc.utils.Result.SAFE;
+import static com.dat3m.zombmc.utils.Result.UNKNOWN;
 import static com.dat3m.zombmc.utils.Result.UNSAFE;
 import static com.microsoft.z3.Status.SATISFIABLE;
 
@@ -53,18 +55,21 @@ public class ZomBMC {
         
         Context ctx = new Context();
         List<Mitigation> mitigations = new ArrayList<Mitigation>();
+        if(options.getNoSpeculationOption()) {
+            mitigations.add(NOSPECULATION);
+        }
         if(options.getLfenceOption()) {
-            mitigations.add(LFENCE);        	
+            mitigations.add(LFENCE);
         }
         if(options.getSLHOption()) {
-            mitigations.add(SLH);        	
+            mitigations.add(SLH);
         }
-        Result result = testProgramSpeculatively(ctx, p, mcm, target, mitigations, options.getSettings());
+        Result result = testMemorySafety(ctx, p, mcm, target, mitigations, options.getSettings());
         System.out.println(result);
 		ctx.close();
     }
 
-    public static Result testProgramSpeculatively(Context ctx, Program program, Wmm wmm, Arch target, List<Mitigation> mitigations, Settings settings) {
+    public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, Arch target, List<Mitigation> mitigations, Settings settings) {
     	program.unroll(settings.getBound(), 0);
         program.compile(target, mitigations, 0);
 
@@ -72,10 +77,16 @@ public class ZomBMC {
         solver.add(program.encodeSCF(ctx, mitigations));
         solver.add(wmm.encode(program, ctx, settings));
         solver.add(wmm.consistent(program, ctx));
-        solver.add(encodeSpectre(program, ctx, "spectre_secret"));
-        // Without this the solver gets super slow
         solver.push();
+        solver.add(encodeSpectre(program, ctx, "spectre_secret"));
 
-        return solver.check() == SATISFIABLE ? UNSAFE : SAFE;
+		if(solver.check() == SATISFIABLE) {
+        	solver.add(program.encodeNoBoundEventExec(ctx));
+			return solver.check() == SATISFIABLE ? UNSAFE : UNKNOWN;
+        } else {
+        	solver.pop();
+			solver.add(ctx.mkNot(program.encodeNoBoundEventExec(ctx)));
+        	return solver.check() == SATISFIABLE ? UNKNOWN : SAFE;
+        }
     }
 }

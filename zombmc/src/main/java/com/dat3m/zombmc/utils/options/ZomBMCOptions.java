@@ -12,11 +12,16 @@ public class ZomBMCOptions extends BaseOptions {
 
     protected Set<String> supportedFormats = ImmutableSet.copyOf(Arrays.asList("bpl"));
     
+    private boolean noSpeculation = true;
     private boolean lfence = false;
     private boolean slh = false;
     
     public ZomBMCOptions(){
         super();
+        Option noSpecOption = new Option("nospeculation", false,
+                "Disable speculative execution");
+        addOption(noSpecOption);
+
         Option lfenceOption = new Option("lfence", false,
                 "Fence after every branch mitigation");
         addOption(lfenceOption);
@@ -33,10 +38,15 @@ public class ZomBMCOptions extends BaseOptions {
             throw new RuntimeException("Unrecognized program format");
         }
     	CommandLine cmd = new DefaultParser().parse(this, args);
+    	noSpeculation = cmd.hasOption("nospeculation");
     	lfence = cmd.hasOption("lfence");
     	slh = cmd.hasOption("slh");
     }
     
+    public boolean getNoSpeculationOption(){
+        return noSpeculation;
+    }
+
     public boolean getLfenceOption(){
         return lfence;
     }

@@ -18,6 +18,7 @@ import com.dat3m.dartagnan.program.event.utils.RegWriter;
 import com.dat3m.dartagnan.program.memory.Location;
 import com.dat3m.dartagnan.program.memory.Memory;
 
+import static com.dat3m.dartagnan.compiler.Mitigation.NOSPECULATION;
 import static com.dat3m.dartagnan.compiler.Mitigation.SLH;
 
 import java.util.*;
@@ -185,7 +186,11 @@ public class Program {
         }
         BoolExpr enc = memory.encode(ctx);
         for(Thread t : threads){
-            enc = ctx.mkAnd(enc, t.encodeSCF(ctx));
+        	if(mitigations.contains(NOSPECULATION)) {        		
+                enc = ctx.mkAnd(enc, t.encodeCF(ctx));
+        	} else {
+                enc = ctx.mkAnd(enc, t.encodeSCF(ctx));        		
+        	}
         }
         return enc;
     }

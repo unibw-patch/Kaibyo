@@ -1,7 +1,7 @@
 package com.dat3m.ui.result;
 
 
-import static com.dat3m.zombmc.ZomBMC.testProgramSpeculatively;
+import static com.dat3m.zombmc.ZomBMC.testMemorySafety;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +44,7 @@ public class ZomBMCResult implements Dat3mResult {
         if(validate()){
          	Context ctx = new Context();
          	List<Mitigation> mitigations = new ArrayList<Mitigation>();
-         	Result result = testProgramSpeculatively(ctx, program, wmm, options.getTarget(), mitigations, options.getSettings());
+         	Result result = testMemorySafety(ctx, program, wmm, options.getTarget(), mitigations, options.getSettings());
             StringBuilder sb = new StringBuilder();
             sb.append(result).append("\n");
             verdict = sb.toString();
