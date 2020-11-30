@@ -17,7 +17,7 @@ public enum AnalysisTypes {
         }
         throw new UnsupportedOperationException("Unrecognized analysis " + s);
 	}
-
+	
 	public String toString() {
         switch(this) {
             case REACHABILITY:
