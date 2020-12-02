@@ -33,12 +33,7 @@ do
                 flag+="-slh";
             fi
 
-            name=$version.$opt
-            
-            if [[ $name = v05.o2 ]]; then
-                flag+="-unroll 2";
-            fi
-
+            name=$version.$opt            
             log=$LOGFOLDER/$version.$mitigation.$opt.log
             (time timeout $TIMEOUT $ZOMBMC $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag) > $log 2> $log.time
 
