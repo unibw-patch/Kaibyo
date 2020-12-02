@@ -24,7 +24,10 @@ do
             log=$LOGFOLDER/$name.log
             (time timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version]) > $log 2> $log.time
             
-            tline=$tline", "$(awk 'FNR == 2 {print $2}' $log.time | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"s"); print a[1]}')
+            min=$(awk 'FNR == 2 {print $2}' $log.time | awk '{split($0,a,"m"); print a[1]}')
+            sec=$(awk 'FNR == 2 {print $2}' $log.time | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"s"); print a[1]}' | awk '{split($0,a,"."); print a[1]}')
+            ms=$(awk 'FNR == 2 {print $2}' $log.time | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"s"); print a[1]}' | awk '{split($0,a,"."); print a[2]}')
+            tline=$tline", "$((60*min+sec)).$ms
 
             to=$(grep "program is" $log | wc -l)
             if [ $to -eq 0 ]; then
