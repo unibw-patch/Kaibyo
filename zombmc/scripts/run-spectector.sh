@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TIMEOUT=180
+TIMEOUT=300
 
 LOGFOLDER=$DAT3M_HOME/output/logs/spectector-$(date +%Y-%m-%d_%H:%M)
 mkdir -p $LOGFOLDER

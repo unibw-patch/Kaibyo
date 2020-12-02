@@ -18,11 +18,5 @@ do
 
         clang $flags $DIR/spectre.c -o $DIR/asm/$version.$mitigation.o0.s
         clang $flags -O2 $DIR/spectre.c -o $DIR/asm/$version.$mitigation.o2.s
-
-        clang $flags $DIR/spectre-cloop.c -o $DIR/asm/$version-cloop.$mitigation.o0.s
-        clang $flags -O2 $DIR/spectre-cloop.c -o $DIR/asm/$version-cloop.$mitigation.o2.s
-
-        clang $flags $DIR/spectre-sloop.c -o $DIR/asm/$version-sloop.$mitigation.o0.s
-        clang $flags -O2 $DIR/spectre-sloop.c -o $DIR/asm/$version-sloop.$mitigation.o2.s
     done
 done

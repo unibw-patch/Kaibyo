@@ -8,10 +8,4 @@ do
 
     clang-6.0 $flags $DIR/spectre.c -o $DIR/bc/$version.none.o0.bc
     clang-6.0 $flags -O2 $DIR/spectre.c -o $DIR/bc/$version.none.o2.bc
-
-    clang-6.0 $flags $DIR/spectre-cloop.c -o $DIR/bc/$version-cloop.none.o0.bc
-    clang-6.0 $flags -O2 $DIR/spectre-cloop.c -o $DIR/bc/$version-cloop.none.o2.bc
-
-    clang-6.0 $flags $DIR/spectre-sloop.c -o $DIR/bc/$version-sloop.none.o0.bc
-    clang-6.0 $flags -O2 $DIR/spectre-sloop.c -o $DIR/bc/$version-sloop.none.o2.bc
 done
