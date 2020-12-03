@@ -23,11 +23,11 @@ do
     do
         name=$version.none.$opt
         log=$LOGFOLDER/$name.log
-        (time timeout $TIMEOUT $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$name.bc) 2> $log 2> $log.time
-        
-        min=$(awk 'FNR == 2 {print $2}' $log.time | awk '{split($0,a,"m"); print a[1]}')
-        sec=$(awk 'FNR == 2 {print $2}' $log.time | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"s"); print a[1]}' | awk '{split($0,a,"."); print a[1]}')
-        ms=$(awk 'FNR == 2 {print $2}' $log.time | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"s"); print a[1]}' | awk '{split($0,a,"."); print a[2]}')
+        (time timeout $TIMEOUT $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$name.bc) 2> $log
+
+        min=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[1]}')
+        sec=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"s"); print a[1]}' | awk '{split($0$
+        ms=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"s"); print a[1]}' | awk '{split($0,$
         tline=$tline", "$((60*min+sec)).$ms
 
         to=$(grep "Spectre found" $log | wc -l)
