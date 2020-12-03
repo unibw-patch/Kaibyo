@@ -24,15 +24,15 @@ docker-benchmarks: docker-asm docker-bc docker-bpl
 
 save-asm:
 	@echo "Saving *.asm files"
-	@cp -r ${DAT3M_HOME}/benchmarks/spectre/asm/*.s /data
+	@cp ${DAT3M_HOME}/benchmarks/spectre/asm/*.s /data/asm
 
 save-bc:
 	@echo "Saving *.bc files"
-	@cp -r ${DAT3M_HOME}/benchmarks/spectre/bc/*.bc /data
+	@cp ${DAT3M_HOME}/benchmarks/spectre/bc/*.bc /data/bc
 
 save-bpl:
 	@echo "Saving *.bpl files"
-	@cp -r ${DAT3M_HOME}/benchmarks/spectre/bpl/*.bpl /data
+	@cp ${DAT3M_HOME}/benchmarks/spectre/bpl/*.bpl /data/bpl
 
 tools: spectector klee zombmc
 
@@ -64,21 +64,18 @@ save-logs:
 
 save-spectector:
 	@echo "Saving Spectector results"
-	@cp ${DAT3M_HOME}/output/spectector.csv /data
-	@cp ${DAT3M_HOME}/output/spectector-cloop.csv /data
-	@cp ${DAT3M_HOME}/output/spectector-sloop.csv /data
+	@cp ${DAT3M_HOME}/output/spectector-results.csv /data
+	@cp ${DAT3M_HOME}/output/spectector-times.csv /data
 
 save-klee:
 	@echo "Saving KLEE results"
-	@cp ${DAT3M_HOME}/output/klee.csv /data
-	@cp ${DAT3M_HOME}/output/klee-cloop.csv /data
-	@cp ${DAT3M_HOME}/output/klee-sloop.csv /data
+	@cp ${DAT3M_HOME}/output/klee-results.csv /data
+	@cp ${DAT3M_HOME}/output/klee-times.csv /data
 
 save-zombmc:
 	@echo "Saving Zom-B-MC results"
-	@cp ${DAT3M_HOME}/output/zombmc.csv /data
-	@cp ${DAT3M_HOME}/output/zombmc-cloop.csv /data
-	@cp ${DAT3M_HOME}/output/zombmc-sloop.csv /data
+	@cp ${DAT3M_HOME}/output/zombmc-results.csv /data
+	@cp ${DAT3M_HOME}/output/zombmc-times.csv /data
 
 clean: clean-asm clean-bc clean-bpl
 
