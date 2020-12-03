@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TIMEOUT=300
+TIMEOUT=180
 
 KLEE=$KLEE_HOME/build/bin/klee
 KLEEFLAGS="--search=randomsp --enable-speculative"

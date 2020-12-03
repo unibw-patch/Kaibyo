@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TIMEOUT=300
+TIMEOUT=180
 
 ZOMBMC="java -jar $DAT3M_HOME/zombmc/target/zombmc-2.0.7-jar-with-dependencies.jar -i"
 
@@ -33,7 +33,13 @@ do
                 flag+="-slh";
             fi
 
-            name=$version.$opt            
+            name=$version.$opt
+            
+            # Some benchmarks require loop unrolling
+            if [[ $name = v09.o2 || $version = v10 || $name = v11.o0 ]]; then
+                flag+=" -unroll 2";
+            fi
+
             log=$LOGFOLDER/$version.$mitigation.$opt.log
             (time timeout $TIMEOUT $ZOMBMC $DAT3M_HOME/benchmarks/spectre/bpl/$name.bpl $flag) > $log 2> $log.time
 
