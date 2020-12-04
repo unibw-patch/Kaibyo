@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TIMEOUT=180
+TIMEOUT=300
 
 LOGFOLDER=$DAT3M_HOME/output/logs/spectector-$(date +%Y-%m-%d_%H:%M)
 mkdir -p $LOGFOLDER
@@ -28,17 +28,17 @@ do
             name=$version.$mitigation.$opt
             log=$LOGFOLDER/$name.log
             (time timeout $TIMEOUT spectector $flag $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version]) > $log 2>> $log
-            
+
             min=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[1]}')
             sec=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[1]}')
-            ms=$(tail -3 $log  | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[2]}')
+            ms=$(tail -3 $log  | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[2]}' | awk '{split($0,a,"s"); print a[1]}')
             tline=$tline", "$((60*min+sec)).$ms
 
             to=$(grep "program is" $log | wc -l)
             if [ $to -eq 0 ]; then
                 rline=$rline", \VarClock"
             else
-                safe=$(tail -n 1 "$log" | grep "program is safe" | wc -l)
+                safe=$(tail -n 5 "$log" | grep "program is safe" | wc -l)
                 if [ $safe -eq 0 ]; then
                     rline=$rline", \redcross"
                 else

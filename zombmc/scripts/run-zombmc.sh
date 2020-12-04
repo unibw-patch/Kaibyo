@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TIMEOUT=180
+TIMEOUT=300
 
 ZOMBMC="java -jar $DAT3M_HOME/zombmc/target/zombmc-2.0.7-jar-with-dependencies.jar -i"
 
@@ -14,7 +14,7 @@ TIMES=$DAT3M_HOME/output/zombmc-times.csv
 echo benchmark, o0-none, o2-none, o0-lfence, o2-lfence, o0-slh, o2-slh, o0-ns, o2-ns >> $RESULT
 echo benchmark, o0-none, o2-none, o0-lfence, o2-lfence, o0-slh, o2-slh, o0-ns, o2-ns >> $TIMES
 
-for version in v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15
+for version in v01
 do
     rline=$version
     tline=$version
@@ -45,7 +45,7 @@ do
 
             min=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[1]}')
             sec=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[1]}')
-            ms=$(tail -3 $log  | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[2]}')
+            ms=$(tail -3 $log  | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[2]}' | awk '{split($0,a,"s"); print a[1]}')
             tline=$tline", "$((60*min+sec)).$ms
 
             if [ $(grep "SAFE" $log | wc -l) -eq 0 ]; then

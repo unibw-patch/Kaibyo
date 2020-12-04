@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TIMEOUT=180
+TIMEOUT=300
 
 KLEE=$KLEE_HOME/build/bin/klee
 KLEEFLAGS="--search=randomsp --enable-speculative"
@@ -27,7 +27,7 @@ do
 
         min=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[1]}')
         sec=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[1]}')
-        ms=$(tail -3 $log  | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[2]}')
+        ms=$(tail -3 $log  | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[2]}' | awk '{split($0,a,"s"); print a[1]}')
         tline=$tline", "$((60*min+sec)).$ms
 
         to=$(grep "Spectre found" $log | wc -l)
