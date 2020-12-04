@@ -9,8 +9,8 @@ RESULT=$DAT3M_HOME/output/spectector-results.csv
 [ -e $RESULT ] && rm $RESULT
 TIMES=$DAT3M_HOME/output/spectector-times.csv
 [ -e $TIMES ] && rm $TIMES
-echo benchmark, o0-none, o2-none, o0-lfence, o2-lfence, o0-slh, o2-slh >> $RESULT
-echo benchmark, o0-none, o2-none, o0-lfence, o2-lfence, o0-slh, o2-slh >> $TIMES
+echo benchmark, o0-none, o2-none, o0-lfence, o2-lfence, o0-slh, o2-slh, o0-ns, o2-ns >> $RESULT
+echo benchmark, o0-none, o2-none, o0-lfence, o2-lfence, o0-slh, o2-slh, o0-ns, o2-ns >> $TIMES
 
 for version in v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15
 do
@@ -20,9 +20,14 @@ do
     do
         for opt in o0 o2
         do
+            flag="";
+            if [[ $mitigation = ns ]]; then
+                flag+="--nonspec";
+            fi
+
             name=$version.$mitigation.$opt
             log=$LOGFOLDER/$name.log
-            (time timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version]) > $log 2>> $log
+            (time timeout $TIMEOUT spectector $flag $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version]) > $log 2>> $log
             
             min=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[1]}')
             sec=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[1]}')
