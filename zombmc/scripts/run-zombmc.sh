@@ -14,7 +14,7 @@ TIMES=$DAT3M_HOME/output/zombmc-times.csv
 echo benchmark, o0-none, o2-none, o0-lfence, o2-lfence, o0-slh, o2-slh, o0-ns, o2-ns >> $RESULT
 echo benchmark, o0-none, o2-none, o0-lfence, o2-lfence, o0-slh, o2-slh, o0-ns, o2-ns >> $TIMES
 
-for version in v01
+for version in v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15
 do
     rline=$version
     tline=$version
