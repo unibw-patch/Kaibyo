@@ -28,13 +28,7 @@ zombmc:
 	@echo "Running Zom-B-MC"
 	@bash run-zombmc.sh
 
-clean: clean-asm clean-bc clean-bpl clean-log
-
-clean-log:
-	@echo "Removing log files"
-	@rm -r ../../output/logs/klee*
-	@rm -r ../../output/logs/spectector*
-	@rm -r ../../output/logs/zombmc*
+clean: clean-asm clean-bc clean-bpl
 
 clean-asm:
 	@echo "Removing *.asm files"
@@ -42,7 +36,6 @@ clean-asm:
 
 clean-bc:
 	@echo "Removing *.bc files"
-	@rm -r klee-*
 	@find ../../benchmarks/spectre/bc/ -type f ! -name '*.md' -delete
 
 clean-bpl:
