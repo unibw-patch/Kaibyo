@@ -23,14 +23,13 @@ do
     do
         for opt in o0 o2
         do
-            flag="";
             if [[ $mitigation != ns ]]; then
-                flag+="--enable-speculative";
+                KLEEFLAGS+=" --enable-speculative";
             fi
 
             name=$version.$mitigation.$opt
             log=$LOGFOLDER/$name.log
-            (time timeout $TIMEOUT $KLEE $KLEEFLAGS $flag $DAT3M_HOME/benchmarks/spectre/bc/$name.bc) 2> $log
+            (time timeout $TIMEOUT $KLEE $KLEEFLAGS $DAT3M_HOME/benchmarks/spectre/bc/$name.bc) 2> $log
 
             min=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[1]}')
             sec=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[1]}')
