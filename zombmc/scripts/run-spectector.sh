@@ -22,12 +22,12 @@ do
         do
             flag="";
             if [[ $mitigation = ns ]]; then
-                flag+="--nonspec";
+                flag+="-n";
             fi
 
             name=$version.$mitigation.$opt
             log=$LOGFOLDER/$name.log
-            (time timeout $TIMEOUT spectector $flag $DAT3M_HOME/benchmarks/spectre/asm/$name.s -e [victim_function_$version]) > $log 2>> $log
+            (time timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s $flag -e [victim_function_$version]) > $log 2>> $log
 
             min=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[1]}')
             sec=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[1]}')
