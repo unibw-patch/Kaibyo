@@ -1,5 +1,5 @@
 #include <string.h>
-#include <stdlib.h>
+    #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -14,11 +14,9 @@ extern int __VERIFIER_nondet_int(void);
 #endif
 #endif
 
-#define SIZE    (1)
-
 unsigned int array1_size = 16;
 uint8_t array1[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-uint8_t array2[256 * SIZE];
+uint8_t array2[64];
 
 char * spectre_secret = "The Magic Words are Squeamish Ossifrage.";
 
@@ -30,7 +28,7 @@ uint8_t temp = 0; /* Used so compiler won’t optimize out victim_function() */
 // ----------------------------------------------------------------------------------------
 void victim_function_v01(size_t x) {
      if (x < array1_size) {
-          temp &= array2[array1[x] * SIZE];
+          temp &= array2[array1[x]];
      }
 }
 #endif
@@ -39,7 +37,7 @@ void victim_function_v01(size_t x) {
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 2:  Moving the leak to a local function that can be inlined.
 // ----------------------------------------------------------------------------------------
-void leakByteLocalFunction(uint8_t k) { temp &= array2[(k)* SIZE]; }
+void leakByteLocalFunction(uint8_t k) { temp &= array2[(k)]; }
 void victim_function_v02(size_t x) {
      if (x < array1_size) {
           leakByteLocalFunction(array1[x]);
@@ -54,7 +52,7 @@ void victim_function_v02(size_t x) {
 // Comments: Output is unsafe.  The same results occur if leakByteNoinlineFunction()
 // is in another source module.
 // ----------------------------------------------------------------------------------------
-__declspec(noinline) void leakByteNoinlineFunction(uint8_t k) { temp &= array2[(k)* SIZE]; }
+__declspec(noinline) void leakByteNoinlineFunction(uint8_t k) { temp &= array2[(k)]; }
 void victim_function_v03(size_t x) {
      if (x < array1_size)
           leakByteNoinlineFunction(array1[x]);
@@ -69,7 +67,7 @@ void victim_function_v03(size_t x) {
 // ----------------------------------------------------------------------------------------
 void victim_function_v04(size_t x) {
      if (x < array1_size)
-          temp &= array2[array1[x << 1] * SIZE];
+          temp &= array2[array1[x << 1]];
 }
 #endif
 
@@ -83,7 +81,7 @@ void victim_function_v05(size_t x) {
      int i;
      if (x < array1_size) {
          for (i = x - 1; i >= 0; i--) {
-               temp &= array2[array1[i] * SIZE];
+               temp &= array2[array1[i]];
          }
      }
 }
@@ -98,7 +96,7 @@ void victim_function_v05(size_t x) {
 int array_size_mask = 15;
 void victim_function_v06(size_t x) {
      if ((x & array_size_mask) == x)
-          temp &= array2[array1[x] * SIZE];
+          temp &= array2[array1[x]];
 }
 #endif
 
@@ -111,7 +109,7 @@ void victim_function_v06(size_t x) {
 void victim_function_v07(size_t x) {
      static size_t last_x = 0;
      if (x == last_x)
-          temp &= array2[array1[x] * SIZE];
+          temp &= array2[array1[x]];
      if (x < array1_size)
           last_x = x;
 }
@@ -122,7 +120,7 @@ void victim_function_v07(size_t x) {
 // EXAMPLE 8:  Use a ?: operator to check bounds.
 // ----------------------------------------------------------------------------------------
 void victim_function_v08(size_t x) {
-     temp &= array2[array1[x < array1_size ? (x + 1) : 0] * SIZE];
+     temp &= array2[array1[x < array1_size ? (x + 1) : 0]];
 }
 #endif
 
@@ -134,7 +132,7 @@ void victim_function_v08(size_t x) {
 // ----------------------------------------------------------------------------------------
 void victim_function_v09(size_t x, int *x_is_safe) {
      if (*x_is_safe)
-          temp &= array2[array1[x] * SIZE];
+          temp &= array2[array1[x]];
 }
 #endif
 
@@ -175,7 +173,7 @@ int mymemcmp(const void *cs, const void *ct, int count)
 }
 void victim_function_v11(size_t x) {
      if (x < array1_size)
-          temp = mymemcmp(&temp, array2 + (array1[x] * SIZE), 1);
+          temp = mymemcmp(&temp, array2 + (array1[x]), 1);
 }
 #endif
 
@@ -187,7 +185,7 @@ void victim_function_v11(size_t x) {
 // ----------------------------------------------------------------------------------------
 void victim_function_v12(size_t x, size_t y) {
      if ((x + y) < array1_size)
-          temp &= array2[array1[x + y] * SIZE];
+          temp &= array2[array1[x + y]];
 }
 #endif
 
@@ -205,7 +203,7 @@ int is_x_safe(size_t x) {
 }
 void victim_function_v13(size_t x) {
      if (is_x_safe(x))
-          temp &= array2[array1[x] * SIZE];
+          temp &= array2[array1[x]];
 }
 #endif
 
@@ -217,7 +215,7 @@ void victim_function_v13(size_t x) {
 // ----------------------------------------------------------------------------------------
 void victim_function_v14(size_t x) {
      if (x < array1_size)
-          temp &= array2[array1[x ^ 255] * SIZE];
+          temp &= array2[array1[x ^ 255]];
 }
 #endif
 
@@ -229,7 +227,7 @@ void victim_function_v14(size_t x) {
 // ----------------------------------------------------------------------------------------
 void victim_function_v15(size_t *x) {
      if (*x < array1_size)
-          temp &= array2[array1[*x] * SIZE];
+          temp &= array2[array1[*x]];
 }
 #endif
 
