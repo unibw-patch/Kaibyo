@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TIMEOUT=600
+TIMEOUT=3600
 
 KLEE=$KLEE_HOME/build/bin/klee
 KLEEFLAGS="--search=randomsp"
