@@ -307,11 +307,11 @@ int main()
     #ifdef v15
     victim_function_v15(&x);
     #endif
-    #ifdef and-mask
-    and-mask(x);
+    #ifdef andmask
+    andmask(x);
     #endif
-    #ifdef dead-code
-    dead-code(x);
+    #ifdef deadcode
+    deadcode(x);
     #endif
     return 0;
 }
