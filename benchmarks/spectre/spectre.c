@@ -19,7 +19,7 @@ unsigned int array1_size = 16;
 uint8_t array1[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 uint8_t array2[64];
 
-char * spectre_secret = "The Magic Words are Squeamish Ossifrage.";
+char * spectre_secret = "The Magic Words are Squeamish Ossanifrage.";
 
 uint8_t temp = 0; /* Used so compiler won’t optimize out victim_function() */
 
@@ -232,7 +232,7 @@ void victim_function_v15(size_t *x) {
 }
 #endif
 
-#ifdef and-mask
+#ifdef andmask
 void and-mask(size_t x) {
     x &= 15;
     if (x < array1_size) {
@@ -241,7 +241,7 @@ void and-mask(size_t x) {
 }
 #endif
 
-#ifdef dead-code
+#ifdef deadcode
 void dead-code(size_t x) {
     if (a < array1_size) {
       temp &= array2[array1[a]];
