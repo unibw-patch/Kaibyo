@@ -16,6 +16,7 @@ extern int __VERIFIER_nondet_int(void);
 
 unsigned int a = 100;
 unsigned int array1_size = 16;
+unsigned int array1_smaller_size = 5;
 uint8_t array1[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 uint8_t array2[64];
 
@@ -235,7 +236,7 @@ void victim_function_v15(size_t *x) {
 #ifdef v16
 void victim_function_v16(size_t x) {
     x &= 15;
-    if (x < 5)
+    if (x < array1_smaller_size)
         temp &= array2[array1[x]];
 }
 #endif
