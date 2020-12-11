@@ -14,6 +14,7 @@ extern int __VERIFIER_nondet_int(void);
 #endif
 #endif
 
+unsigned int a = 100;
 unsigned int array1_size = 16;
 uint8_t array1[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 uint8_t array2[64];
@@ -231,6 +232,23 @@ void victim_function_v15(size_t *x) {
 }
 #endif
 
+#ifdef and-mask
+void and-mask(size_t x) {
+    x &= 15;
+    if (x < array1_size) {
+        temp &= array2[array1[x]];
+    }
+}
+#endif
+
+#ifdef dead-code
+void dead-code(size_t x) {
+    if (a < array1_size) {
+      temp &= array2[array1[a]];
+    }
+}
+#endif
+
 #ifndef spectector
 int main()
 {
@@ -288,6 +306,12 @@ int main()
     #endif
     #ifdef v15
     victim_function_v15(&x);
+    #endif
+    #ifdef and-mask
+    and-mask(x);
+    #endif
+    #ifdef dead-code
+    dead-code(x);
     #endif
     return 0;
 }
