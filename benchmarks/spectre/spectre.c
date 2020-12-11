@@ -233,7 +233,7 @@ void victim_function_v15(size_t *x) {
 #endif
 
 #ifdef andmask
-void and-mask(size_t x) {
+void andmask(size_t x) {
     x &= 15;
     if (x < array1_size) {
         temp &= array2[array1[x]];
@@ -242,7 +242,7 @@ void and-mask(size_t x) {
 #endif
 
 #ifdef deadcode
-void dead-code(size_t x) {
+void deadcode(size_t x) {
     if (a < array1_size) {
       temp &= array2[array1[a]];
     }
