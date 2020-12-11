@@ -235,9 +235,10 @@ void victim_function_v15(size_t *x) {
 
 #ifdef v16
 void victim_function_v16(size_t x) {
-    x &= 15;
-    if (x < array1_smaller_size)
+    if (x < array1_smaller_size) {
+        x &= 15;
         temp &= array2[array1[x]];
+    }
 }
 #endif
 
