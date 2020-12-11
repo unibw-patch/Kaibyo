@@ -232,16 +232,16 @@ void victim_function_v15(size_t *x) {
 }
 #endif
 
-#ifdef andmask
-void andmask(size_t x) {
+#ifdef v16
+void victim_function_v16(size_t x) {
     x &= 15;
     if (x < array1_size)
         temp &= array2[array1[x]];
 }
 #endif
 
-#ifdef deadcode
-void deadcode(size_t x) {
+#ifdef v17
+void victim_function_v17(size_t x) {
      if (a < array1_size)
           temp &= array2[array1[a]];
 }
@@ -305,11 +305,11 @@ int main()
     #ifdef v15
     victim_function_v15(&x);
     #endif
-    #ifdef andmask
-    andmask(x);
+    #ifdef v16
+    victim_function_v16(x);
     #endif
-    #ifdef deadcode
-    deadcode(x);
+    #ifdef v17
+    victim_function_v17(x);
     #endif
     return 0;
 }
