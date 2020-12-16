@@ -1,5 +1,5 @@
 #include <string.h>
-    #include <stdlib.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -14,9 +14,7 @@ extern int __VERIFIER_nondet_int(void);
 #endif
 #endif
 
-unsigned int a = 100;
 unsigned int array1_size = 16;
-unsigned int array1_smaller_size = 5;
 uint8_t array1[16] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 uint8_t array2[64];
 
@@ -234,6 +232,7 @@ void victim_function_v15(size_t *x) {
 #endif
 
 #ifdef v16
+unsigned int array1_smaller_size = 5;
 void victim_function_v16(size_t x) {
     if (x < array1_smaller_size) {
         x &= 15;
@@ -243,6 +242,7 @@ void victim_function_v16(size_t x) {
 #endif
 
 #ifdef v17
+unsigned int a = 100;
 void victim_function_v17(size_t x) {
      if (a < array1_size)
           temp &= array2[array1[a]];
