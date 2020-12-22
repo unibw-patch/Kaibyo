@@ -23,6 +23,9 @@ do
         for opt in o0 o2
         do
             flag="";
+            if [[ $mitigation = none ]]; then
+                flag+="-sleak";
+            fi
             if [[ $mitigation = ns ]]; then
                 flag+="-nospeculation";
             fi
