@@ -4,6 +4,7 @@ import static com.dat3m.dartagnan.compiler.Mitigation.LFENCE;
 import static com.dat3m.dartagnan.compiler.Mitigation.NOSPECULATION;
 import static com.dat3m.dartagnan.compiler.Mitigation.SLH;
 import static com.dat3m.zombmc.utils.Encodings.encodeLeakage;
+import static com.dat3m.zombmc.utils.Encodings.encodeSpeculationStart;
 import static com.dat3m.zombmc.utils.Result.SAFE;
 import static com.dat3m.zombmc.utils.Result.UNKNOWN;
 import static com.dat3m.zombmc.utils.Result.UNSAFE;
@@ -64,12 +65,12 @@ public class ZomBMC {
         if(options.getSLHOption()) {
             mitigations.add(SLH);
         }
-        Result result = testMemorySafety(ctx, p, mcm, target, mitigations, options.getSettings());
+        Result result = testMemorySafety(ctx, p, mcm, target, mitigations, options.getSpecLeakOption(), options.getSettings());
         System.out.println(result);
 		ctx.close();
     }
 
-    public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, Arch target, List<Mitigation> mitigations, Settings settings) {
+    public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, Arch target, List<Mitigation> mitigations, boolean onlySpecLeak, Settings settings) {
     	program.unroll(settings.getBound(), 0);
         program.compile(target, mitigations, 0);
 
@@ -79,6 +80,9 @@ public class ZomBMC {
         solver.add(wmm.consistent(program, ctx));
         solver.push();
         solver.add(encodeLeakage(program, ctx, "spectre_secret"));
+        if(onlySpecLeak) {
+        	solver.add(encodeSpeculationStart(program, ctx));
+        }
 
 		if(solver.check() == SATISFIABLE) {
         	solver.add(program.encodeNoBoundEventExec(ctx));

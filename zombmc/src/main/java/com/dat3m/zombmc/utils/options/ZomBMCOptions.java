@@ -15,12 +15,17 @@ public class ZomBMCOptions extends BaseOptions {
     private boolean noSpeculation = true;
     private boolean lfence = false;
     private boolean slh = false;
+    private boolean sleak = false;
     
     public ZomBMCOptions(){
         super();
         Option noSpecOption = new Option("nospeculation", false,
                 "Disable speculative execution");
         addOption(noSpecOption);
+
+        Option onlySpecLeackOption = new Option("sleak", false,
+                "Detect only speculative leaks");
+        addOption(onlySpecLeackOption);
 
         Option lfenceOption = new Option("lfence", false,
                 "Fence after every branch mitigation");
@@ -41,10 +46,15 @@ public class ZomBMCOptions extends BaseOptions {
     	noSpeculation = cmd.hasOption("nospeculation");
     	lfence = cmd.hasOption("lfence");
     	slh = cmd.hasOption("slh");
+    	sleak = cmd.hasOption("sleak");
     }
     
     public boolean getNoSpeculationOption(){
         return noSpeculation;
+    }
+
+    public boolean getSpecLeakOption(){
+        return sleak;
     }
 
     public boolean getLfenceOption(){
