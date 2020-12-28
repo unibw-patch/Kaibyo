@@ -12,23 +12,16 @@ import com.microsoft.z3.Context;
 
 public class Encodings {
 	
-    public static BoolExpr encodeLeakage(Program p, Context ctx, String location) {
+    public static BoolExpr encodeLeakage(Program p, Context ctx, String location, boolean onlySpeculative) {
     	BoolExpr enc = ctx.mkFalse();
     	try {
         	Address secret = p.getMemory().getLocation(location).getAddress();
         	for(Event r : p.getCache().getEvents(FilterBasic.get(EType.READ))){
-    			enc = ctx.mkOr(enc, ctx.mkAnd(ctx.mkEq(((Load)r).getMemAddressExpr(), secret.toZ3Int(ctx)), r.exec()));
+        		BoolExpr exec = onlySpeculative ? r.se() : r.exec();
+    			enc = ctx.mkOr(enc, ctx.mkAnd(ctx.mkEq(((Load)r).getMemAddressExpr(), secret.toZ3Int(ctx)), exec));
         	}    		
     	} catch (Exception e) {
     		throw new RuntimeException("The program does not contain secrets");
-    	}
-    	return enc;
-    }    
-
-    public static BoolExpr encodeSpeculationStart(Program p, Context ctx) {
-    	BoolExpr enc = ctx.mkFalse();
-    	for(Event j : p.getCache().getEvents(FilterBasic.get(EType.JUMP))){
-    		enc = ctx.mkOr(enc, j.startSE());
     	}
     	return enc;
     }    

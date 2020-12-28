@@ -139,20 +139,20 @@ public class CondJump extends Event implements RegReaderData {
             cfCond = (cfCond == null) ? cond : ctx.mkOr(cfCond, cond);
 			seCond = (seCond == null) ? cond2 : ctx.mkOr(seCond, cond2);            
 			BoolExpr ifCond = expr.toZ3Bool(this, ctx);
-            cfEnc = ctx.mkAnd(ctx.mkEq(cfVar, cfCond), encodeSpecExec(ctx));
+			cfEnc = ctx.mkAnd(ctx.mkEq(cfVar, cfCond), ctx.mkEq(seVar, seCond), encodeSpecExec(ctx));
             if(ifCond.isTrue()) {
             	// Only conditional jumps can start speculation
             	cfEnc = ctx.mkAnd(cfEnc, ctx.mkNot(startSEVar));
-            } else {
-            	cfEnc = ctx.mkAnd(cfEnc, ctx.mkEq(startSEVar, seVar));
+            	label.addSeCond(ctx, seVar);
             }
             // Jump if (cond /\ !spec) 
             label.addCfCond(ctx, ctx.mkAnd(ifCond, ctx.mkNot(startSEVar), cfVar));
             // Jump speculatively if (!cond /\ spec) 
-            label.addSeCond(ctx, ctx.mkAnd(ctx.mkNot(ifCond), startSEVar, cfVar));
+            label.addSeCond(ctx, ctx.mkAnd(ctx.mkNot(ifCond), startSEVar, execVar));
             // Continue if (!cond /\ !spec)
-            BoolExpr cont = ctx.mkAnd(ctx.mkNot(ifCond), ctx.mkNot(startSEVar));
-            cfEnc = ctx.mkAnd(cfEnc, successor.encodeSCF(ctx, ctx.mkAnd(cont, cfVar), seVar));            
+            BoolExpr cont = ctx.mkAnd(ctx.mkNot(ifCond), ctx.mkNot(startSEVar), cfVar);
+            BoolExpr contSpec = ctx.mkAnd(ifCond, startSEVar, execVar);
+            cfEnc = ctx.mkAnd(cfEnc, successor.encodeSCF(ctx, cont, contSpec));            
         }
         return cfEnc;
     }

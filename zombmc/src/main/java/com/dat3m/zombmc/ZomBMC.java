@@ -4,7 +4,6 @@ import static com.dat3m.dartagnan.compiler.Mitigation.LFENCE;
 import static com.dat3m.dartagnan.compiler.Mitigation.NOSPECULATION;
 import static com.dat3m.dartagnan.compiler.Mitigation.SLH;
 import static com.dat3m.zombmc.utils.Encodings.encodeLeakage;
-import static com.dat3m.zombmc.utils.Encodings.encodeSpeculationStart;
 import static com.dat3m.zombmc.utils.Result.SAFE;
 import static com.dat3m.zombmc.utils.Result.UNKNOWN;
 import static com.dat3m.zombmc.utils.Result.UNSAFE;
@@ -79,10 +78,7 @@ public class ZomBMC {
         solver.add(wmm.encode(program, ctx, settings));
         solver.add(wmm.consistent(program, ctx));
         solver.push();
-        solver.add(encodeLeakage(program, ctx, "spectre_secret"));
-        if(onlySpecLeak) {
-        	solver.add(encodeSpeculationStart(program, ctx));
-        }
+        solver.add(encodeLeakage(program, ctx, "spectre_secret", onlySpecLeak));
 
 		if(solver.check() == SATISFIABLE) {
         	solver.add(program.encodeNoBoundEventExec(ctx));
