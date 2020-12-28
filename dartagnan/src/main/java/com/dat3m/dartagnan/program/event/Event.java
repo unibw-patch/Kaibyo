@@ -228,6 +228,10 @@ public abstract class Event implements Comparable<Event> {
 		return cfVar;
 	}
 
+	public BoolExpr se(){
+		return seVar;
+	}
+
 	public BoolExpr startSE(){
 		return startSEVar;
 	}
