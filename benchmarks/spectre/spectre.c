@@ -231,24 +231,6 @@ void victim_function_v15(size_t *x) {
 }
 #endif
 
-#ifdef v16
-unsigned int array1_smaller_size = 5;
-void victim_function_v16(size_t x) {
-    if (x < array1_smaller_size) {
-        x &= 15;
-        temp &= array2[array1[x]];
-    }
-}
-#endif
-
-#ifdef v17
-unsigned int a = 100;
-void victim_function_v17(size_t x) {
-     if (a < array1_size)
-          temp &= array2[array1[a]];
-}
-#endif
-
 #ifndef spectector
 int main()
 {
@@ -306,12 +288,6 @@ int main()
     #endif
     #ifdef v15
     victim_function_v15(&x);
-    #endif
-    #ifdef v16
-    victim_function_v16(x);
-    #endif
-    #ifdef v17
-    victim_function_v17(x);
     #endif
     return 0;
 }

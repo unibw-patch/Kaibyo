@@ -39,7 +39,7 @@ do
             name=$version.$opt
             
             # Some benchmarks require loop unrolling
-            if [[ $name = v09.o2 || $version = v10 || $name = v11.o0 ]]; then
+            if [[ $name = v05.o0 || $name = v09.o2 || $version = v10 || $name = v11.o0 ]]; then
                 flag+=" -unroll 2";
             fi
 
