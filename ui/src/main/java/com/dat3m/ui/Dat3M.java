@@ -15,7 +15,6 @@ import com.dat3m.ui.utils.UiOptions;
 import com.dat3m.ui.options.OptionsPane;
 import com.dat3m.ui.options.utils.ControlCode;
 import com.dat3m.ui.result.Dat3mResult;
-import com.dat3m.ui.result.PortabilityResult;
 import com.dat3m.ui.result.ReachabilityResult;
 import com.dat3m.ui.result.ZomBMCResult;
 import com.dat3m.ui.options.utils.Task;
@@ -119,19 +118,6 @@ public class Dat3M extends JFrame implements ActionListener {
 						testResult = new ReachabilityResult(program, targetModel, options);
 					} else if(options.getTask() == Task.SECURITY){
 						testResult = new ZomBMCResult(program, targetModel, options);
-					} else {
-						try {
-							if(!programEditor.getLoadedFormat().equals("pts")) {
-								showError("PORTHOS only supports *.pts files", "Loading error");
-								return;
-							}
-							Program sourceProgram = new ProgramParser().parse(programEditor.getEditorPane().getText(), programEditor.getLoadedFormat());
-							Wmm sourceModel = new ParserCat().parse(editorsPane.getEditor(EditorCode.SOURCE_MM).getEditorPane().getText());
-							testResult = new PortabilityResult(sourceProgram, program, sourceModel, targetModel, options);
-						} catch (Exception e){
-							String msg = e.getMessage() == null? "Memory model cannot be parsed" : e.getMessage();
-							showError(msg, "Source memory model error");
-						}
 					}
 				} catch (Exception e){
 					String msg = e.getMessage() == null? "Memory model cannot be parsed" : e.getMessage();
