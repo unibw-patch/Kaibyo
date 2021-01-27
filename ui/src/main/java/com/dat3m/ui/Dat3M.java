@@ -17,6 +17,7 @@ import com.dat3m.ui.options.utils.ControlCode;
 import com.dat3m.ui.result.Dat3mResult;
 import com.dat3m.ui.result.PortabilityResult;
 import com.dat3m.ui.result.ReachabilityResult;
+import com.dat3m.ui.result.ZomBMCResult;
 import com.dat3m.ui.options.utils.Task;
 import javax.swing.*;
 
@@ -116,6 +117,8 @@ public class Dat3M extends JFrame implements ActionListener {
 					Wmm targetModel = new ParserCat().parse(editorsPane.getEditor(EditorCode.TARGET_MM).getEditorPane().getText());
 					if(options.getTask() == Task.REACHABILITY){
 						testResult = new ReachabilityResult(program, targetModel, options);
+					} else if(options.getTask() == Task.SECURITY){
+						testResult = new ZomBMCResult(program, targetModel, options);
 					} else {
 						try {
 							if(!programEditor.getLoadedFormat().equals("pts")) {

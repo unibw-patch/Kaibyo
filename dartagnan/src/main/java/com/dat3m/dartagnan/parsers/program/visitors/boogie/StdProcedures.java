@@ -17,8 +17,6 @@ public class StdProcedures {
 	
 	// TODO: find a good way of dealing with allocation of dynamic size
 	private static int MALLOC_ARRAY_SIZE = 100;
-    // TODO: deal with this properly
-    public static int I32_BYTES = 4;
 
 	public static List<String> STDPROCEDURES = Arrays.asList(
 			"external_alloc",
@@ -103,7 +101,7 @@ public class StdProcedures {
 	private static void alloc(VisitorBoogie visitor, Call_cmdContext ctx) {
 		int size;
 		try {
-			size = ((ExprInterface)ctx.call_params().exprs().expr(0).accept(visitor)).reduce().getValue()*I32_BYTES;			
+			size = ((ExprInterface)ctx.call_params().exprs().expr(0).accept(visitor)).reduce().getValue();			
 		} catch (Exception e) {
 			String tmp = ctx.call_params().getText();
 			tmp = tmp.contains(",") ? tmp.substring(0, tmp.indexOf(',')) : tmp.substring(0, tmp.indexOf(')')); 

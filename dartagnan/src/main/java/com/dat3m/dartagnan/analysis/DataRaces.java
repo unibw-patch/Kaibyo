@@ -7,6 +7,8 @@ import static com.dat3m.dartagnan.wmm.utils.Utils.edge;
 import static com.dat3m.dartagnan.wmm.utils.Utils.intVar;
 import static com.microsoft.z3.Status.SATISFIABLE;
 
+import java.util.ArrayList;
+
 import com.dat3m.dartagnan.expression.BConst;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Thread;
@@ -18,7 +20,8 @@ import com.dat3m.dartagnan.utils.Settings;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.dartagnan.wmm.filter.FilterBasic;
 import com.dat3m.dartagnan.wmm.filter.FilterMinus;
-import com.dat3m.dartagnan.wmm.utils.Arch;
+import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
@@ -30,7 +33,7 @@ public class DataRaces {
 
 	public static Result checkForRaces(Solver solver, Context ctx, Program program, Wmm wmm, Arch target, Settings settings) {
     	program.unroll(settings.getBound(), 0);
-        program.compile(target, 0);
+        program.compile(target, new ArrayList<Mitigation>(), 0);
         program.updateAssertion();
 
         solver.add(program.encodeCF(ctx));

@@ -1,6 +1,6 @@
 package com.dat3m.ui.options.utils;
 
-import com.dat3m.dartagnan.wmm.utils.Arch;
+import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.ui.editor.Editor;
 import com.dat3m.ui.editor.EditorCode;
 import com.dat3m.ui.options.Selector;

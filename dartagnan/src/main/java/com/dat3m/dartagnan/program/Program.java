@@ -3,7 +3,6 @@ package com.dat3m.dartagnan.program;
 import com.dat3m.dartagnan.program.utils.EType;
 import com.dat3m.dartagnan.program.utils.ThreadCache;
 import com.dat3m.dartagnan.wmm.filter.FilterBasic;
-import com.dat3m.dartagnan.wmm.utils.Arch;
 import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
@@ -11,11 +10,16 @@ import com.dat3m.dartagnan.asserts.AbstractAssert;
 import com.dat3m.dartagnan.asserts.AssertCompositeOr;
 import com.dat3m.dartagnan.asserts.AssertInline;
 import com.dat3m.dartagnan.asserts.AssertTrue;
+import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Local;
 import com.dat3m.dartagnan.program.event.utils.RegWriter;
 import com.dat3m.dartagnan.program.memory.Location;
 import com.dat3m.dartagnan.program.memory.Memory;
+
+import static com.dat3m.dartagnan.compiler.Mitigation.NOSPECULATION;
+import static com.dat3m.dartagnan.compiler.Mitigation.SLH;
 
 import java.util.*;
 
@@ -153,15 +157,14 @@ public class Program {
     // Compilation
     // -----------------------------------------------------------------------------------------------------------------
 
-    public int compile(Arch target, int nextId) {
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId) {
         for(Thread thread : threads){
-            nextId = thread.compile(target, nextId);
+            nextId = thread.compile(target, mitigations, nextId);
         }
         isCompiled = true;
         cache = null;
         return nextId;
     }
-
 
     // Encoding
     // -----------------------------------------------------------------------------------------------------------------
@@ -173,6 +176,21 @@ public class Program {
         BoolExpr enc = memory.encode(ctx);
         for(Thread t : threads){
             enc = ctx.mkAnd(enc, t.encodeCF(ctx));
+        }
+        return enc;
+    }
+
+    public BoolExpr encodeSCF(Context ctx, List<Mitigation> mitigations) {
+        for(Event e : getEvents()){
+            e.initialise(ctx, mitigations.contains(SLH));
+        }
+        BoolExpr enc = memory.encode(ctx);
+        for(Thread t : threads){
+        	if(mitigations.contains(NOSPECULATION)) {        		
+                enc = ctx.mkAnd(enc, t.encodeCF(ctx));
+        	} else {
+                enc = ctx.mkAnd(enc, t.encodeSCF(ctx));        		
+        	}
         }
         return enc;
     }

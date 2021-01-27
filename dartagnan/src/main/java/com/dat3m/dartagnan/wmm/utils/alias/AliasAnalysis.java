@@ -256,11 +256,32 @@ public class AliasAnalysis {
     }
 
     private void processResults(Program program) {
+    	// Used to have pointer analysis when having arrays and structures
+    	Map<Register, Address> bases = new HashMap<Register, Address>();
+    	for (Event ev : program.getCache().getEvents(FilterBasic.get(EType.LOCAL))) {
+    		// Not only Local events have EType.LOCAL tag
+    		if(!(ev instanceof Local)) {
+    			continue;
+    		}
+    		Local l = (Local)ev;
+    		ExprInterface exp = l.getExpr();
+    		Register reg = l.getResultRegister();
+			if(exp instanceof Address) {
+    			bases.put(reg, (Address)exp);
+    		} else if(exp instanceof Register && bases.containsKey(exp)) {
+    			bases.put(reg, bases.get(exp));
+    		}
+    	}
+    	
         for (Event e : program.getCache().getEvents(FilterBasic.get(EType.MEMORY))) {
             IExpr address = ((MemEvent) e).getAddress();
             Set<Address> adresses;
             if (address instanceof Register) {
-                adresses = graph.getAddresses(((Register) address));
+            	if(bases.containsKey(address)) {
+            		adresses = ImmutableSet.of(bases.get(address));
+            	} else {
+                    adresses = graph.getAddresses(((Register) address));            		
+            	}
             } else if (address instanceof Address) {
                     adresses = ImmutableSet.of(((Address) address));
             } else {
@@ -273,7 +294,7 @@ public class AliasAnalysis {
             ((MemEvent) e).setMaxAddressSet(addr);
         }
     }
-
+    
     private void calculateLocationSetsNoAlias(Program program) {
         ImmutableSet<Address> maxAddressSet = program.getMemory().getAllAddresses();
         for (Event e : program.getCache().getEvents(FilterBasic.get(EType.MEMORY))) {

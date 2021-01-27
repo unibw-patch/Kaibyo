@@ -1,11 +1,11 @@
 package com.dat3m.dartagnan;
 
+import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.parsers.program.ProgramParser;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.utils.Settings;
 import com.dat3m.dartagnan.utils.Result;
 import com.dat3m.dartagnan.wmm.Wmm;
-import com.dat3m.dartagnan.wmm.utils.Arch;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 import org.junit.Test;

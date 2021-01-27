@@ -7,7 +7,6 @@ import static com.dat3m.dartagnan.parsers.program.visitors.boogie.AtomicProcedur
 import static com.dat3m.dartagnan.parsers.program.visitors.boogie.DummyProcedures.DUMMYPROCEDURES;
 import static com.dat3m.dartagnan.parsers.program.visitors.boogie.PthreadsProcedures.PTHREADPROCEDURES;
 import static com.dat3m.dartagnan.parsers.program.visitors.boogie.PthreadsProcedures.handlePthreadsFunctions;
-import static com.dat3m.dartagnan.parsers.program.visitors.boogie.StdProcedures.I32_BYTES;
 import static com.dat3m.dartagnan.parsers.program.visitors.boogie.StdProcedures.STDPROCEDURES;
 import static com.dat3m.dartagnan.parsers.program.visitors.boogie.StdProcedures.handleStdFunction;
 import static com.dat3m.dartagnan.parsers.program.visitors.boogie.SvcompProcedures.SVCOMPPROCEDURES;
@@ -34,15 +33,17 @@ import com.dat3m.dartagnan.expression.BConst;
 import com.dat3m.dartagnan.expression.BExpr;
 import com.dat3m.dartagnan.expression.BExprBin;
 import com.dat3m.dartagnan.expression.BExprUn;
+import com.dat3m.dartagnan.expression.BExprIf;
 import com.dat3m.dartagnan.expression.ExprInterface;
 import com.dat3m.dartagnan.expression.IConst;
 import com.dat3m.dartagnan.expression.IExpr;
 import com.dat3m.dartagnan.expression.IExprBin;
 import com.dat3m.dartagnan.expression.IExprUn;
-import com.dat3m.dartagnan.expression.IfExpr;
+import com.dat3m.dartagnan.expression.IExprIf;
 import com.dat3m.dartagnan.expression.op.BOpUn;
 import com.dat3m.dartagnan.expression.op.IOpUn;
 import com.dat3m.dartagnan.parsers.BoogieBaseVisitor;
+import com.dat3m.dartagnan.parsers.BoogieParser;
 import com.dat3m.dartagnan.parsers.BoogieParser.And_exprContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.Assert_cmdContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.Assign_cmdContext;
@@ -75,6 +76,7 @@ import com.dat3m.dartagnan.parsers.BoogieParser.Proc_declContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.Rel_exprContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.Return_cmdContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.TermContext;
+import com.dat3m.dartagnan.parsers.BoogieParser.Type_declContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.Var_declContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.Var_exprContext;
 import com.dat3m.dartagnan.parsers.BoogieParser.While_cmdContext;
@@ -139,10 +141,12 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 	
 	protected int assertionIndex = 0;
 	
+	private int refPrec = -1;
+	
 	protected BeginAtomic currentBeginAtomic = null;
 	private Call_cmdContext atomicMode = null;
 	 
-	private List<String> smackDummyVariables = Arrays.asList("$GLOBALS_BOTTOM", "$EXTERNS_BOTTOM", "$MALLOC_TOP", "__SMACK_code", "__SMACK_decls", "__SMACK_top_decl", "$1024.ref", "$0.ref", "$1.ref", ".str.1", "env_value_str", ".str.1.3", ".str.19", "errno_global", "$CurrAddr");
+	private List<String> smackDummyVariables = Arrays.asList("$GLOBALS_BOTTOM", "$EXTERNS_BOTTOM", "$MALLOC_TOP", "__SMACK_code", "__SMACK_decls", "__SMACK_top_decl", "$1024.ref", "$0.ref", "$1.ref", "env_value_str", "errno_global", "$CurrAddr");
 
 	public VisitorBoogie(ProgramBuilder pb) {
 		this.programBuilder = pb;
@@ -150,6 +154,9 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 	
     @Override
     public Object visitMain(MainContext ctx) {
+    	for(Type_declContext typeDecContext : ctx.type_decl()) {
+    		visitType_decl(typeDecContext);
+    	}
     	for(Func_declContext funDecContext : ctx.func_decl()) {
     		visitFunc_decl(funDecContext);
     	}
@@ -190,7 +197,7 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
         	for(Attr_typed_idents_whereContext atiwC : ctx.proc_sign().proc_sign_in().attr_typed_idents_wheres().attr_typed_idents_where()) {
         		for(ParseTree ident : atiwC.typed_idents_where().typed_idents().idents().Ident()) {
         			String type = atiwC.typed_idents_where().typed_idents().type().getText();
-        			int precision = type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
+        			int precision = type.contains("ref") ? refPrec : type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
             		threadCallingValues.get(threadCount).add(programBuilder.getOrCreateRegister(threadCount, currentScope.getID() + ":" + ident.getText(), precision));
         		}
         	}
@@ -198,6 +205,14 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
     	procedures.put(name, ctx);
 	}
 
+	@Override
+	public Object visitType_decl(BoogieParser.Type_declContext ctx) {
+		if(ctx.getText().contains("ref")) {
+			refPrec = ctx.getText().contains("bv") ? Integer.parseInt(ctx.type(0).getText().split("bv")[1]) : -1;
+		}
+		return null;
+	}
+	
 	@Override
 	public Object visitAxiom_decl(Axiom_declContext ctx) {
 		ExprInterface exp = (ExprInterface)ctx.proposition().accept(this);
@@ -214,9 +229,9 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 		for(ParseTree ident : ctx.typed_idents().idents().Ident()) {
 			String name = ident.getText();
 			String type = ctx.typed_idents().type().getText();
-			int precision = type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
+			int precision = type.contains("ref") ? refPrec : type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
 			if(ctx.getText().contains("{:count")) {
-				int size = Integer.parseInt((ctx.getText().substring(0, ctx.getText().lastIndexOf("}")).split("count")[1]))*I32_BYTES;
+				int size = Integer.parseInt((ctx.getText().substring(0, ctx.getText().lastIndexOf("}")).split("count")[1]));
 				programBuilder.addDeclarationArray(name, Collections.nCopies(size, new IConst(0, precision)), precision);
 			} else if(ctx.getText().contains("ref;") && !procedures.containsKey(name) && !smackDummyVariables.contains(name)) {
 				programBuilder.getOrCreateLocation(name, precision);
@@ -240,7 +255,7 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
     		 for(ParseTree ident : atiwC.typed_idents_where().typed_idents().idents().Ident()) {
     			 String name = ident.getText();
     			 String type = atiwC.typed_idents_where().typed_idents().type().getText();
-    			 int precision = type.contains("bv") && !name.equals("$M.0") ? Integer.parseInt(type.split("bv")[1]) : -1;
+    			 int precision = type.contains("ref") ? refPrec : type.contains("bv") && !name.equals("$M.0") ? Integer.parseInt(type.split("bv")[1]) : -1;
     			 programBuilder.getOrCreateLocation(name, precision);
     		 }
     	 }
@@ -252,7 +267,7 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 			for(ParseTree ident : atiwC.typed_idents_where().typed_idents().idents().Ident()) {
 				String name = ident.getText();
 				String type = atiwC.typed_idents_where().typed_idents().type().getText();
-				int precision = type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
+				int precision = type.contains("ref") ? refPrec : type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
 				if(constantsTypeMap.containsKey(name)) {
 	                throw new ParsingException("Variable " + name + " is already defined as a constant");
 				}
@@ -304,7 +319,7 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
     				// To deal with references passed to created threads
     				if(index < callingValues.size()) {
     					String type = atiwC.typed_idents_where().typed_idents().type().getText();
-    					int precision = type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
+    					int precision = type.contains("ref") ? refPrec : type.contains("bv") ? Integer.parseInt(type.split("bv")[1]) : -1;
         				Register register = programBuilder.getOrCreateRegister(threadCount, currentScope.getID() + ":" + ident.getText(), precision);
         				ExprInterface value = callingValues.get(index);
         				Local child = new Local(register, value);
@@ -777,7 +792,10 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 		BExpr guard = (BExpr)ctx.expr(0).accept(this);
 		ExprInterface tbranch = (ExprInterface)ctx.expr(1).accept(this);
 		ExprInterface fbranch = (ExprInterface)ctx.expr(2).accept(this);
-		return new IfExpr(guard, tbranch, fbranch);
+		if(tbranch instanceof IExpr) {
+			return new IExprIf(guard, (IExpr)tbranch, (IExpr)fbranch);			
+		}
+		return new BExprIf(guard, (BExpr)tbranch, (BExpr)fbranch);
 	}
 
 	@Override

@@ -2,7 +2,8 @@ package com.dat3m.dartagnan.program.atomic.event;
 
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Fence;
-import com.dat3m.dartagnan.wmm.utils.Arch;
+import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 
 import static com.dat3m.dartagnan.program.atomic.utils.Mo.ACQUIRE;
 import static com.dat3m.dartagnan.program.atomic.utils.Mo.ACQ_REL;
@@ -10,6 +11,7 @@ import static com.dat3m.dartagnan.program.atomic.utils.Mo.RELEASE;
 import static com.dat3m.dartagnan.program.atomic.utils.Mo.SC;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class AtomicThreadFence extends Fence {
 
@@ -44,7 +46,7 @@ public class AtomicThreadFence extends Fence {
     // -----------------------------------------------------------------------------------------------------------------
 
     @Override
-    public int compile(Arch target, int nextId, Event predecessor) {
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
         LinkedList<Event> events = new LinkedList<>();
 
         switch (target) {
@@ -69,6 +71,6 @@ public class AtomicThreadFence extends Fence {
             	throw new UnsupportedOperationException("Compilation to " + target + " is not supported for " + this);
         }
 
-        return compileSequence(target, nextId, predecessor, events);
+        return compileSequence(target, mitigations, nextId, predecessor, events);
     }
 }

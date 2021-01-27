@@ -12,10 +12,12 @@ import com.dat3m.dartagnan.program.event.rmw.RMWStore;
 import com.dat3m.dartagnan.program.event.utils.RegReaderData;
 import com.dat3m.dartagnan.program.event.utils.RegWriter;
 import com.dat3m.dartagnan.program.arch.linux.utils.EType;
-import com.dat3m.dartagnan.wmm.utils.Arch;
+import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 public class RMWOp extends RMWAbstract implements RegWriter, RegReaderData {
 
@@ -50,14 +52,14 @@ public class RMWOp extends RMWAbstract implements RegWriter, RegReaderData {
     // -----------------------------------------------------------------------------------------------------------------
 
     @Override
-    public int compile(Arch target, int nextId, Event predecessor) {
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
         if(target == Arch.NONE) {
             RMWLoad load = new RMWLoad(resultRegister, address, Mo.RELAXED);
             RMWStore store = new RMWStore(load, address, new IExprBin(resultRegister, op, value), Mo.RELAXED);
             load.addFilters(EType.NORETURN);
             LinkedList<Event> events = new LinkedList<>(Arrays.asList(load, store));
-            return compileSequence(target, nextId, predecessor, events);
+            return compileSequence(target, mitigations, nextId, predecessor, events);
         }
-        return super.compile(target, nextId, predecessor);
+        return super.compile(target, mitigations, nextId, predecessor);
     }
 }

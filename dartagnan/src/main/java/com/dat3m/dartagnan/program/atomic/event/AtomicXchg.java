@@ -1,7 +1,8 @@
 package com.dat3m.dartagnan.program.atomic.event;
 
 import com.dat3m.dartagnan.program.event.Event;
-import com.dat3m.dartagnan.wmm.utils.Arch;
+import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 import com.dat3m.dartagnan.expression.ExprInterface;
 import com.dat3m.dartagnan.expression.IExpr;
 import com.dat3m.dartagnan.program.Register;
@@ -12,6 +13,7 @@ import com.dat3m.dartagnan.program.event.utils.RegWriter;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 public class AtomicXchg extends AtomicAbstract implements RegWriter, RegReaderData {
 
@@ -42,14 +44,14 @@ public class AtomicXchg extends AtomicAbstract implements RegWriter, RegReaderDa
     // -----------------------------------------------------------------------------------------------------------------
 
     @Override
-    public int compile(Arch target, int nextId, Event predecessor) {
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
     	switch(target) {
     		case NONE: case TSO:
     			RMWLoad load = new RMWLoad(resultRegister, address, mo);                
                 RMWStore store = new RMWStore(load, address, value, mo);
 
                 LinkedList<Event> events = new LinkedList<>(Arrays.asList(load, store));
-                return compileSequence(target, nextId, predecessor, events);
+                return compileSequence(target, mitigations, nextId, predecessor, events);
     		default:
     	        String tag = mo != null ? "_explicit" : "";
     	        throw new RuntimeException("Compilation of atomic_exchange" + tag + " is not implemented for " + target);    			

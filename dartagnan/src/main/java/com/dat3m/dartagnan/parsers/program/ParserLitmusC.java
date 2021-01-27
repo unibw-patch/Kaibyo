@@ -1,11 +1,11 @@
 package com.dat3m.dartagnan.parsers.program;
 
+import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.parsers.LitmusCLexer;
 import com.dat3m.dartagnan.parsers.LitmusCParser;
 import com.dat3m.dartagnan.parsers.program.utils.ProgramBuilder;
 import com.dat3m.dartagnan.parsers.program.visitors.VisitorLitmusC;
 import com.dat3m.dartagnan.program.Program;
-import com.dat3m.dartagnan.wmm.utils.Arch;
 
 import org.antlr.v4.runtime.*;
 

@@ -56,6 +56,9 @@ public enum IOpBin {
     }
 
     public Expr encode(Expr e1, Expr e2, Context ctx){
+    	if(e1.isBV() != e2.isBV()) {
+    		throw new UnsupportedOperationException(e1 + " and " + e2 + " have different types");
+    	}
 		switch(this){
             case PLUS:
             	return e1.isBV() ? ctx.mkBVAdd((BitVecExpr)e1, (BitVecExpr)e2) : ctx.mkAdd((IntExpr)e1, (IntExpr)e2);            		

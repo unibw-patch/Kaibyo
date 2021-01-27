@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
+
 import com.dat3m.dartagnan.expression.ExprInterface;
 import com.dat3m.dartagnan.expression.IExpr;
 import com.dat3m.dartagnan.program.memory.Address;
@@ -34,10 +35,19 @@ public abstract class MemEvent extends Event {
         this.mo = other.mo;
     }
 
+	// Encoding
+	// -----------------------------------------------------------------------------------------------------------------
+
     @Override
     public void initialise(Context ctx) {
         super.initialise(ctx);
         memAddressExpr = address.toZ3Int(this, ctx);
+    }
+
+    @Override
+    public void initialise(Context ctx, boolean slh) {
+        super.initialise(ctx, slh);
+        memAddressExpr = slh ? ctx.mkITE(cfVar, address.toZ3Int(this, ctx), ctx.mkInt(0)) : address.toZ3Int(this, ctx);
     }
 
     public Expr getMemAddressExpr(){

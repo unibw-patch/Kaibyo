@@ -8,12 +8,14 @@ import com.dat3m.dartagnan.program.arch.aarch64.utils.EType;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.utils.RegReaderData;
 import com.dat3m.dartagnan.program.event.utils.RegWriter;
-import com.dat3m.dartagnan.wmm.utils.Arch;
+import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 public class StoreExclusive extends Store implements RegWriter, RegReaderData {
 
@@ -53,12 +55,12 @@ public class StoreExclusive extends Store implements RegWriter, RegReaderData {
     // -----------------------------------------------------------------------------------------------------------------
 
     @Override
-    public int compile(Arch target, int nextId, Event predecessor) {
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
         if(target == Arch.ARM || target == Arch.ARM8) {
             RMWStoreExclusive store = new RMWStoreExclusive(address, value, mo);
             RMWStoreExclusiveStatus status = new RMWStoreExclusiveStatus(register, store);
             LinkedList<Event> events = new LinkedList<>(Arrays.asList(store, status));
-            return compileSequence(target, nextId, predecessor, events);
+            return compileSequence(target, mitigations, nextId, predecessor, events);
         }
         throw new RuntimeException("Compilation of StoreExclusive is not implemented for " + target);
     }

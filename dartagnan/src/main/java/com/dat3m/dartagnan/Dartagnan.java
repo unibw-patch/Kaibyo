@@ -13,6 +13,7 @@ import org.apache.commons.cli.HelpFormatter;
 
 import com.dat3m.dartagnan.analysis.Termination;
 import com.dat3m.dartagnan.asserts.AbstractAssert;
+import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.parsers.program.ProgramParser;
 import com.dat3m.dartagnan.program.Program;
@@ -22,7 +23,6 @@ import com.dat3m.dartagnan.utils.Settings;
 import com.dat3m.dartagnan.utils.Witness;
 import com.dat3m.dartagnan.utils.options.DartagnanOptions;
 import com.dat3m.dartagnan.wmm.Wmm;
-import com.dat3m.dartagnan.wmm.utils.Arch;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
 

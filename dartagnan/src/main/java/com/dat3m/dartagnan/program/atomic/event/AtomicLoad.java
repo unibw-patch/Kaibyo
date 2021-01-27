@@ -11,7 +11,8 @@ import com.dat3m.dartagnan.program.event.Load;
 import com.dat3m.dartagnan.program.event.MemEvent;
 import com.dat3m.dartagnan.program.event.utils.RegWriter;
 import com.dat3m.dartagnan.program.utils.EType;
-import com.dat3m.dartagnan.wmm.utils.Arch;
+import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 
 import static com.dat3m.dartagnan.expression.op.COpBin.EQ;
 import static com.dat3m.dartagnan.program.atomic.utils.Mo.ACQUIRE;
@@ -19,6 +20,7 @@ import static com.dat3m.dartagnan.program.atomic.utils.Mo.CONSUME;
 import static com.dat3m.dartagnan.program.atomic.utils.Mo.SC;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class AtomicLoad extends MemEvent implements RegWriter {
 
@@ -60,7 +62,7 @@ public class AtomicLoad extends MemEvent implements RegWriter {
     // -----------------------------------------------------------------------------------------------------------------
 
     @Override
-    public int compile(Arch target, int nextId, Event predecessor) {
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
         LinkedList<Event> events = new LinkedList<>();
         Load load = new Load(resultRegister, address, mo);
         load.setCLine(cLine);
@@ -90,6 +92,6 @@ public class AtomicLoad extends MemEvent implements RegWriter {
             default:
             	throw new UnsupportedOperationException("Compilation to " + target + " is not supported for " + this);
         }
-        return compileSequence(target, nextId, predecessor, events);
+        return compileSequence(target, mitigations, nextId, predecessor, events);
     }
 }

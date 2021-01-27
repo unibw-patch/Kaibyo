@@ -4,7 +4,8 @@ import com.dat3m.dartagnan.program.arch.linux.utils.Mo;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Local;
 import com.dat3m.dartagnan.program.event.rmw.cond.FenceCond;
-import com.dat3m.dartagnan.wmm.utils.Arch;
+import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 import com.google.common.collect.ImmutableSet;
 import com.dat3m.dartagnan.expression.ExprInterface;
 import com.dat3m.dartagnan.expression.IExpr;
@@ -16,6 +17,7 @@ import com.dat3m.dartagnan.program.event.utils.RegWriter;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 public class RMWCmpXchg extends RMWAbstract implements RegWriter, RegReaderData {
 
@@ -50,7 +52,7 @@ public class RMWCmpXchg extends RMWAbstract implements RegWriter, RegReaderData 
     // -----------------------------------------------------------------------------------------------------------------
 
     @Override
-    public int compile(Arch target, int nextId, Event predecessor) {
+    public int compile(Arch target, List<Mitigation> mitigations, int nextId, Event predecessor) {
         if(target == Arch.NONE) {
             Register dummy = resultRegister;
             if(resultRegister == value || resultRegister == cmp){
@@ -68,8 +70,8 @@ public class RMWCmpXchg extends RMWAbstract implements RegWriter, RegReaderData 
                 events.addFirst(new FenceCond(load, "Mb"));
                 events.addLast(new FenceCond(load, "Mb"));
             }
-            return compileSequence(target, nextId, predecessor, events);
+            return compileSequence(target, mitigations, nextId, predecessor, events);
         }
-        return super.compile(target, nextId, predecessor);
+        return super.compile(target, mitigations, nextId, predecessor);
     }
 }

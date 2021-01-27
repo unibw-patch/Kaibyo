@@ -5,12 +5,15 @@ import static com.dat3m.dartagnan.utils.Result.PASS;
 import static com.dat3m.dartagnan.utils.Result.UNKNOWN;
 import static com.microsoft.z3.Status.SATISFIABLE;
 
+import java.util.ArrayList;
+
 import com.dat3m.dartagnan.asserts.AssertTrue;
+import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.utils.Result;
 import com.dat3m.dartagnan.utils.Settings;
 import com.dat3m.dartagnan.wmm.Wmm;
-import com.dat3m.dartagnan.wmm.utils.Arch;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Solver;
@@ -19,7 +22,7 @@ public class Base {
 
     public static Result runAnalysis(Solver s1, Context ctx, Program program, Wmm wmm, Arch target, Settings settings) {
     	program.unroll(settings.getBound(), 0);
-        program.compile(target, 0);
+        program.compile(target, new ArrayList<Mitigation>(), 0);
         // AssertionInline depends on compiled events (copies)
         // Thus we need to set the assertion after compilation
         program.updateAssertion();
@@ -73,7 +76,7 @@ public class Base {
 	
     public static Result runAnalysisIncrementalSolver(Solver solver, Context ctx, Program program, Wmm wmm, Arch target, Settings settings) {
     	program.unroll(settings.getBound(), 0);
-        program.compile(target, 0);
+        program.compile(target, new ArrayList<Mitigation>(), 0);
         // AssertionInline depends on compiled events (copies)
         // Thus we need to update the assertion after compilation
         program.updateAssertion();

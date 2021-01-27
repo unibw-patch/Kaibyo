@@ -72,6 +72,15 @@ public class Local extends Event implements RegWriter, RegReaderData {
 		return ctx.mkAnd(enc, ctx.mkEq(regResultExpr,  expr.toZ3Int(this, ctx)));
 	}
 
+	@Override
+	protected BoolExpr encodeSpecExec(Context ctx){
+		BoolExpr enc = super.encodeSpecExec(ctx);
+		if(expr instanceof INonDet) {
+			enc = ctx.mkAnd(enc, ((INonDet)expr).encodeBounds(expr.toZ3Int(this, ctx).isBV(), ctx));
+		}
+		return ctx.mkAnd(enc, ctx.mkEq(regResultExpr,  expr.toZ3Int(this, ctx)));
+	}
+
 	// Unrolling
 	// -----------------------------------------------------------------------------------------------------------------
 
