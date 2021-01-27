@@ -48,7 +48,7 @@ RUN cd home && \
 RUN cd home && \
     git clone https://github.com/unibw-patch/Dat3M.git && \
     cd Dat3M && \
-    mvn install:install-file -Dfile=lib/z3-4.3.2.jar -DgroupId=com.microsoft -DartifactId="z3" -Dversion=4.3.2 -Dpackaging=jar && \
+    mvn install:install-file -Dfile=lib/z3-4.8.6.jar -DgroupId=com.microsoft -DartifactId="z3" -Dversion=4.8.6 -Dpackaging=jar && \
     mvn clean install -DskipTests
 
 # Install spectector
