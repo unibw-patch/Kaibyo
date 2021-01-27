@@ -71,9 +71,7 @@
   </build>
   <modules>
     <module>dartagnan</module>
-    <module>porthos</module>
     <module>ui</module>
-    <module>svcomp</module>
     <module>zombmc</module>
   </modules>
 </project>
