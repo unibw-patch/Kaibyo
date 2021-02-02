@@ -23,6 +23,7 @@ import java.util.List;
 
 import static com.dat3m.zombmc.utils.ResourceHelper.TEST_RESOURCE_PATH;
 import static com.dat3m.zombmc.utils.Result.SAFE;
+import static com.dat3m.zombmc.utils.Result.UNKNOWN;
 import static com.dat3m.zombmc.utils.Result.UNSAFE;
 import static com.dat3m.zombmc.utils.ResourceHelper.CAT_RESOURCE_PATH;
 import static com.dat3m.zombmc.ZomBMC.testMemorySafety;
@@ -49,15 +50,24 @@ public class ZombmcTest {
 
         for(int i = 1; i <= 15; i++) {
         	for(int o = 0; o <= 2; o+=2) {
+        		// Some benchmarks needs unroll 2
         		if ((i == 5 && o ==0) || (i == 9 && o == 2) || (i == 10) || (i == 11 && o == 0)) {
         			s = new Settings(Mode.KNASTER, Alias.CFIS, 2, true);
         		}
-        		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v0" + i + ".o" + o + ".bpl", lfence, SAFE, s});
-        		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v0" + i + ".o" + o + ".bpl", slh, SAFE, s});        	
-        		if(i == 8 && o == 2) {
-        			continue;
+        		// v05 has an input dependent loop thus we cannot prove it correct
+        		if(i != 5) {
+            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v" + i + ".o" + o + ".bpl", lfence, SAFE, s});
+            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v" + i + ".o" + o + ".bpl", slh, SAFE, s});
+        		} else {
+            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v" + i + ".o" + o + ".bpl", lfence, UNKNOWN, s});
+            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v" + i + ".o" + o + ".bpl", slh, UNKNOWN, s});
         		}
-        		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v0" + i + ".o" + o + ".bpl", none, UNSAFE, s});
+        		// v08.02 is safe
+        		if(i == 8 && o == 2) {
+        			data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v" + i + ".o" + o + ".bpl", none, SAFE, s});
+        		} else {
+            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v" + i + ".o" + o + ".bpl", none, UNSAFE, s});        			
+        		}
         	}
         }
         return data;
