@@ -64,12 +64,12 @@ public class ZomBMC {
         if(options.getSLHOption()) {
             mitigations.add(SLH);
         }
-        Result result = testMemorySafety(ctx, p, mcm, target, mitigations, options.getSpecLeakOption(), options.getSettings());
+        Result result = testMemorySafety(ctx, p, mcm, target, mitigations, options.getSpecLeakOption(), options.getSecretOption(), options.getSettings());
         System.out.println(result);
 		ctx.close();
     }
 
-    public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, Arch target, List<Mitigation> mitigations, boolean onlySpecLeak, Settings settings) {
+    public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, Arch target, List<Mitigation> mitigations, boolean onlySpecLeak, String secret, Settings settings) {
     	program.unroll(settings.getBound(), 0);
         program.compile(target, mitigations, 0);
 
@@ -78,7 +78,7 @@ public class ZomBMC {
         solver.add(wmm.encode(program, ctx, settings));
         solver.add(wmm.consistent(program, ctx));
         solver.push();
-        solver.add(encodeLeakage(program, ctx, "spectre_secret", onlySpecLeak));
+        solver.add(encodeLeakage(program, ctx, secret, onlySpecLeak));
 
 		if(solver.check() == SATISFIABLE) {
         	solver.add(program.encodeNoBoundEventExec(ctx));

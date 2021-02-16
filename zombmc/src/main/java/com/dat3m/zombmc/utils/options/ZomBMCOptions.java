@@ -12,6 +12,7 @@ public class ZomBMCOptions extends BaseOptions {
 
     protected Set<String> supportedFormats = ImmutableSet.copyOf(Arrays.asList("bpl"));
     
+    private String secret = "spectre_secret";
     private boolean noSpeculation = true;
     private boolean lfence = false;
     private boolean slh = false;
@@ -19,6 +20,10 @@ public class ZomBMCOptions extends BaseOptions {
     
     public ZomBMCOptions(){
         super();
+        Option secretOption = new Option("secret", true,
+                "Name of the secret variable (default: spectre_secret)");
+        addOption(secretOption);
+
         Option noSpecOption = new Option("nospeculation", false,
                 "Disable speculative execution");
         addOption(noSpecOption);
@@ -43,12 +48,17 @@ public class ZomBMCOptions extends BaseOptions {
             throw new RuntimeException("Unrecognized program format");
         }
     	CommandLine cmd = new DefaultParser().parse(this, args);
+    	secret = cmd.getOptionValue("secret");
     	noSpeculation = cmd.hasOption("nospeculation");
     	lfence = cmd.hasOption("lfence");
     	slh = cmd.hasOption("slh");
     	sleak = cmd.hasOption("sleak");
     }
     
+    public String getSecretOption(){
+        return secret;
+    }
+
     public boolean getNoSpeculationOption(){
         return noSpeculation;
     }

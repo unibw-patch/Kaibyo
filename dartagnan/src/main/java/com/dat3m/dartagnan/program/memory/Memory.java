@@ -74,6 +74,13 @@ public class Memory {
         return locationIndex.get(name);
     }
 
+    public Address getArrayAddress(String name){
+        if(!arrays.containsKey(name)){
+        	throw new RuntimeException("No Array named " + name);
+        }
+        return arrays.get(name).get(0);
+    }
+
     public ImmutableSet<Address> getAllAddresses(){
         Set<Address> result = new HashSet<>(map.values());
         for(List<Address> array : arrays.values()){

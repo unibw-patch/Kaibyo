@@ -12,16 +12,25 @@ import com.microsoft.z3.Context;
 
 public class Encodings {
 	
-    public static BoolExpr encodeLeakage(Program p, Context ctx, String location, boolean onlySpeculative) {
+    public static BoolExpr encodeLeakage(Program p, Context ctx, String secret, boolean onlySpeculative) {
     	BoolExpr enc = ctx.mkFalse();
+    	Address secretAddr;
     	try {
-        	Address secret = p.getMemory().getLocation(location).getAddress();
+        	secretAddr = p.getMemory().getLocation(secret).getAddress();
         	for(Event r : p.getCache().getEvents(FilterBasic.get(EType.READ))){
         		BoolExpr exec = onlySpeculative ? r.se() : r.exec();
-    			enc = ctx.mkOr(enc, ctx.mkAnd(ctx.mkEq(((Load)r).getMemAddressExpr(), secret.toZ3Int(ctx)), exec));
+    			enc = ctx.mkOr(enc, ctx.mkAnd(ctx.mkEq(((Load)r).getMemAddressExpr(), secretAddr.toZ3Int(ctx)), exec));
         	}    		
-    	} catch (Exception e) {
-    		throw new RuntimeException("The program does not contain secrets");
+    	} catch (Exception e1) {
+    		try {
+            	secretAddr = p.getMemory().getArrayAddress(secret);
+            	for(Event r : p.getCache().getEvents(FilterBasic.get(EType.READ))){
+            		BoolExpr exec = onlySpeculative ? r.se() : r.exec();
+        			enc = ctx.mkOr(enc, ctx.mkAnd(ctx.mkEq(((Load)r).getMemAddressExpr(), secretAddr.toZ3Int(ctx)), exec));
+            	}    		    			
+    		} catch (Exception e2) {
+        		throw new RuntimeException("The program does not contain secrets");
+			}
     	}
     	return enc;
     }    
