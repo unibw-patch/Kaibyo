@@ -499,7 +499,7 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 	        	continue;
 	        }		
 			String name = ctx.Ident(i).getText();
-	        if(smackDummyVariables.contains(name)) {
+			if(smackDummyVariables.contains(name)) {
 	        	continue;
 	        }
 			if(constantsTypeMap.containsKey(name)) {
@@ -755,6 +755,10 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 			IExpr value = (IExpr)ctx.expr(2).accept(this);
 			// This improves the blow-up
 			if(initMode && value instanceof IConst && ((IConst)value).getValue() == 0) {
+				return null;
+			}
+			if(initMode && address instanceof Address && !(value.reduce() instanceof Address)) {
+				programBuilder.initAddEqConst((Address)address, value.reduce());
 				return null;
 			}
 			Store child = new Store(address, value, null);
