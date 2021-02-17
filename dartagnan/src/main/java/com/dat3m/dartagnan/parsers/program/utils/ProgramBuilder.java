@@ -90,6 +90,10 @@ public class ProgramBuilder {
         iValueMap.put(location.getAddress(), iValue);
     }
 
+    public void initAddEqConst(Address add, IConst iValue){
+        iValueMap.put(add, iValue);
+    }
+
     public void initRegEqLocPtr(int regThread, String regName, String locName, int precision){
         Location loc = getOrCreateLocation(locName, precision);
         Register reg = getOrCreateRegister(regThread, regName, precision);
