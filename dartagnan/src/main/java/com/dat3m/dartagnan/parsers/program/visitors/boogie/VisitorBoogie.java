@@ -92,6 +92,7 @@ import com.dat3m.dartagnan.program.atomic.event.AtomicLoad;
 import com.dat3m.dartagnan.program.atomic.event.AtomicStore;
 import com.dat3m.dartagnan.program.event.Assume;
 import com.dat3m.dartagnan.program.event.CondJump;
+import com.dat3m.dartagnan.program.event.Fence;
 import com.dat3m.dartagnan.program.event.FunCall;
 import com.dat3m.dartagnan.program.event.FunRet;
 import com.dat3m.dartagnan.program.event.If;
@@ -445,6 +446,7 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 		}
 		programBuilder.addChild(threadCount, new FunRet(name));
 		if(name.equals("$initialize")) {
+			programBuilder.addChild(threadCount, new Fence("Mfence"));
 			initMode = false;
 		}
 		return null;
@@ -755,10 +757,6 @@ public class VisitorBoogie extends BoogieBaseVisitor<Object> implements BoogieVi
 			IExpr value = (IExpr)ctx.expr(2).accept(this);
 			// This improves the blow-up
 			if(initMode && value instanceof IConst && ((IConst)value).getValue() == 0) {
-				return null;
-			}
-			if(initMode && address instanceof Address && !(value.reduce() instanceof Address)) {
-				programBuilder.initAddEqConst((Address)address, value.reduce());
 				return null;
 			}
 			Store child = new Store(address, value, null);
