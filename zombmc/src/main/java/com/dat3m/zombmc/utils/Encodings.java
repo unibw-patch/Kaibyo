@@ -31,6 +31,9 @@ public class Encodings {
     	} catch (Exception e) {
     		throw new RuntimeException("The program does not contain secrets");
     	}
+    	if(enc.isFalse()) {
+    		throw new RuntimeException("The program does not contain secrets");
+    	}
     	return enc;
     }   
     
@@ -43,6 +46,9 @@ public class Encodings {
     			}
     			enc = ctx.mkOr(enc, Utils.edge("rf", w, r, ctx));
     		}
+    	}
+    	if(enc.isFalse()) {
+    		throw new RuntimeException("The program does not contain secrets");
     	}
     	return enc;
     }

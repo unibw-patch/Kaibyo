@@ -44,7 +44,7 @@ public class ZomBMCResult implements Dat3mResult {
         if(validate()){
          	Context ctx = new Context();
          	List<Mitigation> mitigations = new ArrayList<Mitigation>();
-         	Result result = testMemorySafety(ctx, program, wmm, options.getTarget(), mitigations, false, "spectre_secret", options.getSettings());
+         	Result result = testMemorySafety(ctx, program, wmm, options.getTarget(), mitigations, false, "secret", options.getSettings());
             StringBuilder sb = new StringBuilder();
             sb.append(result).append("\n");
             verdict = sb.toString();
