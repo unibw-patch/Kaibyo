@@ -86,7 +86,7 @@ public class ZombmcTest {
         	Wmm wmm = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/sc.cat"));
             Program program = new ProgramParser().parse(new File(path));
             Context ctx = new Context();
-            assertTrue(testMemorySafety(ctx, program, wmm, Arch.NONE, mitigations, true, "spectre_secret", settings).equals(expected));
+            assertTrue(testMemorySafety(ctx, program, wmm, Arch.NONE, mitigations, true, "secret", settings).equals(expected));
             ctx.close();
         } catch (IOException e){
             fail("Missing resource file");
