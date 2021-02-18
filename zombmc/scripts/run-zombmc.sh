@@ -14,7 +14,7 @@ TIMES=$DAT3M_HOME/output/zombmc-times.csv
 echo benchmark, o0-none, o2-none, o0-lfence, o2-lfence, o0-slh, o2-slh, o0-ns, o2-ns >> $RESULT
 echo benchmark, o0-none, o2-none, o0-lfence, o2-lfence, o0-slh, o2-slh, o0-ns, o2-ns >> $TIMES
 
-for version in v01 v02 v03 v04 v05 v06 v07 v08 v09 v10 v11 v12 v13 v14 v15
+for version in v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 v12 v13 v14 v15
 do
     rline=$version
     tline=$version
@@ -39,7 +39,7 @@ do
             name=$version.$opt
             
             # Some benchmarks require loop unrolling
-            if [[ $name = v05.o0 || $name = v09.o2 || $version = v10 || $name = v11.o0 ]]; then
+            if [[ $name = v5.o0 || $name = v9.o2 || $version = v10 || $name = v11.o0 ]]; then
                 flag+=" -unroll 2";
             fi
 
