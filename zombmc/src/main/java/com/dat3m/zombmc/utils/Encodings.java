@@ -1,37 +1,69 @@
 package com.dat3m.zombmc.utils;
 
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.event.Event;
+import com.dat3m.dartagnan.program.event.Init;
 import com.dat3m.dartagnan.program.event.Load;
 import com.dat3m.dartagnan.program.memory.Address;
 import com.dat3m.dartagnan.program.utils.EType;
+import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.dartagnan.wmm.filter.FilterBasic;
+import com.dat3m.dartagnan.wmm.utils.Tuple;
+import com.dat3m.dartagnan.wmm.utils.Utils;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 
 public class Encodings {
 	
-    public static BoolExpr encodeLeakage(Program p, Context ctx, String secret, boolean onlySpeculative) {
+	public static BoolExpr encodeLeakage(Program p, Context ctx, String location, boolean onlySpeculative) {
     	BoolExpr enc = ctx.mkFalse();
-    	Address secretAddr;
     	try {
-        	secretAddr = p.getMemory().getLocation(secret).getAddress();
+        	Address secret = p.getMemory().getLocation(location).getAddress();
         	for(Event r : p.getCache().getEvents(FilterBasic.get(EType.READ))){
         		BoolExpr exec = onlySpeculative ? r.se() : r.exec();
-    			enc = ctx.mkOr(enc, ctx.mkAnd(ctx.mkEq(((Load)r).getMemAddressExpr(), secretAddr.toZ3Int(ctx)), exec));
+    			enc = ctx.mkOr(enc, ctx.mkAnd(ctx.mkEq(((Load)r).getMemAddressExpr(), secret.toZ3Int(ctx)), exec));
         	}    		
-    	} catch (Exception e1) {
-    		try {
-            	secretAddr = p.getMemory().getArrayAddress(secret);
-            	for(Event r : p.getCache().getEvents(FilterBasic.get(EType.READ))){
-            		BoolExpr exec = onlySpeculative ? r.se() : r.exec();
-        			enc = ctx.mkOr(enc, ctx.mkAnd(ctx.mkEq(((Load)r).getMemAddressExpr(), secretAddr.toZ3Int(ctx)), exec));
-            	}    		    			
-    		} catch (Exception e2) {
-        		throw new RuntimeException("The program does not contain secrets");
-			}
+    	} catch (Exception e) {
+    		throw new RuntimeException("The program does not contain secrets");
     	}
     	return enc;
-    }    
+    }   
+    
+    public static BoolExpr encodeLeakage2(Program p, Wmm wmm, Context ctx, String secret, boolean onlySpeculative) {
+    	BoolExpr enc = ctx.mkFalse();
+    	for(Event r : p.getCache().getEvents(FilterBasic.get(EType.READ))){
+    		for(Init w : getSecretInit(p, secret)) {
+    			if(!wmm.getRelationRepository().getRelation("rf").getMaxTupleSet().contains(new Tuple(w,r))) {
+    				continue;
+    			}
+    			enc = ctx.mkOr(enc, Utils.edge("rf", w, r, ctx));
+    		}
+    	}
+    	return enc;
+    }
+
+    public static List<Init> getSecretInit(Program p, String secret) {
+    	try {
+    		List<Address> secretAddr = p.getMemory().getArrayAddresses(secret);
+            return p.getCache().getEvents(FilterBasic.get(EType.INIT)).stream().
+            		filter(e -> secretAddr.contains(((Init)e).getAddress())).
+            		map(e -> (Init)e).
+            		collect(Collectors.toList());
+    	} catch (Exception e1) {
+    		try {
+        		List<Address> secretAddr = Arrays.asList(p.getMemory().getLocation(secret).getAddress());
+                return p.getCache().getEvents(FilterBasic.get(EType.INIT)).stream().
+                		filter(f -> secretAddr.contains(((Init)f).getAddress())).
+                		map(f -> (Init)f).
+                		collect(Collectors.toList());    			
+    		} catch (Exception e2) {
+        		throw new RuntimeException("The program does not contain secrets");
+        	}
+		}
+    }
 }
