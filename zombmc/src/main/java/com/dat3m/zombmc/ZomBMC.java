@@ -78,7 +78,7 @@ public class ZomBMC {
         solver.add(wmm.encode(program, ctx, settings));
         solver.add(wmm.consistent(program, ctx));
         solver.push();
-        solver.add(encodeLeakage(program, ctx, secret, onlySpecLeak));
+        solver.add(encodeLeakage(program, wmm, ctx, secret, onlySpecLeak));
 
 		if(solver.check() == SATISFIABLE) {
         	solver.add(program.encodeNoBoundEventExec(ctx));
