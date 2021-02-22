@@ -18,7 +18,7 @@ uint32_t publicarray_size = 16;
 uint8_t publicarray[16] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
 uint8_t publicarray2[64];
 
-uint8_t secret;
+uint8_t secret __attribute__((used));
 
 uint8_t temp = 0; /* Used so compiler won’t optimize out victim_function() */
 

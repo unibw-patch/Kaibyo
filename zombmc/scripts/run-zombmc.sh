@@ -22,7 +22,7 @@ do
     do
         for opt in o0 o2
         do
-            flag="";
+            flag="-secret secret ";
             if [[ $mitigation != ns ]]; then
                 flag+="-sleak ";
             fi
