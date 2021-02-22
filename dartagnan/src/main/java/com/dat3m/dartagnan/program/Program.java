@@ -6,6 +6,7 @@ import com.dat3m.dartagnan.wmm.filter.FilterBasic;
 import com.google.common.collect.ImmutableSet;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
+import com.microsoft.z3.Expr;
 import com.dat3m.dartagnan.asserts.AbstractAssert;
 import com.dat3m.dartagnan.asserts.AssertCompositeOr;
 import com.dat3m.dartagnan.asserts.AssertInline;
@@ -13,6 +14,7 @@ import com.dat3m.dartagnan.asserts.AssertTrue;
 import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.compiler.Mitigation;
 import com.dat3m.dartagnan.program.event.Event;
+import com.dat3m.dartagnan.program.event.Init;
 import com.dat3m.dartagnan.program.event.Local;
 import com.dat3m.dartagnan.program.event.utils.RegWriter;
 import com.dat3m.dartagnan.program.memory.Location;
@@ -174,6 +176,7 @@ public class Program {
             e.initialise(ctx);
         }
         BoolExpr enc = memory.encode(ctx);
+        enc = ctx.mkAnd(enc, ctx.mkDistinct(getCache().getEvents(FilterBasic.get(EType.INIT)).stream().map(e -> ((Init)e).getMemAddressExpr()).toArray(Expr[]::new)));
         for(Thread t : threads){
             enc = ctx.mkAnd(enc, t.encodeCF(ctx));
         }
@@ -185,6 +188,7 @@ public class Program {
             e.initialise(ctx, mitigations.contains(SLH));
         }
         BoolExpr enc = memory.encode(ctx);
+        enc = ctx.mkAnd(enc, ctx.mkDistinct(getCache().getEvents(FilterBasic.get(EType.INIT)).stream().map(e -> ((Init)e).getMemAddressExpr()).toArray(Expr[]::new)));
         for(Thread t : threads){
         	if(mitigations.contains(NOSPECULATION)) {        		
                 enc = ctx.mkAnd(enc, t.encodeCF(ctx));

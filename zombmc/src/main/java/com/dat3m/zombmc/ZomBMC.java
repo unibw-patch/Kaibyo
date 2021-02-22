@@ -11,7 +11,9 @@ import static com.microsoft.z3.Status.SATISFIABLE;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.cli.HelpFormatter;
@@ -64,8 +66,11 @@ public class ZomBMC {
         if(options.getSLHOption()) {
             mitigations.add(SLH);
         }
+        long t1 = System.currentTimeMillis();
         Result result = testMemorySafety(ctx, p, mcm, target, mitigations, options.getSpecLeakOption(), options.getSecretOption(), options.getSettings());
+        long t2 = System.currentTimeMillis();
         System.out.println(result);
+        System.out.println("Solved in " + (new SimpleDateFormat("mm:ss:SS")).format(new Date(t2-t1)) + " (m:s:ms)");
 		ctx.close();
     }
 
