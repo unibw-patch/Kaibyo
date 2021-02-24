@@ -74,9 +74,9 @@ do
     echo $tline >> $TIMES
 done
 
-RESULT=$DAT3M_HOME/output/zombmc-v4-results.csv
+RESULT=$DAT3M_HOME/output/zombmc-spectre-v4-results.csv
 [ -e $RESULT ] && rm $RESULT
-TIMES=$DAT3M_HOME/output/zombmc-v4-times.csv
+TIMES=$DAT3M_HOME/output/zombmc-spectre-v4-times.csv
 [ -e $TIMES ] && rm $TIMES
 echo benchmark, sc, spectre-v4 >> $RESULT
 echo benchmark, sc, spectre-v4 >> $TIMES
@@ -88,7 +88,7 @@ do
     for mm in sc spectre-v4
     do
         CAT="-cat "$DAT3M_HOME/cat/$mm.cat
-        flag="-secret secretarray ";
+        flag="-nospeculation -secret secretarray ";
         name=spectre-stl-$version
         
         log=$LOGFOLDER/spectre-stl-$version.$mm.log
