@@ -8,7 +8,7 @@ do
     do
         flags="-g -c -Dklee -emit-llvm -fdeclspec -I $KLEE_HOME/include/ -D"$version;
 
-        clang-6.0 $flags $DIR/spectre.c -o $DIR/bc/$version.$mitigation.o0.bc
-        clang-6.0 $flags -O2 $DIR/spectre.c -o $DIR/bc/$version.$mitigation.o2.bc
+        clang-6.0 $flags $DIR/spectre-pht.c -o $DIR/bc/spectre-pht-$version.$mitigation.o0.bc
+        clang-6.0 $flags -O2 $DIR/spectre-pht.c -o $DIR/bc/spectre-pht-$version.$mitigation.o2.bc
     done
 done

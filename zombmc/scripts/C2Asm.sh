@@ -16,7 +16,7 @@ do
             flags+=" -mllvm -x86-speculative-load-hardening";
         fi
 
-        clang $flags $DIR/spectre.c -o $DIR/asm/$version.$mitigation.o0.s
-        clang $flags -O2 $DIR/spectre.c -o $DIR/asm/$version.$mitigation.o2.s
+        clang $flags $DIR/spectre-pht.c -o $DIR/asm/spectre-pht-$version.$mitigation.o0.s
+        clang $flags -O2 $DIR/spectre-pht.c -o $DIR/asm/spectre-pht-$version.$mitigation.o2.s
     done
 done

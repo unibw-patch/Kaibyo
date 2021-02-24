@@ -25,7 +25,7 @@ do
                 flag+="-n";
             fi
 
-            name=$version.$mitigation.$opt
+            name=spectre-pht-$version.$mitigation.$opt
             log=$LOGFOLDER/$name.log
             (time timeout $TIMEOUT spectector $DAT3M_HOME/benchmarks/spectre/asm/$name.s $flag -e [victim_function_$version]) > $log 2>> $log
 

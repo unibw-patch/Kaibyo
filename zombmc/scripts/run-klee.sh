@@ -28,7 +28,7 @@ do
                 flag+="--enable-speculative";
             fi
 
-            name=$version.$mitigation.$opt
+            name=spectre-pht-$version.$mitigation.$opt
             log=$LOGFOLDER/$name.log
             (time timeout $TIMEOUT $KLEE $KLEEFLAGS $flag $DAT3M_HOME/benchmarks/spectre/bc/$name.bc) 2> $log
 
