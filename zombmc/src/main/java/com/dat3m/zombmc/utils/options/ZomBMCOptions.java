@@ -20,6 +20,11 @@ public class ZomBMCOptions extends BaseOptions {
     
     public ZomBMCOptions(){
         super();
+        Option catOption = new Option("cat", true,
+                "Path to the CAT file");
+        catOption.setRequired(true);
+        addOption(catOption);
+
         Option secretOption = new Option("secret", true,
                 "Name of the secret variable (default: spectre_secret)");
         addOption(secretOption);

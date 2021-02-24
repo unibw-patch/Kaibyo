@@ -51,7 +51,7 @@ public class ZomBMC {
         	throw new RuntimeException("DAT3M_HOME variable is not set");
         }
         
-        Wmm mcm = new ParserCat().parse(new File(System.getenv().get("DAT3M_HOME") + "/cat/sc.cat"));
+        Wmm mcm = new ParserCat().parse(new File(options.getTargetModelFilePath()));
 		Program p = new ProgramParser().parse(new File(options.getProgramFilePath()));		
         Arch target = Arch.NONE;
         
@@ -74,7 +74,7 @@ public class ZomBMC {
 		ctx.close();
     }
 
-    public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, Arch target, List<Mitigation> mitigations, boolean onlySpecLeak, String secret, Settings settings) {
+    public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, Arch target, List<Mitigation> mitigations, boolean onlySpecLeak, String secret, Settings settings) {    	
     	program.unroll(settings.getBound(), 0);
         program.compile(target, mitigations, 0);
 
