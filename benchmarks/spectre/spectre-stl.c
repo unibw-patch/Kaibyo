@@ -13,7 +13,7 @@ uint8_t publicarray2[16] = {20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20};
 
 // The attacker's goal in all of these examples is to learn any of the secret data in secretarray
 uint32_t secretarray_size = 16;
-uint8_t secretarray[16] = { 10,21,32,43,54,65,76,87,98,109,110,121,132,143,154,165 };
+uint8_t secretarray[16] __attribute__((used)) = { 10,21,32,43,54,65,76,87,98,109,110,121,132,143,154,165 };
 
 // this is mostly used to prevent the compiler from optimizing out certain operations
 volatile uint8_t temp = 0;
@@ -26,6 +26,7 @@ uint32_t idxg;
 /* https://github.com/IAIK/transientfail/blob/master/pocs/spectre/STL/main.c */
 // ----------------------------------------------------------------------------------------
 void victim_function_v1(uint32_t idx) {  /* INSECURE */
+    
     uint32_t ridx = idx & (secretarray_size - 1);
 
     uint8_t* data = secretarray;
