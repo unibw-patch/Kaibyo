@@ -3,7 +3,9 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#ifdef zombmc
 extern uint32_t __VERIFIER_nondet_int(void);
+#endif
 
 uint32_t publicarray_size = 16;
 uint8_t publicarray[16] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
@@ -206,8 +208,12 @@ void victim_function_v13(uint32_t idx) {  // SECURE
 
 int main()
 {
+    uint32_t x = 0;
+    
+    #ifdef zombmc
     idxg = __VERIFIER_nondet_int();
-    uint32_t x = __VERIFIER_nondet_int();
+    x = __VERIFIER_nondet_int();
+    #endif
 
     #ifdef v1
     victim_function_v1(x);

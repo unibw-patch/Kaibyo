@@ -7,11 +7,9 @@
 #include <klee/klee.h>
 #endif
 
-#ifndef spectector
-#ifndef klee
+#ifdef zombmc
 extern size_t __VERIFIER_nondet_long(void);
 extern int __VERIFIER_nondet_int(void);
-#endif
 #endif
 
 uint32_t publicarray_size = 16;
@@ -234,14 +232,17 @@ void victim_function_v15(size_t *x) {
 #ifndef spectector
 int main()
 {
-    #ifdef klee
     size_t x;
-    klee_make_symbolic(&x, sizeof(x), "x");
     int y;
+    
+    #ifdef klee
+    klee_make_symbolic(&x, sizeof(x), "x");
     klee_make_symbolic(&y, sizeof(y), "y");
-    #else
-    size_t x = __VERIFIER_nondet_long();
-    int y = __VERIFIER_nondet_int();
+    #endif
+    
+    #ifdef zombmc
+    x = __VERIFIER_nondet_long();
+    y = __VERIFIER_nondet_int();
     #endif 
 
     #ifdef v1
