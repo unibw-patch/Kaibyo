@@ -65,7 +65,7 @@ void victim_function_v2(uint32_t idx) {  /* INSECURE */
 #ifdef v3
 /* Same example as before but the index is put in a register so the
    example is now secure */
-void case_3(uint32_t idx) { // SECURE
+void victim_function_v3(uint32_t idx) {  // SECURE
   register uint32_t ridx asm ("edx");
   ridx = idx & (secretarray_size - 1);
 
@@ -79,7 +79,7 @@ void case_3(uint32_t idx) { // SECURE
 
 #ifdef v4
 /* Similar to case_1 but without intermediate pointers */
-void case_4(uint32_t idx) { // INSECURE
+void victim_function_v4(uint32_t idx) { // INSECURE
   register uint32_t ridx asm ("edx");
   ridx = idx & (secretarray_size - 1);
 
@@ -93,7 +93,7 @@ void case_4(uint32_t idx) { // INSECURE
 
 #ifdef v5
 uint8_t *case5_ptr = secretarray;
-void case_5(uint32_t idx) {  // INSECURE
+void victim_function_v5(uint32_t idx) { // INSECURE
   register uint32_t ridx asm ("edx");
   ridx = idx & (secretarray_size - 1);
 
@@ -107,7 +107,7 @@ void case_5(uint32_t idx) {  // INSECURE
 #ifdef v6
 uint32_t case6_idx = 0;
 uint8_t *case6_array[2] = { secretarray, publicarray };
-void case_6(uint32_t idx) { // INSECURE
+void victim_function_v6(uint32_t idx) { // INSECURE
   register uint32_t ridx asm ("edx");
   ridx = idx & (secretarray_size - 1);
 
@@ -120,7 +120,7 @@ void case_6(uint32_t idx) { // INSECURE
 
 #ifdef v7
 uint32_t case7_mask = UINT32_MAX;
-void case_7(uint32_t idx) {  // INSECURE
+void victim_function_v7(uint32_t idx) {  // INSECURE
   case7_mask = (secretarray_size - 1); // Bypassed store
 
   uint8_t toleak = publicarray[idx & case7_mask];
@@ -131,7 +131,7 @@ void case_7(uint32_t idx) {  // INSECURE
 #ifdef v8
 uint32_t case8_mult = 200;
 
-void case_8(uint32_t idx) {  // INSECURE
+void victim_function_v8(uint32_t idx) {  // INSECURE
   case8_mult = 0; // Bypassed store
 
   uint8_t toleak = publicarray[idx * case8_mult];
@@ -143,7 +143,7 @@ void case_8(uint32_t idx) {  // INSECURE
 /* This store should be secure assuming no speculation on conditionals
    because when the programs fetches the last line, the store that
    overwrites the secret should be retired. */
-void case_9(uint32_t idx) {  // SECURE
+void victim_function_v9(uint32_t idx) {  // SECURE
   register uint32_t ridx asm ("edx");
   ridx = idx & (secretarray_size - 1);
 
@@ -181,7 +181,7 @@ uint32_t case_10_mask(uint32_t idx) {
   ridx = idx & (secretarray_size - 1);
   return ridx;
 }
-void case_10(uint32_t idx) { // INSECURE
+void victim_function_v10(uint32_t idx) { // SECURE
   uint32_t fidx = case_10_mask(idx);
 
   /* Access overwritten secret */
@@ -197,7 +197,7 @@ uint8_t case_11_load_value(uint32_t idx) {
   uint8_t to_leak = publicarray[ridx];
   return to_leak;
 }
-void case_11(uint32_t idx) { // INSECURE
+void victim_function_v11(uint32_t idx) { // SECURE
   uint8_t to_leak = case_11_load_value(idx);
 
   /* Access overwritten secret */
@@ -212,7 +212,7 @@ uint32_t case_12_mask(uint32_t idx) {
   ridx = idx & (secretarray_size - 1);
   return ridx;
 }
-void case_12(uint32_t idx) { // SECURE
+void victim_function_v12(uint32_t idx) { // SECURE
   register uint32_t ridx asm ("edx");
   ridx = case_10_mask(idx);
 
@@ -229,8 +229,7 @@ uint8_t case_13_load_value(uint32_t idx) {
   uint8_t to_leak = publicarray[ridx];
   return to_leak;
 }
-
-void case_13(uint32_t idx) {  // SECURE
+void victim_function_v13(uint32_t idx) {  // SECURE
   register uint8_t to_leak asm ("edx");
   to_leak = case_11_load_value(idx);
 
