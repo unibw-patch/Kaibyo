@@ -32,11 +32,11 @@ uint32_t idxg;
 /* https://github.com/IAIK/transientfail/blob/master/pocs/spectre/STL/main.c */
 void victim_function_v1(uint32_t idx) {  /* INSECURE */
   register uint32_t ridx asm ("edx");
-  ridx = idx & (secretarray_size - 1);
+  ridx = idx % (secretarray_size - 1);
 
-  uint8_t* data = secretarray;
-  uint8_t** data_slowptr = &data;
-  uint8_t*** data_slowslowptr = &data_slowptr;
+  uint32_t* data = secretarray;
+  uint32_t** data_slowptr = &data;
+  uint32_t*** data_slowslowptr = &data_slowptr;
   
   /* Overwrite secret value */
   (*(*data_slowslowptr))[ridx] = 0; // Bypassed store
