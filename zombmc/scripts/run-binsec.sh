@@ -2,7 +2,7 @@
 
 TIMEOUT=60
 
-BINSECFLAGS="-relse -relse-fp 1 -sse-depth 0 -sse-load-ro-sections -sse-load-sections .got,.got.plt,.data,.plt,.data.rel.ro -fml-solver boolector -fml-solver-timeout 0 -relse-debug-level 0 -relse-paths 0 -x86-handle-seg gs -relse-timeout "$TIMEOUT" -relse-high-sym secretarray -relse-spectre-dyn-pht none -relse-speculative-window 200 -sse-memory "$DAT3M_HOME/benchmarks/spectre/memory.txt
+BINSECFLAGS="-relse -relse-fp 1 -sse-depth 0 -sse-load-ro-sections -sse-load-sections .got,.got.plt,.data,.plt,.data.rel.ro -fml-solver boolector -fml-solver-timeout 0 -relse-debug-level 0 -relse-paths 0 -x86-handle-seg gs -relse-timeout "$TIMEOUT" -relse-spectre-dyn-pht none -relse-speculative-window 200 -sse-memory "$DAT3M_HOME/benchmarks/spectre/memory.txt
 
 LOGFOLDER=$DAT3M_HOME/output/logs/binsec-$(date +%Y-%m-%d_%H:%M)
 mkdir -p $LOGFOLDER
@@ -20,7 +20,7 @@ do
     tline=$version
     for mode in haunted explicit
     do
-        flag="-relse-spectre-stl none";
+        flag="-relse-high-sym secret -relse-spectre-stl none";
         if [[ $mode = haunted ]]; then
             flag+=" -relse-spectre-pht haunted";
         fi
@@ -67,7 +67,7 @@ do
     tline=$version
     for mode in haunted explicit
     do
-        flag="-relse-spectre-pht none";
+        flag="-relse-high-sym secretarray -relse-spectre-pht none";
         if [[ $mode = haunted ]]; then
             flag+=" -relse-spectre-stl haunted-ite";
         fi
