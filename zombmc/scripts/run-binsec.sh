@@ -20,35 +20,38 @@ do
     tline=$version
     for mode in haunted explicit
     do
-        flag="-relse-high-sym secret -relse-spectre-stl none";
-        if [[ $mode = haunted ]]; then
-            flag+=" -relse-spectre-pht haunted";
-        fi
-        if [[ $mode = explicit ]]; then
-            flag+=" -relse-spectre-pht explicit";
-        fi
-
-        name=spectre-pht-$version.$mode
-        log=$LOGFOLDER/$name.log
-        (time timeout $TIMEOUT binsec $DAT3M_HOME/benchmarks/spectre/spectre-pht $BINSECFLAGS $flag -entrypoint victim_function_$version) > $log 2>> $log
-
-        min=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[1]}')
-        sec=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[1]}')
-        ms=$(tail -3 $log  | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[2]}' | awk '{split($0,a,"s"); print a[1]}')
-        tline=$tline", "$((60*min+sec)).$ms
-
-        to=$(grep "Result:" $log | wc -l)
-        if [ $to -eq 0 ]; then
-            rline=$rline", \VarClock"
-            tline=$tline", "$TIMEOUT
-        else
-            unsafe=$(grep "Insecure@Status" $log | wc -l)
-            if [ $unsafe -eq 0 ]; then
-                rline=$rline", \gtick"
-            else
-                rline=$rline", \redcross"
+        for opt in o0 o2
+        do
+            flag="-relse-high-sym secret -relse-spectre-stl none";
+            if [[ $mode = haunted ]]; then
+                flag+=" -relse-spectre-pht haunted";
             fi
-        fi
+            if [[ $mode = explicit ]]; then
+                flag+=" -relse-spectre-pht explicit";
+            fi
+
+            name=spectre-pht-$version.$mode.$opt
+            log=$LOGFOLDER/$name.log
+            (time timeout $TIMEOUT binsec $DAT3M_HOME/benchmarks/spectre/spectre-pht-$opt $BINSECFLAGS $flag -entrypoint victim_function_$version) > $log 2>> $log
+
+            min=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[1]}')
+            sec=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[1]}')
+            ms=$(tail -3 $log  | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[2]}' | awk '{split($0,a,"s"); print a[1]}')
+            tline=$tline", "$((60*min+sec)).$ms
+
+            to=$(grep "Result:" $log | wc -l)
+            if [ $to -eq 0 ]; then
+                rline=$rline", \VarClock"
+                tline=$tline", "$TIMEOUT
+            else
+                unsafe=$(grep "Insecure@Status" $log | wc -l)
+                if [ $unsafe -eq 0 ]; then
+                    rline=$rline", \gtick"
+                else
+                    rline=$rline", \redcross"
+                fi
+            fi
+        done
     done
     echo $rline >> $RESULT
     echo $tline >> $TIMES
