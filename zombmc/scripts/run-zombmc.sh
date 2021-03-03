@@ -106,7 +106,7 @@ do
         if [ $(grep "SAFE" $log | wc -l) -eq 0 ]; then
             if [ $(grep "UNKNOWN" $log | wc -l) -eq 0 ]; then
                 rline=$rline", \VarClock"
-                tline=$TIMEOUT
+                tline=$tline", "$TIMEOUT
             else
                 rline=$rline", \$\mathtt{\qm}\$"
             fi
