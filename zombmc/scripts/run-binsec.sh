@@ -28,7 +28,7 @@ do
             flag+=" -relse-spectre-pht explicit";
         fi
 
-        name=spectre-stl-$version.$mode
+        name=spectre-pht-$version.$mode
         log=$LOGFOLDER/$name.log
         (time timeout $TIMEOUT binsec $DAT3M_HOME/benchmarks/spectre/spectre-pht $BINSECFLAGS $flag -entrypoint victim_function_$version) > $log 2>> $log
 
