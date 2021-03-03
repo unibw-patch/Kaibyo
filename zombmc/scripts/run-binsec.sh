@@ -42,7 +42,7 @@ do
             rline=$rline", \VarClock"
             tline=$tline", "$TIMEOUT
         else
-            safe=$(tail -n 5 "$log" | grep "Insecure@Status" | wc -l)
+            safe=$(grep "Insecure@Status" $log | wc -l)
             if [ $safe -eq 0 ]; then
                 rline=$rline", \redcross"
             else
