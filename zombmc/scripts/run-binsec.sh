@@ -2,7 +2,7 @@
 
 TIMEOUT=60
 
-BINSECFLAGS="-relse -relse-fp 1 -sse-depth 0 -sse-load-ro-sections -sse-load-sections .got,.got.plt,.data,.plt,.data.rel.ro -fml-solver boolector -fml-solver-timeout 0 -relse-debug-level 0 -relse-paths 0 -x86-handle-seg gs -relse-timeout 3600 -relse-high-sym secretarray -relse-spectre-dyn-pht none -relse-speculative-window 200"
+BINSECFLAGS="-relse -relse-fp 1 -sse-depth 0 -sse-load-ro-sections -sse-load-sections .got,.got.plt,.data,.plt,.data.rel.ro -fml-solver boolector -fml-solver-timeout 0 -relse-debug-level 0 -relse-paths 0 -x86-handle-seg gs -relse-timeout 3600 -relse-high-sym secretarray -relse-spectre-dyn-pht none -relse-speculative-window 200 -sse-memory "$DAT3M_HOME/benchmarks/spectre/memory.txt
 
 LOGFOLDER=$DAT3M_HOME/output/logs/binsex-$(date +%Y-%m-%d_%H:%M)
 mkdir -p $LOGFOLDER
@@ -40,7 +40,7 @@ do
         to=$(grep "Result:" $log | wc -l)
         if [ $to -eq 0 ]; then
             rline=$rline", \VarClock"
-            tline=$TIMEOUT
+            tline=$tline", "$TIMEOUT
         else
             safe=$(tail -n 5 "$log" | grep "Insecure@Status" | wc -l)
             if [ $safe -eq 0 ]; then

@@ -40,7 +40,7 @@ do
             to=$(grep "Spectre found" $log | wc -l)
             if [ $to -eq 0 ]; then
                 rline=$rline", \VarClock"
-                tline=$TIMEOUT
+                tline=$tline", "$TIMEOUT
             else
                 safe=$(grep "Spectre found: 0" $log | wc -l)
                 if [ $safe -eq 0 ]; then
