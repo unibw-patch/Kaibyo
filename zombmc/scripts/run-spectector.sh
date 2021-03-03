@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TIMEOUT=3600
+TIMEOUT=60
 
 LOGFOLDER=$DAT3M_HOME/output/logs/spectector-$(date +%Y-%m-%d_%H:%M)
 mkdir -p $LOGFOLDER
@@ -37,6 +37,7 @@ do
             to=$(grep "program is" $log | wc -l)
             if [ $to -eq 0 ]; then
                 rline=$rline", \VarClock"
+                tline=$TIMEOUT
             else
                 safe=$(tail -n 5 "$log" | grep "program is safe" | wc -l)
                 if [ $safe -eq 0 ]; then

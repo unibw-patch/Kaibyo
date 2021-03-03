@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TIMEOUT=3600
+TIMEOUT=60
 
 KLEE=$KLEE_HOME/build/bin/klee
 KLEEFLAGS="--search=randomsp"
@@ -40,6 +40,7 @@ do
             to=$(grep "Spectre found" $log | wc -l)
             if [ $to -eq 0 ]; then
                 rline=$rline", \VarClock"
+                tline=$TIMEOUT
             else
                 safe=$(grep "Spectre found: 0" $log | wc -l)
                 if [ $safe -eq 0 ]; then
