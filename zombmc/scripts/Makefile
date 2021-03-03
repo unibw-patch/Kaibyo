@@ -14,7 +14,11 @@ bpl:
 	@echo "Compiling to Boogie"
 	@bash C2Bpl.sh
 
-tools: spectector klee zombmc
+tools: binsec spectector klee zombmc
+
+binsec:
+	@echo "Running Binsec"
+	@bash run-binsec.sh
 
 spectector:
 	@echo "Running Spectector"
