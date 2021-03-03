@@ -11,8 +11,8 @@ RESULT=$DAT3M_HOME/output/binsec-spectre-v1-results.csv
 [ -e $RESULT ] && rm $RESULT
 TIMES=$DAT3M_HOME/output/binsec-spectre-v1-times.csv
 [ -e $TIMES ] && rm $TIMES
-echo benchmark, haunted, explicit >> $RESULT
-echo benchmark, haunted, explicit >> $TIMES
+echo benchmark, o0-haunted, o2-haunted, o0-explicit, o2-explicit >> $RESULT
+echo benchmark, o0-haunted, o2-haunted, o0-explicit, o2-explicit >> $TIMES
 
 for version in v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 v12 v13 v14 v15
 do
