@@ -37,11 +37,11 @@ do
         ms=$(tail -3 $log  | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[2]}' | awk '{split($0,a,"s"); print a[1]}')
         tline=$tline", "$((60*min+sec)).$ms
 
-        to=$(grep "program is" $log | wc -l)
+        to=$(grep "Result:" $log | wc -l)
         if [ $to -eq 0 ]; then
             rline=$rline", \VarClock"
         else
-            safe=$(tail -n 5 "$log" | grep "program is safe" | wc -l)
+            safe=$(tail -n 5 "$log" | grep "Insecure@Status" | wc -l)
             if [ $safe -eq 0 ]; then
                 rline=$rline", \redcross"
             else
