@@ -25,6 +25,7 @@ public class ZomBMCOptions extends BaseOptions {
     private boolean lfence = false;
     private boolean slh = false;
     private boolean sleak = false;
+    private boolean alias = false;
     
     public ZomBMCOptions(){
         super();
@@ -41,6 +42,10 @@ public class ZomBMCOptions extends BaseOptions {
                 "Disable speculative execution");
         addOption(noSpecOption);
 
+        Option aliasOption = new Option("alias_speculation", false,
+                "Allow alias speculation");
+        addOption(aliasOption);
+
         Option onlySpecLeackOption = new Option("sleak", false,
                 "Detect only speculative leaks");
         addOption(onlySpecLeackOption);
@@ -54,9 +59,10 @@ public class ZomBMCOptions extends BaseOptions {
         addOption(slhOption);
     }
 
-    public ZomBMCOptions(String secret, boolean sleak, List<Mitigation> mitigations, Settings settings){
+    public ZomBMCOptions(String secret, boolean sleak, boolean alias, List<Mitigation> mitigations, Settings settings){
         this.secret = secret;
-        this.sleak = noSpeculation;
+        this.sleak = sleak;
+        this.alias = alias;
         this.lfence = mitigations.contains(LFENCE);
         this.slh = mitigations.contains(SLH);
         this.noSpeculation = mitigations.contains(NOSPECULATION);
@@ -74,6 +80,7 @@ public class ZomBMCOptions extends BaseOptions {
     	lfence = cmd.hasOption("lfence");
     	slh = cmd.hasOption("slh");
     	sleak = cmd.hasOption("sleak");
+    	alias = cmd.hasOption("alias_speculation");
     }
     
     public String getSecretOption(){
@@ -86,6 +93,10 @@ public class ZomBMCOptions extends BaseOptions {
 
     public boolean getSpecLeakOption(){
         return sleak;
+    }
+
+    public boolean getAliasOption(){
+        return alias;
     }
 
     public boolean getLfenceOption(){

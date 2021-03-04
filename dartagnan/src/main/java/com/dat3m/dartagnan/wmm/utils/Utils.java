@@ -12,6 +12,10 @@ public class Utils {
 		return ctx.mkBoolConst(relName + "(" + e1.repr() + "," + e2.repr() + ")");
 	}
 
+	public static BoolExpr alias(Event e1, Event e2, Context ctx) {
+		return ctx.mkBoolConst("alias(" + e1.repr() + "," + e2.repr() + ")");
+	}
+
 	public static BoolExpr bindRegVal(Register register, Event w, Event r, Context ctx){
 		return ctx.mkBoolConst("BindRegVal(E" + w.getCId() + ",E" + r.getCId() + "," + register.getName() + ")");
 	}

@@ -50,9 +50,13 @@ public class ZombmcTest {
         			s = new Settings(Mode.KNASTER, Alias.CFIS, 2, true);
         		}
 
-        		ZomBMCOptions noneO = new ZomBMCOptions("secret", true, new ArrayList<Mitigation>(), s);
-        		ZomBMCOptions lfenceO = new ZomBMCOptions("secret", true, Collections.singletonList(Mitigation.LFENCE), s);
-        		ZomBMCOptions slhO = new ZomBMCOptions("secret", true, Collections.singletonList(Mitigation.SLH), s);
+        		String secret = "secret";
+        		boolean sleak = true;
+        		boolean alias = false;
+        		
+        		ZomBMCOptions noneO = new ZomBMCOptions(secret, sleak, alias, new ArrayList<Mitigation>(), s);
+        		ZomBMCOptions lfenceO = new ZomBMCOptions(secret, sleak, alias, Collections.singletonList(Mitigation.LFENCE), s);
+        		ZomBMCOptions slhO = new ZomBMCOptions(secret, sleak, alias, Collections.singletonList(Mitigation.SLH), s);
         		
         		// v05 has an input dependent loop thus we cannot prove it correct
         		if(i != 5) {

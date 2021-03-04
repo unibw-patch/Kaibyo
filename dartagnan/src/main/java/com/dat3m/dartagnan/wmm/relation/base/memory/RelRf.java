@@ -12,6 +12,7 @@ import com.dat3m.dartagnan.program.event.MemEvent;
 import com.dat3m.dartagnan.wmm.relation.Relation;
 import com.dat3m.dartagnan.wmm.utils.Tuple;
 import com.dat3m.dartagnan.wmm.utils.TupleSet;
+import com.dat3m.dartagnan.wmm.utils.Utils;
 
 import java.util.*;
 
@@ -68,11 +69,7 @@ public class RelRf extends Relation {
             MemEvent w = (MemEvent) tuple.getFirst();
             MemEvent r = (MemEvent) tuple.getSecond();
             BoolExpr edge = edge(term, w, r, ctx);
-            
-            IntExpr a1 = w.getMemAddressExpr().isBV() ? ctx.mkBV2Int((BitVecExpr)w.getMemAddressExpr(), false) : (IntExpr)w.getMemAddressExpr();
-            IntExpr a2 = r.getMemAddressExpr().isBV() ? ctx.mkBV2Int((BitVecExpr)r.getMemAddressExpr(), false) : (IntExpr)r.getMemAddressExpr();
-            BoolExpr sameAddress = ctx.mkEq(a1, a2);
-            
+                        
             IntExpr v1 = w.getMemValueExpr().isBV() ? ctx.mkBV2Int((BitVecExpr)w.getMemValueExpr(), false) : (IntExpr)w.getMemValueExpr();
             IntExpr v2 = r.getMemValueExpr().isBV() ? ctx.mkBV2Int((BitVecExpr)r.getMemValueExpr(), false) : (IntExpr)r.getMemValueExpr();
             BoolExpr sameValue = ctx.mkEq(v1, v2);
@@ -80,9 +77,9 @@ public class RelRf extends Relation {
             edgeMap.putIfAbsent(r, new ArrayList<>());
             edgeMap.get(r).add(edge);
             if(canAccNonInitMem && w.is(EType.INIT)){
-                memInitMap.put(r, ctx.mkOr(memInitMap.getOrDefault(r, ctx.mkFalse()), sameAddress));
+                memInitMap.put(r, ctx.mkOr(memInitMap.getOrDefault(r, ctx.mkFalse()), Utils.alias(w, r, ctx)));
             }
-            enc = ctx.mkAnd(enc, ctx.mkImplies(edge, ctx.mkAnd(w.exec(), r.exec(), sameAddress, sameValue)));
+            enc = ctx.mkAnd(enc, ctx.mkImplies(edge, ctx.mkAnd(w.exec(), r.exec(), Utils.alias(w, r, ctx), sameValue)));
         }
 
         for(MemEvent r : edgeMap.keySet()){
