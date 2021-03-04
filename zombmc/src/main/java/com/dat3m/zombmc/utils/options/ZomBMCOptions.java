@@ -18,14 +18,21 @@ import com.google.common.collect.ImmutableSet;
 
 public class ZomBMCOptions extends BaseOptions {
 
+	private String SECRETSTRING = "secret";
+	private String BRANCHSPECULATIONSTRING = "branch_speculation";
+	private String ALIASSPECULATIONSTRING = "alias_speculation";
+	private String ONLYSPECULATIVESTRING = "branch_misprediction_error";
+	private String LFENCESTRING = "lfence";
+	private String SLHSTRING = "slh";
+	
     protected Set<String> supportedFormats = ImmutableSet.copyOf(Arrays.asList("bpl"));
     
     private String secret = "spectre_secret";
-    private boolean noSpeculation = true;
+    private boolean branchSpeculation = false;
+    private boolean aliasSpeculation = false;
+    private boolean onlySpeculative = true;
     private boolean lfence = false;
     private boolean slh = false;
-    private boolean sleak = false;
-    private boolean alias = false;
     
     public ZomBMCOptions(){
         super();
@@ -34,38 +41,38 @@ public class ZomBMCOptions extends BaseOptions {
         catOption.setRequired(true);
         addOption(catOption);
 
-        Option secretOption = new Option("secret", true,
-                "Name of the secret variable (default: spectre_secret)");
+        Option secretOption = new Option(SECRETSTRING, true,
+                "Name of the secret variable (default: secret)");
         addOption(secretOption);
 
-        Option noSpecOption = new Option("nospeculation", false,
-                "Disable speculative execution");
+        Option noSpecOption = new Option(BRANCHSPECULATIONSTRING, false,
+                "Allow branch speculation");
         addOption(noSpecOption);
 
-        Option aliasOption = new Option("alias_speculation", false,
+        Option aliasOption = new Option(ALIASSPECULATIONSTRING, false,
                 "Allow alias speculation");
         addOption(aliasOption);
 
-        Option onlySpecLeackOption = new Option("sleak", false,
-                "Detect only speculative leaks");
-        addOption(onlySpecLeackOption);
+        Option onlySpeculativeOption = new Option(ONLYSPECULATIVESTRING, false,
+                "Check for safety violation only due to branch misprediction");
+        addOption(onlySpeculativeOption);
 
-        Option lfenceOption = new Option("lfence", false,
+        Option lfenceOption = new Option(LFENCESTRING, false,
                 "Fence after every branch mitigation");
         addOption(lfenceOption);
 
-        Option slhOption = new Option("slh", false,
+        Option slhOption = new Option(SLHSTRING, false,
                 "Speculative Load Hardening mitigation");
         addOption(slhOption);
     }
 
-    public ZomBMCOptions(String secret, boolean sleak, boolean alias, List<Mitigation> mitigations, Settings settings){
+    public ZomBMCOptions(String secret, boolean onlySpeculative, boolean alias, List<Mitigation> mitigations, Settings settings){
         this.secret = secret;
-        this.sleak = sleak;
-        this.alias = alias;
+        this.branchSpeculation = !mitigations.contains(NOSPECULATION);
+        this.aliasSpeculation = alias;
+        this.onlySpeculative = onlySpeculative;
         this.lfence = mitigations.contains(LFENCE);
         this.slh = mitigations.contains(SLH);
-        this.noSpeculation = mitigations.contains(NOSPECULATION);
         this.settings = settings;
     }
 	
@@ -75,28 +82,24 @@ public class ZomBMCOptions extends BaseOptions {
             throw new RuntimeException("Unrecognized program format");
         }
     	CommandLine cmd = new DefaultParser().parse(this, args);
-    	secret = cmd.getOptionValue("secret");
-    	noSpeculation = cmd.hasOption("nospeculation");
-    	lfence = cmd.hasOption("lfence");
-    	slh = cmd.hasOption("slh");
-    	sleak = cmd.hasOption("sleak");
-    	alias = cmd.hasOption("alias_speculation");
+    	secret = cmd.getOptionValue(SECRETSTRING);
+    	branchSpeculation = cmd.hasOption(BRANCHSPECULATIONSTRING);
+    	aliasSpeculation = cmd.hasOption(ALIASSPECULATIONSTRING);
+    	onlySpeculative = cmd.hasOption(ONLYSPECULATIVESTRING);
+    	lfence = cmd.hasOption(LFENCESTRING);
+    	slh = cmd.hasOption(SLHSTRING);
     }
     
     public String getSecretOption(){
         return secret;
     }
 
-    public boolean getNoSpeculationOption(){
-        return noSpeculation;
-    }
-
-    public boolean getSpecLeakOption(){
-        return sleak;
-    }
-
     public boolean getAliasOption(){
-        return alias;
+        return aliasSpeculation;
+    }
+
+    public boolean getOnlySpeculativeOption(){
+        return onlySpeculative;
     }
 
     public boolean getLfenceOption(){
@@ -109,7 +112,7 @@ public class ZomBMCOptions extends BaseOptions {
     
     public List<Mitigation> getMitigations() {
         List<Mitigation> mitigations = new ArrayList<Mitigation>();
-        if(noSpeculation) {
+        if(!branchSpeculation) {
             mitigations.add(NOSPECULATION);
         }
         if(lfence) {

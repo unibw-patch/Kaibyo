@@ -29,7 +29,7 @@ public class Encodings {
     			if(!wmm.getRelationRepository().getRelation("rf").getMaxTupleSet().contains(new Tuple(w,r))) {
     				continue;
     			}
-    			BoolExpr exec = options.getSpecLeakOption() ? r.se() : r.exec();
+    			BoolExpr exec = options.getOnlySpeculativeOption() ? r.se() : r.exec();
     			enc = ctx.mkOr(enc, ctx.mkAnd(exec, Utils.edge("rf", w, r, ctx)));
     		}
     	}

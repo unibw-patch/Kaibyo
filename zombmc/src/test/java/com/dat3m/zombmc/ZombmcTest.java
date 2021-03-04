@@ -51,12 +51,12 @@ public class ZombmcTest {
         		}
 
         		String secret = "secret";
-        		boolean sleak = true;
+        		boolean onlySpeculative = true;
         		boolean alias = false;
         		
-        		ZomBMCOptions noneO = new ZomBMCOptions(secret, sleak, alias, new ArrayList<Mitigation>(), s);
-        		ZomBMCOptions lfenceO = new ZomBMCOptions(secret, sleak, alias, Collections.singletonList(Mitigation.LFENCE), s);
-        		ZomBMCOptions slhO = new ZomBMCOptions(secret, sleak, alias, Collections.singletonList(Mitigation.SLH), s);
+        		ZomBMCOptions noneO = new ZomBMCOptions(secret, onlySpeculative, alias, new ArrayList<Mitigation>(), s);
+        		ZomBMCOptions lfenceO = new ZomBMCOptions(secret, onlySpeculative, alias, Collections.singletonList(Mitigation.LFENCE), s);
+        		ZomBMCOptions slhO = new ZomBMCOptions(secret, onlySpeculative, alias, Collections.singletonList(Mitigation.SLH), s);
         		
         		// v05 has an input dependent loop thus we cannot prove it correct
         		if(i != 5) {
