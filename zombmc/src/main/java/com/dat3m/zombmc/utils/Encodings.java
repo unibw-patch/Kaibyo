@@ -14,19 +14,21 @@ import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.dartagnan.wmm.filter.FilterBasic;
 import com.dat3m.dartagnan.wmm.utils.Tuple;
 import com.dat3m.dartagnan.wmm.utils.Utils;
+import com.dat3m.zombmc.utils.options.ZomBMCOptions;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 
 public class Encodings {
 	
-    public static BoolExpr encodeLeakage(Program p, Wmm wmm, Context ctx, String secret, boolean onlySpeculative) {
+    public static BoolExpr encodeLeakage(Program p, Wmm wmm, ZomBMCOptions options, Context ctx) {
+    	
     	BoolExpr enc = ctx.mkFalse();
     	for(Event r : p.getCache().getEvents(FilterBasic.get(EType.READ))){
-    		for(Init w : getSecretInit(p, secret)) {
+    		for(Init w : getSecretInit(p, options.getSecretOption())) {
     			if(!wmm.getRelationRepository().getRelation("rf").getMaxTupleSet().contains(new Tuple(w,r))) {
     				continue;
     			}
-    			BoolExpr exec = onlySpeculative ? r.se() : r.exec();
+    			BoolExpr exec = options.getSpecLeakOption() ? r.se() : r.exec();
     			enc = ctx.mkOr(enc, ctx.mkAnd(exec, Utils.edge("rf", w, r, ctx)));
     		}
     	}

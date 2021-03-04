@@ -1,10 +1,18 @@
 package com.dat3m.zombmc.utils.options;
 
+import static com.dat3m.dartagnan.compiler.Mitigation.LFENCE;
+import static com.dat3m.dartagnan.compiler.Mitigation.NOSPECULATION;
+import static com.dat3m.dartagnan.compiler.Mitigation.SLH;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.cli.*;
 
+import com.dat3m.dartagnan.compiler.Mitigation;
+import com.dat3m.dartagnan.utils.Settings;
 import com.dat3m.dartagnan.utils.options.BaseOptions;
 import com.google.common.collect.ImmutableSet;
 
@@ -46,6 +54,14 @@ public class ZomBMCOptions extends BaseOptions {
         addOption(slhOption);
     }
 
+    public ZomBMCOptions(String secret, boolean sleak, List<Mitigation> mitigations, Settings settings){
+        this.secret = secret;
+        this.sleak = noSpeculation;
+        this.lfence = mitigations.contains(LFENCE);
+        this.slh = mitigations.contains(SLH);
+        this.noSpeculation = mitigations.contains(NOSPECULATION);
+        this.settings = settings;
+    }
 	
     public void parse(String[] args) throws ParseException, RuntimeException {
     	super.parse(args);
@@ -78,5 +94,19 @@ public class ZomBMCOptions extends BaseOptions {
 
     public boolean getSLHOption(){
         return slh;
+    }
+    
+    public List<Mitigation> getMitigations() {
+        List<Mitigation> mitigations = new ArrayList<Mitigation>();
+        if(noSpeculation) {
+            mitigations.add(NOSPECULATION);
+        }
+        if(lfence) {
+            mitigations.add(LFENCE);
+        }
+        if(slh) {
+            mitigations.add(SLH);
+        }
+        return mitigations;
     }
 }

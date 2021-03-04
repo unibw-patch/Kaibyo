@@ -1,8 +1,5 @@
 package com.dat3m.zombmc;
 
-import static com.dat3m.dartagnan.compiler.Mitigation.LFENCE;
-import static com.dat3m.dartagnan.compiler.Mitigation.NOSPECULATION;
-import static com.dat3m.dartagnan.compiler.Mitigation.SLH;
 import static com.dat3m.zombmc.utils.Encodings.encodeLeakage;
 import static com.dat3m.zombmc.utils.Result.SAFE;
 import static com.dat3m.zombmc.utils.Result.UNKNOWN;
@@ -12,18 +9,13 @@ import static com.microsoft.z3.Status.SATISFIABLE;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.cli.HelpFormatter;
 
 import com.dat3m.dartagnan.compiler.Arch;
-import com.dat3m.dartagnan.compiler.Mitigation;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.parsers.program.ProgramParser;
 import com.dat3m.dartagnan.program.Program;
-import com.dat3m.dartagnan.utils.Settings;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.zombmc.utils.Result;
 import com.dat3m.zombmc.utils.options.ZomBMCOptions;
@@ -53,37 +45,26 @@ public class ZomBMC {
         
         Wmm mcm = new ParserCat().parse(new File(options.getTargetModelFilePath()));
 		Program p = new ProgramParser().parse(new File(options.getProgramFilePath()));		
-        Arch target = Arch.NONE;
         
         Context ctx = new Context();
-        List<Mitigation> mitigations = new ArrayList<Mitigation>();
-        if(options.getNoSpeculationOption()) {
-            mitigations.add(NOSPECULATION);
-        }
-        if(options.getLfenceOption()) {
-            mitigations.add(LFENCE);
-        }
-        if(options.getSLHOption()) {
-            mitigations.add(SLH);
-        }
         long t1 = System.currentTimeMillis();
-        Result result = testMemorySafety(ctx, p, mcm, target, mitigations, options.getSpecLeakOption(), options.getSecretOption(), options.getSettings());
+        Result result = testMemorySafety(ctx, p, mcm, options);
         long t2 = System.currentTimeMillis();
         System.out.println(result);
         System.out.println("Solved in " + (new SimpleDateFormat("mm:ss:SS")).format(new Date(t2-t1)) + " (m:s:ms)");
 		ctx.close();
     }
 
-    public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, Arch target, List<Mitigation> mitigations, boolean onlySpecLeak, String secret, Settings settings) {    	
-    	program.unroll(settings.getBound(), 0);
-        program.compile(target, mitigations, 0);
+    public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, ZomBMCOptions options) {    	
+    	program.unroll(options.getSettings().getBound(), 0);
+        program.compile(Arch.NONE, options.getMitigations(), 0);
 
         Solver solver = ctx.mkSolver();
-        solver.add(program.encodeSCF(ctx, mitigations));
-        solver.add(wmm.encode(program, ctx, settings));
+        solver.add(program.encodeSCF(ctx, options.getMitigations()));
+        solver.add(wmm.encode(program, ctx, options.getSettings()));
         solver.add(wmm.consistent(program, ctx));
         solver.push();
-        solver.add(encodeLeakage(program, wmm, ctx, secret, onlySpecLeak));
+        solver.add(encodeLeakage(program, wmm, options, ctx));
 
 		if(solver.check() == SATISFIABLE) {
         	solver.add(program.encodeNoBoundEventExec(ctx));

@@ -3,17 +3,14 @@ package com.dat3m.ui.result;
 
 import static com.dat3m.zombmc.ZomBMC.testMemorySafety;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.dat3m.dartagnan.compiler.Arch;
-import com.dat3m.dartagnan.compiler.Mitigation;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.utils.Graph;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.ui.utils.UiOptions;
 import com.dat3m.ui.utils.Utils;
 import com.dat3m.zombmc.utils.Result;
+import com.dat3m.zombmc.utils.options.ZomBMCOptions;
 import com.microsoft.z3.Context;
 
 public class ZomBMCResult implements Dat3mResult {
@@ -43,8 +40,7 @@ public class ZomBMCResult implements Dat3mResult {
     private void run(){
         if(validate()){
          	Context ctx = new Context();
-         	List<Mitigation> mitigations = new ArrayList<Mitigation>();
-         	Result result = testMemorySafety(ctx, program, wmm, options.getTarget(), mitigations, false, "secretarray", options.getSettings());
+         	Result result = testMemorySafety(ctx, program, wmm, new ZomBMCOptions());
             StringBuilder sb = new StringBuilder();
             sb.append(result).append("\n");
             verdict = sb.toString();
