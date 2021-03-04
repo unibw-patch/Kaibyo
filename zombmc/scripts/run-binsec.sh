@@ -11,24 +11,18 @@ RESULT=$DAT3M_HOME/output/binsec-spectre-v1-results.csv
 [ -e $RESULT ] && rm $RESULT
 TIMES=$DAT3M_HOME/output/binsec-spectre-v1-times.csv
 [ -e $TIMES ] && rm $TIMES
-echo benchmark, o0-haunted, o2-haunted, o0-explicit, o2-explicit >> $RESULT
-echo benchmark, o0-haunted, o2-haunted, o0-explicit, o2-explicit >> $TIMES
+echo benchmark, o0-ns, o2-ns, o0-none, o2-none >> $RESULT
+echo benchmark, o0-ns, o2-ns, o0-none, o2-none >> $TIMES
 
 for version in v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 v12 v13 v14 v15
 do
     rline=$version
     tline=$version
-    for mode in haunted explicit
+    for mode in none haunted
     do
         for opt in o0 o2
         do
-            flag="-relse-high-sym secret -relse-spectre-stl none";
-            if [[ $mode = haunted ]]; then
-                flag+=" -relse-spectre-pht haunted";
-            fi
-            if [[ $mode = explicit ]]; then
-                flag+=" -relse-spectre-pht explicit";
-            fi
+            flag="-relse-high-sym secret -relse-spectre-stl none -relse-spectre-pht "$mode;
 
             name=spectre-pht-$version.$mode.$opt
             log=$LOGFOLDER/$name.log
