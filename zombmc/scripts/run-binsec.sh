@@ -31,12 +31,17 @@ do
             min=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[1]}')
             sec=$(tail -3 $log | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[1]}')
             ms=$(tail -3 $log  | awk 'FNR == 1 {print $2}' | awk '{split($0,a,"m"); print a[2]}' | awk '{split($0,a,"."); print a[2]}' | awk '{split($0,a,"s"); print a[1]}')
-            tline=$tline", "$((60*min+sec)).$ms
 
             to=$(grep "Result:" $log | wc -l)
             if [ $to -eq 0 ]; then
-                rline=$rline", \VarClock"
-                tline=$tline", "$TIMEOUT
+                ex=$(grep "exception" $log | wc -l)
+                if [ $ex -eq 0 ]; then
+                    rline=$rline", \VarClock"
+                    tline=$tline", "$TIMEOUT
+                else
+                    rline=$rline", -"
+                    tline=$tline", "$((60*min+sec)).$ms
+                fi
             else
                 unsafe=$(grep "Insecure@Status" $log | wc -l)
                 if [ $unsafe -eq 0 ]; then
@@ -44,6 +49,7 @@ do
                 else
                     rline=$rline", \redcross"
                 fi
+                tline=$tline", "$((60*min+sec)).$ms
             fi
         done
     done
