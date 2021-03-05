@@ -21,7 +21,7 @@ import java.util.*;
  */
 public class Wmm {
 
-    private final static ImmutableSet<String> baseRelations = ImmutableSet.of("co", "rf", "idd", "addrDirect");
+    private final static ImmutableSet<String> baseRelations = ImmutableSet.of("co", "rf", "srf", "idd", "addrDirect");
 
     private List<Axiom> axioms = new ArrayList<>();
     private Map<String, FilterAbstract> filters = new HashMap<>();
@@ -98,10 +98,6 @@ public class Wmm {
             ax.getRel().getMaxTupleSet();
         }
 
-        for(String relName : baseRelations){
-            relationRepository.getRelation(relName).getMaxTupleSet();
-        }
-
         if(settings.getDrawGraph()){
             for(String relName : settings.getGraphRelations()){
                 Relation relation = relationRepository.getRelation(relName);
@@ -122,7 +118,10 @@ public class Wmm {
 
         BoolExpr enc = ctx.mkTrue();
         for(String relName : baseRelations){
-            enc = ctx.mkAnd(enc, relationRepository.getRelation(relName).encode());
+            Relation relation = relationRepository.getRelation(relName);
+            if(relation.isUsed()) {
+    			enc = ctx.mkAnd(enc, relation.encode());            	
+            }
         }
 
         if(settings.getMode() == Mode.KLEENE){

@@ -20,8 +20,7 @@ public class ZomBMCOptions extends BaseOptions {
 
 	private String SECRETSTRING = "secret";
 	private String BRANCHSPECULATIONSTRING = "branch_speculation";
-	private String ALIASSPECULATIONSTRING = "alias_speculation";
-	private String ONLYSPECULATIVESTRING = "branch_misprediction_error";
+	private String ONLYSPECULATIVESTRING = "branch_speculation_error";
 	private String LFENCESTRING = "lfence";
 	private String SLHSTRING = "slh";
 	
@@ -29,7 +28,6 @@ public class ZomBMCOptions extends BaseOptions {
     
     private String secret = "spectre_secret";
     private boolean branchSpeculation = false;
-    private boolean aliasSpeculation = false;
     private boolean onlySpeculative = true;
     private boolean lfence = false;
     private boolean slh = false;
@@ -49,10 +47,6 @@ public class ZomBMCOptions extends BaseOptions {
                 "Allow branch speculation");
         addOption(noSpecOption);
 
-        Option aliasOption = new Option(ALIASSPECULATIONSTRING, false,
-                "Allow alias speculation");
-        addOption(aliasOption);
-
         Option onlySpeculativeOption = new Option(ONLYSPECULATIVESTRING, false,
                 "Check for safety violation only due to branch misprediction");
         addOption(onlySpeculativeOption);
@@ -66,10 +60,9 @@ public class ZomBMCOptions extends BaseOptions {
         addOption(slhOption);
     }
 
-    public ZomBMCOptions(String secret, boolean onlySpeculative, boolean alias, List<Mitigation> mitigations, Settings settings){
+    public ZomBMCOptions(String secret, boolean onlySpeculative, List<Mitigation> mitigations, Settings settings){
         this.secret = secret;
         this.branchSpeculation = !mitigations.contains(NOSPECULATION);
-        this.aliasSpeculation = alias;
         this.onlySpeculative = onlySpeculative;
         this.lfence = mitigations.contains(LFENCE);
         this.slh = mitigations.contains(SLH);
@@ -84,7 +77,6 @@ public class ZomBMCOptions extends BaseOptions {
     	CommandLine cmd = new DefaultParser().parse(this, args);
     	secret = cmd.getOptionValue(SECRETSTRING);
     	branchSpeculation = cmd.hasOption(BRANCHSPECULATIONSTRING);
-    	aliasSpeculation = cmd.hasOption(ALIASSPECULATIONSTRING);
     	onlySpeculative = cmd.hasOption(ONLYSPECULATIVESTRING);
     	lfence = cmd.hasOption(LFENCESTRING);
     	slh = cmd.hasOption(SLHSTRING);
@@ -92,10 +84,6 @@ public class ZomBMCOptions extends BaseOptions {
     
     public String getSecretOption(){
         return secret;
-    }
-
-    public boolean getAliasOption(){
-        return aliasSpeculation;
     }
 
     public boolean getOnlySpeculativeOption(){

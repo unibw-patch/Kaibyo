@@ -38,10 +38,16 @@ public abstract class Relation {
     protected boolean isRecursive = false;
     protected boolean forceDoEncode = false;
 
+    protected boolean used = false;
+
     public Relation() {}
 
     public Relation(String name) {
         this.name = name;
+    }
+
+    public boolean isUsed(){
+        return used;
     }
 
     public int getRecursiveGroupId(){

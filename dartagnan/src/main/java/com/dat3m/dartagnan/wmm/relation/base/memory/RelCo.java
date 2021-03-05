@@ -26,6 +26,7 @@ public class RelCo extends Relation {
     public RelCo(){
         term = "co";
         forceDoEncode = true;
+        used = true;
     }
 
     @Override
@@ -83,7 +84,7 @@ public class RelCo extends Relation {
             MemEvent w1 = (MemEvent)w;
             BoolExpr lastCo = w1.exec();
 
-            for(Tuple t : maxTupleSet.getByFirst(w1)){
+            for(Tuple t : getMaxTupleSet().getByFirst(w1)){
                 MemEvent w2 = (MemEvent)t.getSecond();
                 BoolExpr relation = edge("co", w1, w2, ctx);
                 lastCo = ctx.mkAnd(lastCo, ctx.mkNot(edge("co", w1, w2, ctx)));

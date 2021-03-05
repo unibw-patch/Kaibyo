@@ -42,7 +42,7 @@ public class ZomBMCResult implements Dat3mResult {
     private void run(){
         if(validate()){
          	Context ctx = new Context();
-         	ZomBMCOptions zombmcO = new ZomBMCOptions("secretarray", false, true, new ArrayList<>(), options.getSettings());
+         	ZomBMCOptions zombmcO = new ZomBMCOptions("secretarray", false, new ArrayList<>(), options.getSettings());
          	Result result = testMemorySafety(ctx, program, wmm, zombmcO);
             StringBuilder sb = new StringBuilder();
             sb.append(result).append("\n");

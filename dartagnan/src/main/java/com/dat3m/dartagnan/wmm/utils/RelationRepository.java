@@ -13,6 +13,7 @@ import com.dat3m.dartagnan.wmm.relation.base.local.RelIdd;
 import com.dat3m.dartagnan.wmm.relation.base.memory.RelCo;
 import com.dat3m.dartagnan.wmm.relation.base.memory.RelLoc;
 import com.dat3m.dartagnan.wmm.relation.base.memory.RelRf;
+import com.dat3m.dartagnan.wmm.relation.base.memory.RelSRf;
 import com.dat3m.dartagnan.wmm.relation.base.stat.*;
 import com.dat3m.dartagnan.wmm.relation.binary.BinaryRelation;
 import com.dat3m.dartagnan.wmm.relation.binary.RelComposition;
@@ -123,6 +124,8 @@ public class RelationRepository {
                 return new RelCo();
             case "rf":
                 return new RelRf();
+            case "srf":
+                return new RelSRf();
             case "rmw":
                 return new RelRMW();
             case "crit":
@@ -137,8 +140,12 @@ public class RelationRepository {
                 return new RelEmpty("0");
             case "rf^-1":
                 return getRelation(RelInverse.class, getRelation("rf"));
+            case "srf^-1":
+                return getRelation(RelInverse.class, getRelation("srf"));
             case "fr":
                 return getRelation(RelComposition.class, getRelation("rf^-1"), getRelation("co")).setName("fr");
+            case "sfr":
+                return getRelation(RelComposition.class, getRelation("srf^-1"), getRelation("co")).setName("sfr");
             case "(R*W)":
                 return getRelation(RelCartesian.class, FilterBasic.get(EType.READ), FilterBasic.get(EType.WRITE));
             case "(R*M)":

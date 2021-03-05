@@ -1,7 +1,6 @@
 package com.dat3m.zombmc;
 
 import static com.dat3m.zombmc.utils.Encodings.encodeLeakage;
-import static com.dat3m.zombmc.utils.Encodings.encodeAlias;
 import static com.dat3m.zombmc.utils.Result.SAFE;
 import static com.dat3m.zombmc.utils.Result.UNKNOWN;
 import static com.dat3m.zombmc.utils.Result.UNSAFE;
@@ -66,7 +65,6 @@ public class ZomBMC {
         solver.add(wmm.consistent(program, ctx));
         solver.push();
         solver.add(encodeLeakage(program, wmm, options, ctx));
-        solver.add(encodeAlias(program, options, ctx));
 
 		if(solver.check() == SATISFIABLE) {
         	solver.add(program.encodeNoBoundEventExec(ctx));
