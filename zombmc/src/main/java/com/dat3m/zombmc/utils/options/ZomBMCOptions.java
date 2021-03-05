@@ -1,7 +1,7 @@
 package com.dat3m.zombmc.utils.options;
 
 import static com.dat3m.dartagnan.compiler.Mitigation.LFENCE;
-import static com.dat3m.dartagnan.compiler.Mitigation.NOSPECULATION;
+import static com.dat3m.dartagnan.compiler.Mitigation.NOBRANCHSPECULATION;
 import static com.dat3m.dartagnan.compiler.Mitigation.SLH;
 
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class ZomBMCOptions extends BaseOptions {
 
     public ZomBMCOptions(String secret, boolean onlySpeculative, List<Mitigation> mitigations, Settings settings){
         this.secret = secret;
-        this.branchSpeculation = !mitigations.contains(NOSPECULATION);
+        this.branchSpeculation = !mitigations.contains(NOBRANCHSPECULATION);
         this.onlySpeculative = onlySpeculative;
         this.lfence = mitigations.contains(LFENCE);
         this.slh = mitigations.contains(SLH);
@@ -101,7 +101,7 @@ public class ZomBMCOptions extends BaseOptions {
     public List<Mitigation> getMitigations() {
         List<Mitigation> mitigations = new ArrayList<Mitigation>();
         if(!branchSpeculation) {
-            mitigations.add(NOSPECULATION);
+            mitigations.add(NOBRANCHSPECULATION);
         }
         if(lfence) {
             mitigations.add(LFENCE);
@@ -110,5 +110,10 @@ public class ZomBMCOptions extends BaseOptions {
             mitigations.add(SLH);
         }
         return mitigations;
+    }
+    
+    @Override
+    public String toString() {
+		return secret + ", only-speculative: " + onlySpeculative + ", mitigations: " + getMitigations();
     }
 }

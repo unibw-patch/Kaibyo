@@ -26,6 +26,7 @@ import static com.dat3m.zombmc.utils.Result.SAFE;
 import static com.dat3m.zombmc.utils.Result.UNKNOWN;
 import static com.dat3m.zombmc.utils.Result.UNSAFE;
 import static com.dat3m.zombmc.utils.ResourceHelper.CAT_RESOURCE_PATH;
+import static com.dat3m.dartagnan.compiler.Mitigation.NOBRANCHSPECULATION;
 import static com.dat3m.zombmc.ZomBMC.testMemorySafety;
 import static org.junit.Assert.*;
 
@@ -40,17 +41,19 @@ public class ZombmcTest {
 	@Parameterized.Parameters(name = "{index}: {0} bound={2}")
     public static Iterable<Object[]> data() throws IOException {        
 
-        Settings s = new Settings(Mode.KNASTER, Alias.CFIS, 1, true);
+        Settings s = new Settings(Mode.KNASTER, Alias.CFIS, 1, false);
 
         List<Object[]> data = new ArrayList<>();
         
         Wmm sc = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/sc.cat"));
+        Wmm stl = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/stl.cat"));
+        Wmm srf = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/srf.cat"));
         
         for(int i = 1; i <= 15; i++) {
         	for(int o = 0; o <= 2; o+=2) {
         		// Some benchmarks needs unroll 2
         		if ((i == 5 && o ==0) || (i == 9 && o == 2) || (i == 10) || (i == 11 && o == 0)) {
-        			s = new Settings(Mode.KNASTER, Alias.CFIS, 2, true);
+        			s = new Settings(Mode.KNASTER, Alias.CFIS, 2, false);
         		}
 
         		String secret = "secret";
@@ -76,6 +79,41 @@ public class ZombmcTest {
         		}
         	}
         }
+        
+        for(int i = 1; i <= 14; i++) {
+        	s = new Settings(Mode.KNASTER, Alias.CFIS, 1, false);
+    		String secret = "secretarray";
+    		boolean onlySpeculative = false;
+    		ArrayList<Mitigation> mitigations = new ArrayList<Mitigation>();
+    		mitigations.add(NOBRANCHSPECULATION);
+    		ZomBMCOptions options = new ZomBMCOptions(secret, onlySpeculative, mitigations, s);
+    		
+    		switch(i) {
+    		case 1:
+    		case 2:
+    		case 4:
+    		case 5:
+    		case 6:
+    		case 7:
+    		case 8:
+    			data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-stl-v" + i + ".bpl", stl, options, UNSAFE});
+    			break;
+    		case 3:
+    		case 10:
+    		case 11:
+    		case 12:
+    		case 13:
+    			data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-stl-v" + i + ".bpl", stl, options, SAFE});
+    			break;
+    		case 9:
+    			data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-stl-v" + i + ".bpl", stl, options, UNKNOWN});
+    			break;
+    		case 14:
+    			data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-stl-v" + i + ".bpl", srf, options, UNSAFE});
+    			break;
+    		}
+        }
+        
         return data;
     }
     

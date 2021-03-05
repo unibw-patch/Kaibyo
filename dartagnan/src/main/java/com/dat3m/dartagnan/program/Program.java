@@ -20,7 +20,7 @@ import com.dat3m.dartagnan.program.event.utils.RegWriter;
 import com.dat3m.dartagnan.program.memory.Location;
 import com.dat3m.dartagnan.program.memory.Memory;
 
-import static com.dat3m.dartagnan.compiler.Mitigation.NOSPECULATION;
+import static com.dat3m.dartagnan.compiler.Mitigation.NOBRANCHSPECULATION;
 import static com.dat3m.dartagnan.compiler.Mitigation.SLH;
 
 import java.util.*;
@@ -190,7 +190,7 @@ public class Program {
         BoolExpr enc = memory.encode(ctx);
         enc = ctx.mkAnd(enc, ctx.mkDistinct(getCache().getEvents(FilterBasic.get(EType.INIT)).stream().map(e -> ((Init)e).getMemAddressExpr()).toArray(Expr[]::new)));
         for(Thread t : threads){
-        	if(mitigations.contains(NOSPECULATION)) {        		
+        	if(mitigations.contains(NOBRANCHSPECULATION)) {        		
                 enc = ctx.mkAnd(enc, t.encodeCF(ctx));
         	} else {
                 enc = ctx.mkAnd(enc, t.encodeSCF(ctx));        		

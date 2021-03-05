@@ -6,6 +6,7 @@ import static com.dat3m.zombmc.ZomBMC.testMemorySafety;
 import java.util.ArrayList;
 
 import com.dat3m.dartagnan.compiler.Arch;
+import com.dat3m.dartagnan.compiler.Mitigation;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.utils.Graph;
 import com.dat3m.dartagnan.wmm.Wmm;
@@ -42,7 +43,8 @@ public class ZomBMCResult implements Dat3mResult {
     private void run(){
         if(validate()){
          	Context ctx = new Context();
-         	ZomBMCOptions zombmcO = new ZomBMCOptions("secretarray", false, new ArrayList<>(), options.getSettings());
+         	ArrayList<Mitigation> mitigations = new ArrayList<>();
+			ZomBMCOptions zombmcO = new ZomBMCOptions("secretarray", false, mitigations, options.getSettings());
          	Result result = testMemorySafety(ctx, program, wmm, zombmcO);
             StringBuilder sb = new StringBuilder();
             sb.append(result).append("\n");

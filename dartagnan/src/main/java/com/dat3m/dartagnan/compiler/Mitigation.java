@@ -1,5 +1,5 @@
 package com.dat3m.dartagnan.compiler;
 
 public enum Mitigation {
-	LFENCE, SLH, NOSPECULATION;
+	LFENCE, SLH, NOBRANCHSPECULATION;
 }
