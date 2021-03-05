@@ -33,6 +33,7 @@ import static org.junit.Assert.*;
 public class ZombmcTest {
 
     private String path;
+    private Wmm wmm;
     private ZomBMCOptions options;
     private Result expected;
 
@@ -42,6 +43,8 @@ public class ZombmcTest {
         Settings s = new Settings(Mode.KNASTER, Alias.CFIS, 1, true);
 
         List<Object[]> data = new ArrayList<>();
+        
+        Wmm sc = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/sc.cat"));
         
         for(int i = 1; i <= 15; i++) {
         	for(int o = 0; o <= 2; o+=2) {
@@ -59,33 +62,33 @@ public class ZombmcTest {
         		
         		// v05 has an input dependent loop thus we cannot prove it correct
         		if(i != 5) {
-            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v" + i + ".o" + o + ".bpl", lfenceO, SAFE});
-            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v" + i + ".o" + o + ".bpl", slhO, SAFE});
+            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-pht-v" + i + ".o" + o + ".bpl", sc, lfenceO, SAFE});
+            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-pht-v" + i + ".o" + o + ".bpl", sc, slhO, SAFE});
         		} else {
-            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v" + i + ".o" + o + ".bpl", lfenceO, UNKNOWN});
-            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v" + i + ".o" + o + ".bpl", slhO, UNKNOWN});
+            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-pht-v" + i + ".o" + o + ".bpl", sc, lfenceO, UNKNOWN});
+            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-pht-v" + i + ".o" + o + ".bpl", sc, slhO, UNKNOWN});
         		}
         		// v08.02 is safe
         		if(i == 8 && o == 2) {
-        			data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v" + i + ".o" + o + ".bpl", noneO, SAFE});
+        			data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-pht-v" + i + ".o" + o + ".bpl", sc, noneO, SAFE});
         		} else {
-            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/kocher/v" + i + ".o" + o + ".bpl", noneO, UNSAFE});        			
+            		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-pht-v" + i + ".o" + o + ".bpl", sc, noneO, UNSAFE});        			
         		}
         	}
         }
         return data;
     }
     
-    public ZombmcTest(String path, ZomBMCOptions options, Result expected) {
+    public ZombmcTest(String path, Wmm wmm, ZomBMCOptions options, Result expected) {
         this.path = path;
+        this.wmm = wmm;
         this.options = options;
         this.expected = expected;
     }
 
     @Test(timeout = 180000)
-    public void Spectre_v1() {
+    public void litmus() {
         try {
-        	Wmm wmm = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/sc.cat"));
             Program program = new ProgramParser().parse(new File(path));
             Context ctx = new Context();
             assertTrue(testMemorySafety(ctx, program, wmm, options).equals(expected));
