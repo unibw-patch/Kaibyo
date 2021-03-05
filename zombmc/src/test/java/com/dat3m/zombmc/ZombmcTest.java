@@ -87,7 +87,7 @@ public class ZombmcTest {
     		ArrayList<Mitigation> mitigations = new ArrayList<Mitigation>();
     		mitigations.add(NOBRANCHSPECULATION);
     		ZomBMCOptions options = new ZomBMCOptions(secret, onlySpeculative, mitigations, s);
-    		
+    		    		
     		switch(i) {
     		case 1:
     		case 2:
@@ -96,6 +96,7 @@ public class ZombmcTest {
     		case 6:
     		case 7:
     		case 8:
+        		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-stl-v" + i + ".bpl", sc, options, SAFE});
     			data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-stl-v" + i + ".bpl", stl, options, UNSAFE});
     			break;
     		case 3:
@@ -103,12 +104,15 @@ public class ZombmcTest {
     		case 11:
     		case 12:
     		case 13:
+        		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-stl-v" + i + ".bpl", sc, options, SAFE});
     			data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-stl-v" + i + ".bpl", stl, options, SAFE});
     			break;
     		case 9:
+    			data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-stl-v" + i + ".bpl", sc, options, UNKNOWN});
     			data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-stl-v" + i + ".bpl", stl, options, UNKNOWN});
     			break;
     		case 14:
+        		data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-stl-v" + i + ".bpl", sc, options, SAFE});
     			data.add(new Object[]{TEST_RESOURCE_PATH + "boogie/spectre-stl-v" + i + ".bpl", srf, options, UNSAFE});
     			break;
     		}

@@ -18,11 +18,11 @@ import com.google.common.collect.ImmutableSet;
 
 public class ZomBMCOptions extends BaseOptions {
 
-	private String SECRETSTRING = "secret";
-	private String BRANCHSPECULATIONSTRING = "branch_speculation";
-	private String ONLYSPECULATIVESTRING = "branch_speculation_error";
-	private String LFENCESTRING = "lfence";
-	private String SLHSTRING = "slh";
+	public static String SECRETSTRING = "secret";
+	public static String BRANCHSPECULATIONSTRING = "branch_speculation";
+	public static String ONLYSPECULATIVESTRING = "branch_speculation_error";
+	public static String LFENCESTRING = "lfence";
+	public static String SLHSTRING = "slh";
 	
     protected Set<String> supportedFormats = ImmutableSet.copyOf(Arrays.asList("bpl"));
     
@@ -48,7 +48,7 @@ public class ZomBMCOptions extends BaseOptions {
         addOption(noSpecOption);
 
         Option onlySpeculativeOption = new Option(ONLYSPECULATIVESTRING, false,
-                "Check for safety violation only due to branch misprediction");
+                "Check for safety violation only due to branch misprediction (requires " + BRANCHSPECULATIONSTRING + " option)");
         addOption(onlySpeculativeOption);
 
         Option lfenceOption = new Option(LFENCESTRING, false,
@@ -84,6 +84,10 @@ public class ZomBMCOptions extends BaseOptions {
     
     public String getSecretOption(){
         return secret;
+    }
+
+    public boolean getbranchSpeculativeOption(){
+        return branchSpeculation;
     }
 
     public boolean getOnlySpeculativeOption(){

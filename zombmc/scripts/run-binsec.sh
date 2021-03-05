@@ -7,9 +7,9 @@ BINSECFLAGS="-relse -relse-fp 1 -sse-depth 0 -sse-load-ro-sections -sse-load-sec
 LOGFOLDER=$DAT3M_HOME/output/logs/binsec-$(date +%Y-%m-%d_%H:%M)
 mkdir -p $LOGFOLDER
 
-RESULT=$DAT3M_HOME/output/binsec-spectre-v1-results.csv
+RESULT=$DAT3M_HOME/output/binsec-spectre-pht-results.csv
 [ -e $RESULT ] && rm $RESULT
-TIMES=$DAT3M_HOME/output/binsec-spectre-v1-times.csv
+TIMES=$DAT3M_HOME/output/binsec-spectre-pht-times.csv
 [ -e $TIMES ] && rm $TIMES
 echo benchmark, o0-ns, o2-ns, o0-none, o2-none >> $RESULT
 echo benchmark, o0-ns, o2-ns, o0-none, o2-none >> $TIMES
@@ -57,9 +57,9 @@ do
     echo $tline >> $TIMES
 done
 
-RESULT=$DAT3M_HOME/output/binsec-spectre-v4-results.csv
+RESULT=$DAT3M_HOME/output/binsec-spectre-stl-results.csv
 [ -e $RESULT ] && rm $RESULT
-TIMES=$DAT3M_HOME/output/binsec-spectre-v4-times.csv
+TIMES=$DAT3M_HOME/output/binsec-spectre-stl-times.csv
 [ -e $TIMES ] && rm $TIMES
 echo benchmark, haunted, explicit >> $RESULT
 echo benchmark, haunted, explicit >> $TIMES

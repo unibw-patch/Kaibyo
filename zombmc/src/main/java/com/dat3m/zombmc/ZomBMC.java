@@ -4,6 +4,8 @@ import static com.dat3m.zombmc.utils.Encodings.encodeLeakage;
 import static com.dat3m.zombmc.utils.Result.SAFE;
 import static com.dat3m.zombmc.utils.Result.UNKNOWN;
 import static com.dat3m.zombmc.utils.Result.UNSAFE;
+import static com.dat3m.zombmc.utils.options.ZomBMCOptions.BRANCHSPECULATIONSTRING;
+import static com.dat3m.zombmc.utils.options.ZomBMCOptions.ONLYSPECULATIVESTRING;
 import static com.microsoft.z3.Status.SATISFIABLE;
 
 import java.io.File;
@@ -31,16 +33,21 @@ public class ZomBMC {
             options.parse(args);
         }
         catch (Exception e){
-            if(e instanceof UnsupportedOperationException){
-                System.out.println(e.getMessage());
-            }
+        	System.out.println(e.getMessage());
             new HelpFormatter().printHelp("Zom-B-MC", options);
             System.exit(1);
             return;
         }
+    	if(options.getOnlySpeculativeOption() && !options.getbranchSpeculativeOption()) {
+    		System.out.println("\"" + ONLYSPECULATIVESTRING + "\" option requires \"" + BRANCHSPECULATIONSTRING + "\" option");
+    		System.exit(1);
+            return;
+    	}
 
         if(System.getenv().get("DAT3M_HOME") == null) {
-        	throw new RuntimeException("DAT3M_HOME variable is not set");
+        	System.out.println("DAT3M_HOME variable is not set");
+    		System.exit(1);
+            return;
         }
         
         Wmm mcm = new ParserCat().parse(new File(options.getTargetModelFilePath()));

@@ -8,9 +8,9 @@ CAT="-cat "$DAT3M_HOME/cat/sc.cat
 LOGFOLDER=$DAT3M_HOME/output/logs/zombmc-$(date +%Y-%m-%d_%H:%M)
 mkdir -p $LOGFOLDER
 
-RESULT=$DAT3M_HOME/output/zombmc-spectre-v1-results.csv
+RESULT=$DAT3M_HOME/output/zombmc-spectre-pht-results.csv
 [ -e $RESULT ] && rm $RESULT
-TIMES=$DAT3M_HOME/output/zombmc-spectre-v1-times.csv
+TIMES=$DAT3M_HOME/output/zombmc-spectre-pht-times.csv
 [ -e $TIMES ] && rm $TIMES
 echo benchmark, o0-none, o2-none, o0-lfence, o2-lfence, o0-slh, o2-slh, o0-ns, o2-ns >> $RESULT
 echo benchmark, o0-none, o2-none, o0-lfence, o2-lfence, o0-slh, o2-slh, o0-ns, o2-ns >> $TIMES
@@ -23,9 +23,9 @@ do
     do
         for opt in o0 o2
         do
-            flag="-secret secret -sleak ";
-            if [[ $mitigation = ns ]]; then
-                flag+="-nospeculation";
+            flag="-secret secret ";
+            if [[ $mitigation != ns ]]; then
+                flag+="-branch_speculation -branch_speculation_error ";
             fi
             if [[ $mitigation = lfence ]]; then
                 flag+="-lfence";
@@ -71,21 +71,21 @@ do
     echo $tline >> $TIMES
 done
 
-RESULT=$DAT3M_HOME/output/zombmc-spectre-v4-results.csv
+RESULT=$DAT3M_HOME/output/zombmc-spectre-stl-results.csv
 [ -e $RESULT ] && rm $RESULT
-TIMES=$DAT3M_HOME/output/zombmc-spectre-v4-times.csv
+TIMES=$DAT3M_HOME/output/zombmc-spectre-stl-times.csv
 [ -e $TIMES ] && rm $TIMES
-echo benchmark, sc, spectre-v4 >> $RESULT
-echo benchmark, sc, spectre-v4 >> $TIMES
+echo benchmark, sc, stl >> $RESULT
+echo benchmark, sc, stl >> $TIMES
 
 for version in v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 v12 v13
 do
     rline=$version
     tline=$version
-    for mm in sc spectre-v4
+    for mm in sc stl
     do
         CAT="-cat "$DAT3M_HOME/cat/$mm.cat
-        flag="-nospeculation -secret secretarray ";
+        flag="-secret secretarray ";
         name=spectre-stl-$version
 
         log=$LOGFOLDER/spectre-stl-$version.$mm.log

@@ -26,7 +26,10 @@ public class Encodings {
     			if(!wmm.getRelationRepository().getRelation("rf").getMaxTupleSet().contains(new Tuple(w,r))) {
     				continue;
     			}
-    			BoolExpr exec = options.getOnlySpeculativeOption() ? r.se() : r.exec();
+    			// We use the AND to avoid cases where r.se() is not constrained anywhere else 
+    			// (e.g. speculation execution if off) and the solver can make it trivially true 
+    			// without affecting the execution of the instruction
+    			BoolExpr exec = options.getOnlySpeculativeOption() ? ctx.mkAnd(r.se(), r.exec()) : r.exec();
     			enc = ctx.mkOr(enc, ctx.mkAnd(exec, Utils.edge("rf", w, r, ctx)));
     		}
     	}
