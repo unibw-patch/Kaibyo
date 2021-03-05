@@ -36,7 +36,7 @@ public class Encodings {
     	return enc;
     }
 
-    public static List<Init> getSecretInit(Program p, String secret) {
+    private static List<Init> getSecretInit(Program p, String secret) {
     	try {
     		List<Address> secretAddr = p.getMemory().getArrayAddresses(secret);
             return p.getCache().getEvents(FilterBasic.get(EType.INIT)).stream().
