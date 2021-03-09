@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableSet;
 public class ZomBMCOptions extends BaseOptions {
 
 	public static String SECRETSTRING = "secret";
-	public static String SECRETEVENTSTRING = "read_from_event";
+	public static String SECRETEVENTSTRING = "read_from";
 	public static String BRANCHSPECULATIONSTRING = "branch_speculation";
 	public static String ONLYSPECULATIVESTRING = "branch_speculation_error";
 	public static String LFENCESTRING = "lfence";
