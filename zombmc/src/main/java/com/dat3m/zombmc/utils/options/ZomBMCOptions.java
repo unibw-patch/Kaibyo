@@ -91,7 +91,9 @@ public class ZomBMCOptions extends BaseOptions {
         }
     	CommandLine cmd = new DefaultParser().parse(this, args);
     	secret = cmd.getOptionValue(SECRETSTRING);
-    	read_from = Integer.parseInt(cmd.getOptionValue(SECRETEVENTSTRING));
+    	if(cmd.hasOption(SECRETEVENTSTRING)) {
+        	read_from = Integer.parseInt(cmd.getOptionValue(SECRETEVENTSTRING));    		
+    	}
     	branchSpeculation = cmd.hasOption(BRANCHSPECULATIONSTRING);
     	onlySpeculative = cmd.hasOption(ONLYSPECULATIVESTRING);
     	lfence = cmd.hasOption(LFENCESTRING);

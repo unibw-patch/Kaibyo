@@ -43,10 +43,10 @@ public abstract class BaseOptions extends Options {
 
         addOption(new Option("rels", true,
                 "Relations to be drawn in the graph"));
-        
-        addOption(new Option("p", "print", true,
-                "It just print the program"));
-    }
+
+        addOption(new Option("print", false,
+                "Only print the program"));
+}
 
     public void parse(String[] args) throws ParseException, RuntimeException {
         CommandLine cmd = new DefaultParser().parse(this, args);
@@ -59,6 +59,7 @@ public abstract class BaseOptions extends Options {
         if(cmd.hasOption("target")) {
             target = Arch.get(cmd.getOptionValue("target"));
         }
+        
         print = cmd.hasOption("print");
     }
 
