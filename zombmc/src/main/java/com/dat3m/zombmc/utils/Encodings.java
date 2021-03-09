@@ -21,8 +21,10 @@ public class Encodings {
 	
     public static BoolExpr encodeLeakage(Program p, Wmm wmm, ZomBMCOptions options, Context ctx) {    	
     	BoolExpr enc = ctx.mkFalse();
+    	List<Event> writes = options.getReadFrom() == -1 ? getSecretInit(p, options.getSecretOption()) : 
+    		p.getCache().getEvents(FilterBasic.get(EType.WRITE)).stream().filter(e -> e.getOId() == options.getReadFrom()).collect(Collectors.toList());
     	for(Event r : p.getCache().getEvents(FilterBasic.get(EType.READ))){
-    		for(Init w : getSecretInit(p, options.getSecretOption())) {
+    		for(Event w : writes) {
     			if(!wmm.getRelationRepository().getRelation("rf").getMaxTupleSet().contains(new Tuple(w,r))) {
     				continue;
     			}
@@ -39,7 +41,7 @@ public class Encodings {
     	return enc;
     }
 
-    private static List<Init> getSecretInit(Program p, String secret) {
+    private static List<Event> getSecretInit(Program p, String secret) {
     	try {
     		List<Address> secretAddr = p.getMemory().getArrayAddresses(secret);
             return p.getCache().getEvents(FilterBasic.get(EType.INIT)).stream().

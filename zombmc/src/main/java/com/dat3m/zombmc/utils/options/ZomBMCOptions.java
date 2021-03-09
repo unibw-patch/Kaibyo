@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableSet;
 public class ZomBMCOptions extends BaseOptions {
 
 	public static String SECRETSTRING = "secret";
+	public static String SECRETEVENTSTRING = "read_from_event";
 	public static String BRANCHSPECULATIONSTRING = "branch_speculation";
 	public static String ONLYSPECULATIVESTRING = "branch_speculation_error";
 	public static String LFENCESTRING = "lfence";
@@ -27,6 +28,7 @@ public class ZomBMCOptions extends BaseOptions {
     protected Set<String> supportedFormats = ImmutableSet.copyOf(Arrays.asList("bpl"));
     
     private String secret = "spectre_secret";
+    private int read_from = -1;
     private boolean branchSpeculation = false;
     private boolean onlySpeculative = true;
     private boolean lfence = false;
@@ -42,6 +44,10 @@ public class ZomBMCOptions extends BaseOptions {
         Option secretOption = new Option(SECRETSTRING, true,
                 "Name of the secret variable (default: secret)");
         addOption(secretOption);
+
+        Option secretEventOption = new Option(SECRETEVENTSTRING, true,
+                "ID of the event to read from");
+        addOption(secretEventOption);
 
         Option noSpecOption = new Option(BRANCHSPECULATIONSTRING, false,
                 "Allow branch speculation");
@@ -69,6 +75,15 @@ public class ZomBMCOptions extends BaseOptions {
         this.settings = settings;
     }
 	
+    public ZomBMCOptions(int read_from, boolean onlySpeculative, List<Mitigation> mitigations, Settings settings){
+        this.read_from = read_from;
+        this.branchSpeculation = !mitigations.contains(NOBRANCHSPECULATION);
+        this.onlySpeculative = onlySpeculative;
+        this.lfence = mitigations.contains(LFENCE);
+        this.slh = mitigations.contains(SLH);
+        this.settings = settings;
+    }
+	
     public void parse(String[] args) throws ParseException, RuntimeException {
     	super.parse(args);
         if(supportedFormats.stream().map(f -> programFilePath.endsWith(f)). allMatch(b -> b.equals(false))) {
@@ -76,6 +91,7 @@ public class ZomBMCOptions extends BaseOptions {
         }
     	CommandLine cmd = new DefaultParser().parse(this, args);
     	secret = cmd.getOptionValue(SECRETSTRING);
+    	read_from = Integer.parseInt(cmd.getOptionValue(SECRETEVENTSTRING));
     	branchSpeculation = cmd.hasOption(BRANCHSPECULATIONSTRING);
     	onlySpeculative = cmd.hasOption(ONLYSPECULATIVESTRING);
     	lfence = cmd.hasOption(LFENCESTRING);
@@ -84,6 +100,10 @@ public class ZomBMCOptions extends BaseOptions {
     
     public String getSecretOption(){
         return secret;
+    }
+
+    public int getReadFrom(){
+        return read_from;
     }
 
     public boolean getbranchSpeculativeOption(){

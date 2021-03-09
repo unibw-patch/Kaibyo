@@ -18,6 +18,7 @@ import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.parsers.program.ProgramParser;
 import com.dat3m.dartagnan.program.Program;
+import com.dat3m.dartagnan.utils.printer.Printer;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.zombmc.utils.Result;
 import com.dat3m.zombmc.utils.options.ZomBMCOptions;
@@ -52,6 +53,12 @@ public class ZomBMC {
         
         Wmm mcm = new ParserCat().parse(new File(options.getTargetModelFilePath()));
 		Program p = new ProgramParser().parse(new File(options.getProgramFilePath()));		
+        
+        if(options.print()) {
+        	System.out.println(new Printer().print(p));
+    		System.exit(1);
+            return;
+        }
         
         Context ctx = new Context();
         long t1 = System.currentTimeMillis();

@@ -15,6 +15,7 @@ public abstract class BaseOptions extends Options {
     protected Set<String> supportedFormats; 
     protected Settings settings;
     protected Arch target;
+    protected boolean print = false;
 
     private String graphFilePath = "out.dot";
 
@@ -42,6 +43,9 @@ public abstract class BaseOptions extends Options {
 
         addOption(new Option("rels", true,
                 "Relations to be drawn in the graph"));
+        
+        addOption(new Option("p", "print", true,
+                "It just print the program"));
     }
 
     public void parse(String[] args) throws ParseException, RuntimeException {
@@ -55,6 +59,11 @@ public abstract class BaseOptions extends Options {
         if(cmd.hasOption("target")) {
             target = Arch.get(cmd.getOptionValue("target"));
         }
+        print = cmd.hasOption("print");
+    }
+
+    public boolean print() {
+        return print;
     }
 
     public String getProgramFilePath() {
