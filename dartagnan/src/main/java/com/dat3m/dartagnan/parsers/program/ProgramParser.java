@@ -30,6 +30,8 @@ public class ProgramParser {
             return new ParserPorthos().parse(CharStreams.fromString(raw));
         } else if(format.equals("bpl")){
             return new ParserBoogie().parse(CharStreams.fromString(raw));
+        } else if(format.equals("s")){
+            return new ParserAsmX86().parse(CharStreams.fromString(raw));
         } else if(format.equals("litmus")){
             return getConcreteLitmusParser(raw.toUpperCase()).parse(CharStreams.fromString(raw));
         }
@@ -43,6 +45,8 @@ public class ProgramParser {
             return new ParserPorthos();
         } else if(format.equals("bpl")){
             return new ParserBoogie();
+        } else if(format.equals("s")){
+            return new ParserAsmX86();
         } else if(format.equals("litmus")){
             return getConcreteLitmusParser(readFirstLine(file).toUpperCase());
         }
