@@ -13,7 +13,25 @@ instruction
    ;
 
 lbl
-   : label ':'? expressionlist?
+   : GLOB global
+   | TYPE vardef
+   | label COLON? expressionlist?
+   ;
+
+global
+   : NAME
+   ;
+
+vardef
+   : variable ',' type
+   ;
+
+variable
+   : NAME
+   ;
+
+type
+   : NAME
    ;
 
 assemblerdirective
@@ -124,7 +142,7 @@ expression
    ;
 
 multiplyingExpression
-   : argument (('*' | '/' | 'mod') argument)*
+   : argument (MULT argument)*
    ;
 
 argument
@@ -135,11 +153,15 @@ argument
    | string
    | ('(' expression ')')
    | ((number | name)? '[' expression ']')
-   | ptr expression
+   | address
    | NOT expression
    | OFFSET expression
    | LENGTH expression
    | (register_ ':') expression
+   ;
+
+address
+   : ptr '[' expression ']'
    ;
 
 ptr
@@ -301,6 +323,8 @@ COMMENT
 
 REGISTER
    : A H | A L | B H | B L | C H | C L | D H | D L | A X | B X | C X | D X | C I | D I | B P | S P | I P | C S | D S | E S | S S
+   | E A X | E B X | E C X | E D X | E D I | E B P | E S P | E S I
+   | R A X | R B X | R C X | R D X | R D I | R B P | R S P | R S I
    ;
 
 
@@ -319,11 +343,27 @@ DOLLAR
    ;
 
 
+COLON
+   : ':'
+   ;
+
+
 SIGN
    : '+' | '-'
    ;
 
+MULT
+   : '*' | '/' | 'mod'
+   ;
 
+GLOB
+   : '.' G L O B L
+   ;
+   
+TYPE
+   : '.' T Y P E
+   ;
+   
 NAME
    : [.a-zA-Z] [a-zA-Z0-9."_]*
    ;
