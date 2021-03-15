@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableSet;
 
 public class ZomBMCOptions extends BaseOptions {
 
+	public static String ENTRYSTRING = "entry";
 	public static String SECRETSTRING = "secret";
 	public static String SECRETEVENTSTRING = "read_from";
 	public static String BRANCHSPECULATIONSTRING = "branch_speculation";
@@ -25,7 +26,7 @@ public class ZomBMCOptions extends BaseOptions {
 	public static String LFENCESTRING = "lfence";
 	public static String SLHSTRING = "slh";
 	
-    protected Set<String> supportedFormats = ImmutableSet.copyOf(Arrays.asList("bpl"));
+    protected Set<String> supportedFormats = ImmutableSet.copyOf(Arrays.asList("bpl", "s"));
     
     private String secret = "spectre_secret";
     private int read_from = -1;
@@ -33,6 +34,7 @@ public class ZomBMCOptions extends BaseOptions {
     private boolean onlySpeculative = true;
     private boolean lfence = false;
     private boolean slh = false;
+    private String entry = "main";
     
     public ZomBMCOptions(){
         super();
@@ -40,6 +42,10 @@ public class ZomBMCOptions extends BaseOptions {
                 "Path to the CAT file");
         catOption.setRequired(true);
         addOption(catOption);
+
+        Option entryOption = new Option(ENTRYSTRING, true,
+                "Name of the entry procedure (default: main)");
+        addOption(entryOption);
 
         Option secretOption = new Option(SECRETSTRING, true,
                 "Name of the secret variable (default: secret)");
@@ -90,6 +96,9 @@ public class ZomBMCOptions extends BaseOptions {
             throw new RuntimeException("Unrecognized program format");
         }
     	CommandLine cmd = new DefaultParser().parse(this, args);
+    	if(cmd.hasOption(ENTRYSTRING)) {    		
+        	entry = cmd.getOptionValue(ENTRYSTRING);
+    	}
     	secret = cmd.getOptionValue(SECRETSTRING);
     	if(cmd.hasOption(SECRETEVENTSTRING)) {
         	read_from = Integer.parseInt(cmd.getOptionValue(SECRETEVENTSTRING));    		
@@ -100,6 +109,10 @@ public class ZomBMCOptions extends BaseOptions {
     	slh = cmd.hasOption(SLHSTRING);
     }
     
+    public String getEntry(){
+        return entry;
+    }
+
     public String getSecretOption(){
         return secret;
     }

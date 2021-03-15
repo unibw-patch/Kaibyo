@@ -16,7 +16,7 @@ import org.apache.commons.cli.HelpFormatter;
 
 import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
-import com.dat3m.dartagnan.parsers.program.ProgramParser;
+import com.dat3m.dartagnan.parsers.program.ParserAsmX86;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.utils.printer.Printer;
 import com.dat3m.dartagnan.wmm.Wmm;
@@ -52,7 +52,7 @@ public class ZomBMC {
         }
         
         Wmm mcm = new ParserCat().parse(new File(options.getTargetModelFilePath()));
-		Program p = new ProgramParser().parse(new File(options.getProgramFilePath()));		
+		Program p = new ParserAsmX86(options.getEntry()).parse(new File(options.getProgramFilePath()));		
         
         if(options.print()) {
         	System.out.println(new Printer().print(p));
