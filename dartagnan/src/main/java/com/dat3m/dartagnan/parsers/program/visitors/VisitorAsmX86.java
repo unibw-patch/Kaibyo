@@ -9,11 +9,13 @@ import static com.dat3m.dartagnan.expression.op.IOpBin.MULT;
 import static com.dat3m.dartagnan.expression.op.IOpBin.PLUS;
 import static com.dat3m.dartagnan.expression.op.IOpBin.XOR;
 import static com.dat3m.dartagnan.parsers.program.visitors.utils.X86Registers.CF;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
@@ -35,7 +37,9 @@ import com.dat3m.dartagnan.parsers.program.visitors.utils.X86Registers;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.assembler.event.Pop;
+import com.dat3m.dartagnan.program.assembler.event.PopLoad;
 import com.dat3m.dartagnan.program.assembler.event.Push;
+import com.dat3m.dartagnan.program.assembler.event.PushStore;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.CondJump;
 import com.dat3m.dartagnan.program.event.FunCall;
@@ -52,11 +56,12 @@ public class VisitorAsmX86
     private ProgramBuilder programBuilder;
     private int currenThread = 0;
     private String entry = "main";
+    private Set<String> arrays = new HashSet<>();
     
     private Map<String, List<Event>> functions = new HashMap<>();
     private String current_function = "main";
     
-    private Stack<Register> stack = new Stack<Register>();
+    private Stack<Location> stack = new Stack<Location>();
 
     public VisitorAsmX86(ProgramBuilder pb){
         this.programBuilder = pb;
@@ -71,7 +76,13 @@ public class VisitorAsmX86
     // ----------------------------------------------------------------------------------------------------------------
     // Entry point
 
-	@Override public Program visitMain(AsmX86Parser.MainContext ctx) {
+	@Override
+	public Program visitMain(AsmX86Parser.MainContext ctx) {
+		for(AsmX86Parser.VarsizeContext gblCtx : ctx.line().stream().filter(c -> c.lbl() != null).map(c -> c.lbl().varsize()).collect(Collectors.toList())) {
+			if(gblCtx != null) {
+				visitVarsize(gblCtx);
+			}
+		}
 		for(VardefContext gblCtx : ctx.line().stream().filter(c -> c.lbl() != null).map(c -> c.lbl().vardef()).collect(Collectors.toList())) {
 			if(gblCtx != null) {
 				visitVardef(gblCtx);
@@ -108,16 +119,17 @@ public class VisitorAsmX86
 	
 	private void push_pop(Event e) {
 		if(e instanceof Push) {
-			Register sReg = programBuilder.getOrCreateRegister(currenThread, "stack(" + stack.size() + ")", -1);
+			Location sReg = programBuilder.getOrCreateLocation("stack(" + stack.size() + ")", -1);
 			stack.push(sReg);	
-			programBuilder.addChild(currenThread, new Local(sReg, ((Push)e).getValue()));				
+			programBuilder.addChild(currenThread, new PushStore(sReg.getAddress(), ((Push)e).getValue()));				
 		} else {
-			Register sReg = stack.pop();
-			programBuilder.addChild(currenThread, new Local(((Pop)e).getRegister(), sReg));			
+			Location sReg = stack.pop();
+			programBuilder.addChild(currenThread, new PopLoad(((Pop)e).getRegister(), sReg.getAddress()));			
 		}
 	}
 	
-	@Override public Object visitLbl(AsmX86Parser.LblContext ctx) {
+	@Override
+	public Object visitLbl(AsmX86Parser.LblContext ctx) {
 		if(ctx.LABEL() != null) {
 			String name = ctx.getText().substring(2, ctx.getText().length()-1);
 			functions.get(current_function).add(programBuilder.getOrCreateLabel(name));
@@ -132,7 +144,8 @@ public class VisitorAsmX86
 		return visitChildren(ctx);
 	}
 	
-	@Override public Object visitInstruction(AsmX86Parser.InstructionContext ctx) {
+	@Override
+	public Object visitInstruction(AsmX86Parser.InstructionContext ctx) {
 		if(ctx.expressionlist() != null && ctx.expressionlist().expression().size() == 1) {
 			Register reg;
 			switch(ctx.opcode().getText()) {
@@ -147,7 +160,7 @@ public class VisitorAsmX86
 			case "jae":
 				String name = ctx.expressionlist().getText().substring(2);
 				Label label = programBuilder.getOrCreateLabel(name);
-				reg = programBuilder.getOrCreateRegister(currenThread, CF.getName(), -1);
+				reg = programBuilder.getRegister(currenThread, CF.getName());
 				functions.get(current_function).add(new CondJump(new BExprUn(NOT, reg), label));
 				break;
 			case "call":
@@ -183,12 +196,15 @@ public class VisitorAsmX86
 				break;
 			case "cmp":
 				reg = programBuilder.getRegister(currenThread, CF.getName());
-				exp = new Atom(op1, COpBin.GTE, op2);
+				exp = new Atom(op1, COpBin.LT, op2);
 				break;
 			case "lea":
 				reg = (Register)op1;
 				exp = (ExprInterface)ctx.expressionlist().expression(1).multiplyingExpression(0).argument(0).expression().accept(this);
 				break;
+			case "movzx":
+				functions.get(current_function).add(new Load((Register)op1, (IExpr)op2, "NA"));
+				return null;
 			case "mov":
 				if(ctx.expressionlist().expression(0).multiplyingExpression(0).argument(0).address() != null) {
 					IExpr address = (IExpr)ctx.expressionlist().expression(0).accept(this);
@@ -213,9 +229,26 @@ public class VisitorAsmX86
 		return visitChildren(ctx);
 	}
 	
-	@Override public Object visitVardef(AsmX86Parser.VardefContext ctx) {
+	@Override
+	public Object visitVarsize(AsmX86Parser.VarsizeContext ctx) {
+		try {
+			int size = Integer.decode(ctx.expressionlist().expression(1).getText());			
+			String name = ctx.expressionlist().expression(0).getText();
+			programBuilder.addDeclarationArray(name, Collections.nCopies(size, new IConst(0, -1)));
+			arrays.add(name);
+		} catch (Exception e) {
+			// Nothing to do here
+		}
+		return null;
+	}
+
+	@Override
+	public Object visitVardef(AsmX86Parser.VardefContext ctx) {
 		if(ctx.type().getText().equals("object")) {
-			programBuilder.getOrCreateLocation(ctx.variable().getText(), -1);
+			String name = ctx.variable().getText();
+			if(!arrays.contains(name)) {
+				programBuilder.getOrCreateLocation(ctx.variable().getText(), -1);				
+			}
 			return null;
 		}
 		if(ctx.type().getText().equals("function")) {
@@ -227,7 +260,11 @@ public class VisitorAsmX86
 		return null;
 	}
 
-	@Override public Object visitName(AsmX86Parser.NameContext ctx) {
+	@Override
+	public Object visitName(AsmX86Parser.NameContext ctx) {
+		if(arrays.contains(ctx.getText())) {
+			return programBuilder.getPointer(ctx.getText());
+		}
 		Location loc = programBuilder.getLocation(ctx.getText());
 		if(loc != null) {
 			return loc.getAddress();
@@ -235,15 +272,13 @@ public class VisitorAsmX86
 		return visitChildren(ctx);
 	}
 
-	@Override public Object visitAddress(AsmX86Parser.AddressContext ctx) {
+	@Override
+	public Object visitAddress(AsmX86Parser.AddressContext ctx) {
 		return (IExpr)ctx.expression().accept(this);
 	}
 
-	@Override public Object visitExpression(AsmX86Parser.ExpressionContext ctx) {
-		Location loc = programBuilder.getLocation(ctx.getText());
-		if(loc != null) {
-			return loc.getAddress();
-		}
+	@Override
+	public Object visitExpression(AsmX86Parser.ExpressionContext ctx) {
 		if(!ctx.SIGN().isEmpty()) {
 			ExprInterface op1 = (ExprInterface)ctx.multiplyingExpression(0).accept(this);
 			ExprInterface op2 = (ExprInterface)ctx.multiplyingExpression(1).accept(this);
@@ -252,7 +287,9 @@ public class VisitorAsmX86
 		}
 		return visitChildren(ctx);
 	}
-	@Override public Object visitMultiplyingExpression(AsmX86Parser.MultiplyingExpressionContext ctx) {
+	
+	@Override
+	public Object visitMultiplyingExpression(AsmX86Parser.MultiplyingExpressionContext ctx) {
 		if(!ctx.MULT().isEmpty()) {
 			ExprInterface op1 = (ExprInterface)ctx.argument(0).accept(this);
 			ExprInterface op2 = (ExprInterface)ctx.argument(1).accept(this);
@@ -273,11 +310,13 @@ public class VisitorAsmX86
 		return visitChildren(ctx);
 	}
 
-	@Override public Register visitRegister_(AsmX86Parser.Register_Context ctx) {
+	@Override
+	public Register visitRegister_(AsmX86Parser.Register_Context ctx) {
 		return programBuilder.getRegister(currenThread, ctx.getText());
 	}
 
-	@Override public IConst visitNumber(AsmX86Parser.NumberContext ctx) {
+	@Override
+	public IConst visitNumber(AsmX86Parser.NumberContext ctx) {
 		return new IConst(Integer.decode(ctx.getText()), -1);
 	}
 }
