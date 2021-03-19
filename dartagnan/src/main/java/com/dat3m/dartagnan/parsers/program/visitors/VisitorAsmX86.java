@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import com.dat3m.dartagnan.expression.Atom;
 import com.dat3m.dartagnan.expression.BConst;
 import com.dat3m.dartagnan.expression.BExpr;
 import com.dat3m.dartagnan.expression.BExprBin;
@@ -33,6 +34,8 @@ import com.dat3m.dartagnan.expression.IConst;
 import com.dat3m.dartagnan.expression.IExpr;
 import com.dat3m.dartagnan.expression.IExprBin;
 import com.dat3m.dartagnan.expression.op.BOpBin;
+import com.dat3m.dartagnan.expression.op.BOpUn;
+import com.dat3m.dartagnan.expression.op.COpBin;
 import com.dat3m.dartagnan.expression.op.IOpBin;
 import com.dat3m.dartagnan.parsers.AsmX86BaseVisitor;
 import com.dat3m.dartagnan.parsers.AsmX86Parser;
@@ -176,19 +179,39 @@ public class VisitorAsmX86
 				label = programBuilder.getOrCreateLabel(name);
 				functions.get(current_function).add(new CondJump(new BExprUn(NOT, cf), label));
 				break;
+			case "jmp":
+				name = ctx.expressionlist().getText().substring(2);
+				label = programBuilder.getOrCreateLabel(name);
+				functions.get(current_function).add(new CondJump(new BConst(true), label));
+				break;
 			case "jle":
 				name = ctx.expressionlist().getText().substring(2);
 				label = programBuilder.getOrCreateLabel(name);
 				functions.get(current_function).add(new CondJump(new BExprBin(new BExprBin(sf, BOpBin.XOR, of), BOpBin.OR, zf), label));
 				break;
+			case "jge":
+				name = ctx.expressionlist().getText().substring(2);
+				label = programBuilder.getOrCreateLabel(name);
+				functions.get(current_function).add(new CondJump(new Atom(sf, COpBin.EQ, of), label));
+				break;
+			case "jl":
+				name = ctx.expressionlist().getText().substring(2);
+				label = programBuilder.getOrCreateLabel(name);
+				functions.get(current_function).add(new CondJump(new BExprBin(sf, BOpBin.XOR, of), label));
+				break;
+			case "jne":
+				name = ctx.expressionlist().getText().substring(2);
+				label = programBuilder.getOrCreateLabel(name);
+				functions.get(current_function).add(new CondJump(new BExprUn(BOpUn.NOT, zf), label));
+				break;
+			case "je":
+				name = ctx.expressionlist().getText().substring(2);
+				label = programBuilder.getOrCreateLabel(name);
+				functions.get(current_function).add(new CondJump(zf, label));
+				break;
 			case "call":
 				String function_name = ctx.expressionlist().expression(0).getText();
 				functions.get(current_function).add(new FunCall(function_name));
-				break;
-			case "jmp":
-				name = ctx.expressionlist().getText().substring(2);
-				label = programBuilder.getOrCreateLabel(name);
-				functions.get(current_function).add(new CondJump(new BConst(true), label));
 				break;
 			default:
 				System.out.println("WARNING-2: " + ctx.getText());
@@ -353,7 +376,7 @@ public class VisitorAsmX86
 		try {
 			return new IConst(Integer.decode(ctx.getText()), -1);			
 		} catch (Exception e) {
-			System.out.println("WARNING: " + ctx.getText() + "cannot be parsed");
+			System.out.println("WARNING: " + ctx.getText() + " cannot be parsed");
 			return null;
 		}
 	}
