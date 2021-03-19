@@ -249,10 +249,22 @@ public class VisitorAsmX86
 				exp = new IExprBin(op1, MINUS, op2);
 				break;
 			case "cmp":
-				cf = CF.getFlagDef(op1, op2);
-				of = OF.getFlagDef(op1, op2);
-				zf = ZF.getFlagDef(op1, op2);
-				sf = SF.getFlagDef(op1, op2);
+				ExprInterface v1 = op1;
+				ExprInterface v2 = op2;
+				if(!(op1 instanceof Register)) {
+					Register dummy = programBuilder.getOrCreateRegister(currenThread, null, -1);
+					functions.get(current_function).add(new Load(dummy, (IExpr)op1, "NA"));
+					v1 = dummy;
+				}
+				if(!(op2 instanceof Register)) {
+					Register dummy = programBuilder.getOrCreateRegister(currenThread, null, -1);
+					functions.get(current_function).add(new Load(dummy, (IExpr)op2, "NA"));
+					v2 = dummy;
+				}
+				cf = CF.getFlagDef(v1, v2);
+				of = OF.getFlagDef(v1, v2);
+				zf = ZF.getFlagDef(v1, v2);
+				sf = SF.getFlagDef(v1, v2);
 				return null;
 			case "lea":
 				reg = (Register)op1;
