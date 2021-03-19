@@ -3,12 +3,17 @@ package com.dat3m.dartagnan.parsers.program.visitors;
 import static com.dat3m.dartagnan.expression.op.BOpUn.NOT;
 import static com.dat3m.dartagnan.expression.op.IOpBin.AND;
 import static com.dat3m.dartagnan.expression.op.IOpBin.DIV;
+import static com.dat3m.dartagnan.expression.op.IOpBin.L_SHIFT;
 import static com.dat3m.dartagnan.expression.op.IOpBin.MINUS;
 import static com.dat3m.dartagnan.expression.op.IOpBin.MOD;
 import static com.dat3m.dartagnan.expression.op.IOpBin.MULT;
 import static com.dat3m.dartagnan.expression.op.IOpBin.PLUS;
 import static com.dat3m.dartagnan.expression.op.IOpBin.XOR;
-import static com.dat3m.dartagnan.parsers.program.visitors.utils.X86Registers.CF;
+import static com.dat3m.dartagnan.parsers.program.visitors.utils.X86Flags.CF;
+import static com.dat3m.dartagnan.parsers.program.visitors.utils.X86Flags.OF;
+import static com.dat3m.dartagnan.parsers.program.visitors.utils.X86Flags.SF;
+import static com.dat3m.dartagnan.parsers.program.visitors.utils.X86Flags.ZF;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,13 +24,15 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import com.dat3m.dartagnan.expression.Atom;
+import com.dat3m.dartagnan.expression.BConst;
+import com.dat3m.dartagnan.expression.BExpr;
+import com.dat3m.dartagnan.expression.BExprBin;
 import com.dat3m.dartagnan.expression.BExprUn;
 import com.dat3m.dartagnan.expression.ExprInterface;
 import com.dat3m.dartagnan.expression.IConst;
 import com.dat3m.dartagnan.expression.IExpr;
 import com.dat3m.dartagnan.expression.IExprBin;
-import com.dat3m.dartagnan.expression.op.COpBin;
+import com.dat3m.dartagnan.expression.op.BOpBin;
 import com.dat3m.dartagnan.expression.op.IOpBin;
 import com.dat3m.dartagnan.parsers.AsmX86BaseVisitor;
 import com.dat3m.dartagnan.parsers.AsmX86Parser;
@@ -62,6 +69,11 @@ public class VisitorAsmX86
     private String current_function = "main";
     
     private Stack<Location> stack = new Stack<Location>();
+
+	private BExpr cf;
+	private BExpr of;
+	private BExpr zf;
+	private BExpr sf;
 
     public VisitorAsmX86(ProgramBuilder pb){
         this.programBuilder = pb;
@@ -147,7 +159,9 @@ public class VisitorAsmX86
 	@Override
 	public Object visitInstruction(AsmX86Parser.InstructionContext ctx) {
 		if(ctx.expressionlist() != null && ctx.expressionlist().expression().size() == 1) {
+			String name;
 			Register reg;
+			Label label;
 			switch(ctx.opcode().getText()) {
 			case "push":
 				reg = programBuilder.getRegister(currenThread, ctx.expressionlist().getText());
@@ -158,14 +172,23 @@ public class VisitorAsmX86
 				functions.get(current_function).add(new Pop(reg));
 				break;
 			case "jae":
-				String name = ctx.expressionlist().getText().substring(2);
-				Label label = programBuilder.getOrCreateLabel(name);
-				reg = programBuilder.getRegister(currenThread, CF.getName());
-				functions.get(current_function).add(new CondJump(new BExprUn(NOT, reg), label));
+				name = ctx.expressionlist().getText().substring(2);
+				label = programBuilder.getOrCreateLabel(name);
+				functions.get(current_function).add(new CondJump(new BExprUn(NOT, cf), label));
+				break;
+			case "jle":
+				name = ctx.expressionlist().getText().substring(2);
+				label = programBuilder.getOrCreateLabel(name);
+				functions.get(current_function).add(new CondJump(new BExprBin(new BExprBin(sf, BOpBin.XOR, of), BOpBin.OR, zf), label));
 				break;
 			case "call":
 				String function_name = ctx.expressionlist().expression(0).getText();
 				functions.get(current_function).add(new FunCall(function_name));
+				break;
+			case "jmp":
+				name = ctx.expressionlist().getText().substring(2);
+				label = programBuilder.getOrCreateLabel(name);
+				functions.get(current_function).add(new CondJump(new BConst(true), label));
 				break;
 			default:
 				System.out.println("WARNING-2: " + ctx.getText());
@@ -178,6 +201,14 @@ public class VisitorAsmX86
 			Register reg = null;
 			ExprInterface exp = null;
 			switch(ctx.opcode().getText()) {
+			case "shl":
+				reg = (Register)op1;
+				exp = new IExprBin(op1, L_SHIFT, op2);
+				break;
+			case "imul":
+				reg = (Register)op1;
+				exp = new IExprBin(op1, MULT, op2);
+				break;
 			case "xor":
 				reg = (Register)op1;
 				exp = new IExprBin(op1, XOR, op2);
@@ -195,9 +226,11 @@ public class VisitorAsmX86
 				exp = new IExprBin(op1, MINUS, op2);
 				break;
 			case "cmp":
-				reg = programBuilder.getRegister(currenThread, CF.getName());
-				exp = new Atom(op1, COpBin.LT, op2);
-				break;
+				cf = CF.getFlagDef(op1, op2);
+				of = OF.getFlagDef(op1, op2);
+				zf = ZF.getFlagDef(op1, op2);
+				sf = SF.getFlagDef(op1, op2);
+				return null;
 			case "lea":
 				reg = (Register)op1;
 				exp = (ExprInterface)ctx.expressionlist().expression(1).multiplyingExpression(0).argument(0).expression().accept(this);
@@ -317,6 +350,11 @@ public class VisitorAsmX86
 
 	@Override
 	public IConst visitNumber(AsmX86Parser.NumberContext ctx) {
-		return new IConst(Integer.decode(ctx.getText()), -1);
+		try {
+			return new IConst(Integer.decode(ctx.getText()), -1);			
+		} catch (Exception e) {
+			System.out.println("WARNING: " + ctx.getText() + "cannot be parsed");
+			return null;
+		}
 	}
 }

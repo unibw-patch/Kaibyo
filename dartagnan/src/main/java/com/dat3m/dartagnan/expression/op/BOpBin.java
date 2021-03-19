@@ -4,7 +4,7 @@ import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 
 public enum BOpBin {
-    AND, OR;
+    AND, OR, XOR;
 
     @Override
     public String toString() {
@@ -13,6 +13,8 @@ public enum BOpBin {
                 return "&&";
             case OR:
                 return "||";
+            case XOR:
+                return "^";
         }
         return super.toString();
     }
@@ -23,6 +25,8 @@ public enum BOpBin {
                 return ctx.mkAnd(e1, e2);
             case OR:
                 return ctx.mkOr(e1, e2);
+            case XOR:
+            	return ctx.mkAnd(ctx.mkOr(e1, e2), ctx.mkNot(ctx.mkAnd(e1, e2)));
         }
         throw new UnsupportedOperationException("Encoding of not supported for BOpBin " + this);
     }
@@ -33,6 +37,8 @@ public enum BOpBin {
                 return a && b;
             case OR:
                 return a || b;
+            case XOR:
+                return a ^ b;
         }
         throw new UnsupportedOperationException("Illegal operator " + this + " in BOpBin");
     }
