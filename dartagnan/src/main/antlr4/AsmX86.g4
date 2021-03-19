@@ -355,7 +355,7 @@ OPCODE
    | J A | J A E | J B | J B E | J C | J E | J G | J G E | J L | J L E | J N A | J N A E | J N B 
    | J N B E | J N C | J N E | J N G | J N G E | J N L | J N L E | J N O | J N P | J N S | J N Z 
    | J O | J P | J P E | J P O | J S | J Z | J C X Z | J M P | J M P S | J M P F 
-   | L A H F | L D S | L E A | L E S | L O C K | L O D S | L O D S B | L O D S W | L O O P | L O O P E | L O O P N E | L O O P N Z | L O O P Z 
+   | L A H F | L D S | L E A | L E S | L F E N C E | L O C K | L O D S | L O D S B | L O D S W | L O O P | L O O P E | L O O P N E | L O O P N Z | L O O P Z 
    | M O V | M O V S | M O V S B | M O V S W  | M O V S X D | M O V Z X | M U L 
    | N E G | N O P | N O T 
    | O R | O U T 

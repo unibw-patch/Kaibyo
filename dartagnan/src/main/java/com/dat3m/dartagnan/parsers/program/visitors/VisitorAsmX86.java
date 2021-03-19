@@ -9,6 +9,7 @@ import static com.dat3m.dartagnan.expression.op.IOpBin.MOD;
 import static com.dat3m.dartagnan.expression.op.IOpBin.MULT;
 import static com.dat3m.dartagnan.expression.op.IOpBin.PLUS;
 import static com.dat3m.dartagnan.expression.op.IOpBin.XOR;
+import static com.dat3m.dartagnan.parsers.program.visitors.utils.Stack.INITIAL_STACK_ADDRESS;
 import static com.dat3m.dartagnan.parsers.program.visitors.utils.X86Flags.CF;
 import static com.dat3m.dartagnan.parsers.program.visitors.utils.X86Flags.OF;
 import static com.dat3m.dartagnan.parsers.program.visitors.utils.X86Flags.SF;
@@ -51,6 +52,7 @@ import com.dat3m.dartagnan.program.assembler.event.PopLoad;
 import com.dat3m.dartagnan.program.assembler.event.Push;
 import com.dat3m.dartagnan.program.assembler.event.PushStore;
 import com.dat3m.dartagnan.program.event.Event;
+import com.dat3m.dartagnan.program.event.Fence;
 import com.dat3m.dartagnan.program.event.CondJump;
 import com.dat3m.dartagnan.program.event.FunCall;
 import com.dat3m.dartagnan.program.event.Label;
@@ -106,6 +108,7 @@ public class VisitorAsmX86
 		for(X86Registers reg : X86Registers.values()) {
 			programBuilder.getOrCreateRegister(currenThread, reg.getName(), -1);
 		}
+		programBuilder.initRegEqConst(currenThread, "esp", new IConst(INITIAL_STACK_ADDRESS, -1));
 		visitChildren(ctx);
 		if(!functions.containsKey(entry)) {
     		throw new ParsingException("Entry procedure " + entry + " has not been found");
@@ -161,18 +164,25 @@ public class VisitorAsmX86
 	
 	@Override
 	public Object visitInstruction(AsmX86Parser.InstructionContext ctx) {
+		if(ctx.opcode().getText().equals("lfence")) {
+			functions.get(current_function).add(new Fence("lfence"));
+			return null;
+		}
 		if(ctx.expressionlist() != null && ctx.expressionlist().expression().size() == 1) {
 			String name;
 			Register reg;
 			Label label;
+			Register esp = programBuilder.getRegister(currenThread, "esp");
 			switch(ctx.opcode().getText()) {
 			case "push":
 				reg = programBuilder.getRegister(currenThread, ctx.expressionlist().getText());
-				functions.get(current_function).add(new Push(reg));
+				functions.get(current_function).add(new Local(esp, new IExprBin(esp, MINUS, new IConst(8, -1))));
+				functions.get(current_function).add(new Store(esp, reg, "NA"));
 				break;
 			case "pop":
 				reg = programBuilder.getRegister(currenThread, ctx.expressionlist().getText());
-				functions.get(current_function).add(new Pop(reg));
+				functions.get(current_function).add(new Load(reg, esp, "NA"));
+				functions.get(current_function).add(new Local(esp, new IExprBin(esp, PLUS, new IConst(8, -1))));
 				break;
 			case "jae":
 				name = ctx.expressionlist().getText().substring(2);
