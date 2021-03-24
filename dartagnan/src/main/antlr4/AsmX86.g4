@@ -31,7 +31,7 @@ arrayinit
    ;
    
 varinit
-   : LONG expressionlist?
+   : VARINIT expressionlist?
    ;
    
 global
@@ -411,16 +411,16 @@ TYPE
    : '.' T Y P E
    ;
    
-LONG
-   : '.' L O N G
-   ;
-   
 ARRAYSIZE
    : '.' A R R A Y S I Z E
    ;
    
 ARRAYINIT
    : '.' A R R A Y I N I T
+   ;
+   
+VARINIT
+   : '.' V A R I N I T
    ;
    
 LABEL
