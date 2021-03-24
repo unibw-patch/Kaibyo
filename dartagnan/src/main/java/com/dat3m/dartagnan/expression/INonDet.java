@@ -18,14 +18,13 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.primitives.UnsignedInteger;
 import com.google.common.primitives.UnsignedLong;
 
-public class INonDet extends IExpr implements ExprInterface {
+public class INonDet extends IConst implements ExprInterface {
 	
 	private INonDetTypes type;
-	private final int precision;
 	
 	public INonDet(INonDetTypes type, int precision) {
+		super(0, precision);
 		this.type = type;
-		this.precision = precision;
 	}
 
 	public INonDetTypes getType() {

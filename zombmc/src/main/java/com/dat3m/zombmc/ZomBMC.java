@@ -1,9 +1,9 @@
 package com.dat3m.zombmc;
 
 import static com.dat3m.zombmc.utils.Encodings.encodeLeakage;
-import static com.dat3m.zombmc.utils.Result.SAFE;
 import static com.dat3m.zombmc.utils.Result.UNKNOWN;
 import static com.dat3m.zombmc.utils.Result.UNSAFE;
+import static com.dat3m.zombmc.utils.Result.SAFE;
 import static com.dat3m.zombmc.utils.options.ZomBMCOptions.BRANCHSPECULATIONSTRING;
 import static com.dat3m.zombmc.utils.options.ZomBMCOptions.ONLYSPECULATIVESTRING;
 import static com.microsoft.z3.Status.SATISFIABLE;
@@ -18,12 +18,20 @@ import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.parsers.program.ParserAsmX86;
 import com.dat3m.dartagnan.program.Program;
+import com.dat3m.dartagnan.program.event.Event;
+import com.dat3m.dartagnan.program.event.utils.RegWriter;
+import com.dat3m.dartagnan.program.memory.Address;
+import com.dat3m.dartagnan.program.utils.EType;
 import com.dat3m.dartagnan.utils.printer.Printer;
 import com.dat3m.dartagnan.wmm.Wmm;
+import com.dat3m.dartagnan.wmm.filter.FilterBasic;
 import com.dat3m.zombmc.utils.Result;
 import com.dat3m.zombmc.utils.options.ZomBMCOptions;
 import com.microsoft.z3.Context;
+import com.microsoft.z3.Model;
+import com.microsoft.z3.Params;
 import com.microsoft.z3.Solver;
+import com.microsoft.z3.Status;
 
 public class ZomBMC {
 
@@ -72,21 +80,52 @@ public class ZomBMC {
     public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, ZomBMCOptions options) {
     	program.unroll(options.getSettings().getBound(), 0);
         program.compile(Arch.NONE, options.getMitigations(), 0);
+    	System.out.println(new Printer().print(program));
 
         Solver solver = ctx.mkSolver();
-        solver.add(program.encodeSCF(ctx, options.getMitigations()));
+        Params p = ctx.mkParams();
+		p.add("timeout", 10000);
+		solver.setParameters(p);
+
+		solver.add(program.encodeSCF(ctx, options.getMitigations()));
         solver.add(wmm.encode(program, ctx, options.getSettings()));
         solver.add(wmm.consistent(program, ctx));
-        solver.push();
-        solver.add(encodeLeakage(program, wmm, options, ctx));
+//        solver.add(encodeLeakage(program, wmm, options, ctx));
 
-		if(solver.check() == SATISFIABLE) {
-        	solver.add(program.encodeNoBoundEventExec(ctx));
-			return solver.check() == SATISFIABLE ? UNSAFE : UNKNOWN;
-        } else {
-        	solver.pop();
-			solver.add(ctx.mkNot(program.encodeNoBoundEventExec(ctx)));
-        	return solver.check() == SATISFIABLE ? UNKNOWN : SAFE;
+//        if(solver.check() == SATISFIABLE) {
+//        	Model m = solver.getModel();
+//        	for(Event e : program.getCache().getEvents(FilterBasic.get(EType.REG_WRITER))) {
+//        		RegWriter w = (RegWriter)e;
+//        		if(m.getConstInterp(e.exec()).isTrue()) {
+//        			System.out.println(e);
+//        			System.out.println(m.getConstInterp(w.getResultRegisterExpr()));
+//        			System.out.println("=====");
+//        		}
+//        	}
+//        	for(Address a : program.getMemory().getAllAddresses()) {
+//        		if(program.getMemory().getLocationForAddress(a) != null) {
+//            		System.out.println("Address " + a + " contains location " + program.getMemory().getLocationForAddress(a));        			
+//        		}
+//        		System.out.println("Address " + a + " is in " + m.getConstInterp(a.toZ3Int(ctx)));	
+//        	}
+//        	System.out.println("Secret address " + m.getConstInterp(program.getMemory().getLocation("secret").getAddress().toZ3Int(ctx)));
+//        }
+        switch(solver.check()) {
+        	case SATISFIABLE: 
+        		return UNSAFE;
+        	case UNSATISFIABLE: 
+        		return SAFE;
+        	default:
+        		return UNKNOWN;	
         }
+
+//		if(solver.check() == SATISFIABLE) {
+//        	solver.add(program.encodeNoBoundEventExec(ctx));
+//			return solver.check() == SATISFIABLE ? UNSAFE : UNKNOWN;
+//        } else {
+//        	solver.pop();
+//			solver.add(ctx.mkNot(program.encodeNoBoundEventExec(ctx)));
+//        	return solver.check() == SATISFIABLE ? UNKNOWN : SAFE;
+//        }
     }
 }

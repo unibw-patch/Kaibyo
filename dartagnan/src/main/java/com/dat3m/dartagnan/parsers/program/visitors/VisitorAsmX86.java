@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors;
 
+import static com.dat3m.dartagnan.expression.INonDetTypes.UINT;
 import static com.dat3m.dartagnan.expression.op.BOpUn.NOT;
 import static com.dat3m.dartagnan.expression.op.IOpBin.AND;
 import static com.dat3m.dartagnan.expression.op.IOpBin.DIV;
@@ -9,7 +10,6 @@ import static com.dat3m.dartagnan.expression.op.IOpBin.MOD;
 import static com.dat3m.dartagnan.expression.op.IOpBin.MULT;
 import static com.dat3m.dartagnan.expression.op.IOpBin.PLUS;
 import static com.dat3m.dartagnan.expression.op.IOpBin.XOR;
-import static com.dat3m.dartagnan.parsers.program.visitors.utils.Stack.INITIAL_STACK_ADDRESS;
 import static com.dat3m.dartagnan.parsers.program.visitors.utils.X86Flags.CF;
 import static com.dat3m.dartagnan.parsers.program.visitors.utils.X86Flags.OF;
 import static com.dat3m.dartagnan.parsers.program.visitors.utils.X86Flags.SF;
@@ -34,6 +34,7 @@ import com.dat3m.dartagnan.expression.ExprInterface;
 import com.dat3m.dartagnan.expression.IConst;
 import com.dat3m.dartagnan.expression.IExpr;
 import com.dat3m.dartagnan.expression.IExprBin;
+import com.dat3m.dartagnan.expression.INonDet;
 import com.dat3m.dartagnan.expression.op.BOpBin;
 import com.dat3m.dartagnan.expression.op.BOpUn;
 import com.dat3m.dartagnan.expression.op.COpBin;
@@ -47,10 +48,6 @@ import com.dat3m.dartagnan.parsers.program.utils.ProgramBuilder;
 import com.dat3m.dartagnan.parsers.program.visitors.utils.X86Registers;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
-import com.dat3m.dartagnan.program.assembler.event.Pop;
-import com.dat3m.dartagnan.program.assembler.event.PopLoad;
-import com.dat3m.dartagnan.program.assembler.event.Push;
-import com.dat3m.dartagnan.program.assembler.event.PushStore;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Fence;
 import com.dat3m.dartagnan.program.event.CondJump;
@@ -70,11 +67,11 @@ public class VisitorAsmX86
     private String entry = "main";
     private Set<String> arrays = new HashSet<>();
     
+    private String currentVar;
+    
     private Map<String, List<Event>> functions = new HashMap<>();
     private String current_function = "main";
     
-    private Stack<Location> stack = new Stack<Location>();
-
 	private BExpr cf;
 	private BExpr of;
 	private BExpr zf;
@@ -108,42 +105,27 @@ public class VisitorAsmX86
 		for(X86Registers reg : X86Registers.values()) {
 			programBuilder.getOrCreateRegister(currenThread, reg.getName(), -1);
 		}
-		programBuilder.initRegEqConst(currenThread, "esp", new IConst(INITIAL_STACK_ADDRESS, -1));
+		// Before calling the entry point, the stack is initialized we nondet  values
+		// TODO: here we fix the size of the stack to 10. This should be handle better
+		// i.e. compute the actual size of make it parametric
+		programBuilder.addDeclarationArray("stack", Collections.nCopies(10, new INonDet(UINT, -1)));
+		programBuilder.initRegEqConst(currenThread, "esp", programBuilder.getPointer("stack"));
 		visitChildren(ctx);
 		if(!functions.containsKey(entry)) {
     		throw new ParsingException("Entry procedure " + entry + " has not been found");
 		}
 		for(Event e : functions.get(entry)) {
-			if(e instanceof Push || e instanceof Pop) {
-				push_pop(e);
-				continue;
-			}
 			programBuilder.addChild(currenThread, e);
 			if(e instanceof FunCall) {
 				// External functions are called but never defined.
 				if(functions.containsKey(((FunCall)e).getFunctionName())) {
 					for(Event e2 : functions.get(((FunCall)e).getFunctionName())) {
-						if(e2 instanceof Push || e2 instanceof Pop) {
-							push_pop(e2);
-							continue;
-						}
 						programBuilder.addChild(currenThread, e2);
 					}					
 				}
 			}
 		}
 		return programBuilder.build();
-	}
-	
-	private void push_pop(Event e) {
-		if(e instanceof Push) {
-			Location sReg = programBuilder.getOrCreateLocation("stack(" + stack.size() + ")", -1);
-			stack.push(sReg);	
-			programBuilder.addChild(currenThread, new PushStore(sReg.getAddress(), ((Push)e).getValue()));				
-		} else {
-			Location sReg = stack.pop();
-			programBuilder.addChild(currenThread, new PopLoad(((Pop)e).getRegister(), sReg.getAddress()));			
-		}
 	}
 	
 	@Override
@@ -157,6 +139,8 @@ public class VisitorAsmX86
 			String name = ctx.getText().substring(0, ctx.getText().length()-1);
 			if(functions.containsKey(name)) {
 				current_function = name;
+			} else {
+				currentVar = name;
 			}
 		}
 		return visitChildren(ctx);
@@ -231,8 +215,8 @@ public class VisitorAsmX86
 		if(ctx.expressionlist() != null && ctx.expressionlist().expression().size() == 2) {
 			ExprInterface op1 = (ExprInterface)ctx.expressionlist().expression(0).accept(this);
 			ExprInterface op2 = (ExprInterface)ctx.expressionlist().expression(1).accept(this);
-			Register reg = null;
-			ExprInterface exp = null;
+			Register reg;
+			ExprInterface exp;
 			switch(ctx.opcode().getText()) {
 			case "shl":
 				reg = (Register)op1;
@@ -308,12 +292,22 @@ public class VisitorAsmX86
 	}
 	
 	@Override
+	public Object visitVarinit(AsmX86Parser.VarinitContext ctx) {
+		System.out.println(currentVar);
+		System.out.println(ctx.getText());
+		System.out.println("===");
+		return visitChildren(ctx);
+	}
+
+	
+	@Override
 	public Object visitVarsize(AsmX86Parser.VarsizeContext ctx) {
 		try {
 			int size = Integer.decode(ctx.expressionlist().expression(1).getText());			
 			String name = ctx.expressionlist().expression(0).getText();
 			programBuilder.addDeclarationArray(name, Collections.nCopies(size, new IConst(0, -1)));
 			arrays.add(name);
+			System.out.println("Adding array " + name);
 		} catch (Exception e) {
 			// Nothing to do here
 		}

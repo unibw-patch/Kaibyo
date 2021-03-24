@@ -16,12 +16,17 @@ lbl
    : GLOB global
    | TYPE vardef
    | varsize
+   | varinit
    | LABEL COLON
    | slabel COLON? expressionlist?
    ;
 
 varsize
-   : SIZE expressionlist?
+   : (SIZE | COMM) expressionlist?
+   ;
+   
+varinit
+   : LONG expressionlist?
    ;
    
 global
@@ -401,8 +406,16 @@ TYPE
    : '.' T Y P E
    ;
    
+LONG
+   : '.' L O N G
+   ;
+   
 SIZE
    : '.' S I Z E
+   ;
+   
+COMM
+   : '.' C O M M
    ;
    
 LABEL

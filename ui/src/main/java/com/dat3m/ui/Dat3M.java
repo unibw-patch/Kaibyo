@@ -1,6 +1,8 @@
 package com.dat3m.ui;
 
+import com.dat3m.dartagnan.parsers.AsmX86Parser;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
+import com.dat3m.dartagnan.parsers.program.ParserAsmX86;
 import com.dat3m.dartagnan.parsers.program.ProgramParser;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.wmm.Wmm;
@@ -112,6 +114,7 @@ public class Dat3M extends JFrame implements ActionListener {
 			try {
 				Editor programEditor = editorsPane.getEditor(EditorCode.PROGRAM);
 				Program program = new ProgramParser().parse(programEditor.getEditorPane().getText(), programEditor.getLoadedFormat());
+//				Program program = new ParserAsmX86("victim_function_v1").parse(programEditor.getEditorPane().getText());
 				try {
 					Wmm targetModel = new ParserCat().parse(editorsPane.getEditor(EditorCode.TARGET_MM).getEditorPane().getText());
 					if(options.getTask() == Task.REACHABILITY){
