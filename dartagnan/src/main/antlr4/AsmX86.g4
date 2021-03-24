@@ -15,14 +15,19 @@ instruction
 lbl
    : GLOB global
    | TYPE vardef
-   | varsize
+   | arraysize
+   | arrayinit
    | varinit
    | LABEL COLON
    | slabel COLON? expressionlist?
    ;
 
-varsize
-   : (SIZE | COMM) expressionlist?
+arraysize
+   : ARRAYSIZE expressionlist?
+   ;
+   
+arrayinit
+   : ARRAYINIT expressionlist?
    ;
    
 varinit
@@ -410,12 +415,12 @@ LONG
    : '.' L O N G
    ;
    
-SIZE
-   : '.' S I Z E
+ARRAYSIZE
+   : '.' A R R A Y S I Z E
    ;
    
-COMM
-   : '.' C O M M
+ARRAYINIT
+   : '.' A R R A Y I N I T
    ;
    
 LABEL

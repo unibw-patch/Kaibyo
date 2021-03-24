@@ -113,8 +113,8 @@ public class Dat3M extends JFrame implements ActionListener {
 			testResult = null;
 			try {
 				Editor programEditor = editorsPane.getEditor(EditorCode.PROGRAM);
-				Program program = new ProgramParser().parse(programEditor.getEditorPane().getText(), programEditor.getLoadedFormat());
-//				Program program = new ParserAsmX86("victim_function_v1").parse(programEditor.getEditorPane().getText());
+//				Program program = new ProgramParser().parse(programEditor.getEditorPane().getText(), programEditor.getLoadedFormat());
+				Program program = new ParserAsmX86("victim_function_v1").parse(programEditor.getEditorPane().getText());
 				try {
 					Wmm targetModel = new ParserCat().parse(editorsPane.getEditor(EditorCode.TARGET_MM).getEditorPane().getText());
 					if(options.getTask() == Task.REACHABILITY){

@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
 import com.dat3m.dartagnan.expression.Atom;
@@ -41,6 +40,7 @@ import com.dat3m.dartagnan.expression.op.COpBin;
 import com.dat3m.dartagnan.expression.op.IOpBin;
 import com.dat3m.dartagnan.parsers.AsmX86BaseVisitor;
 import com.dat3m.dartagnan.parsers.AsmX86Parser;
+import com.dat3m.dartagnan.parsers.AsmX86Parser.ExpressionContext;
 import com.dat3m.dartagnan.parsers.AsmX86Parser.VardefContext;
 import com.dat3m.dartagnan.parsers.AsmX86Visitor;
 import com.dat3m.dartagnan.parsers.program.utils.ParsingException;
@@ -67,8 +67,6 @@ public class VisitorAsmX86
     private String entry = "main";
     private Set<String> arrays = new HashSet<>();
     
-    private String currentVar;
-    
     private Map<String, List<Event>> functions = new HashMap<>();
     private String current_function = "main";
     
@@ -92,11 +90,6 @@ public class VisitorAsmX86
 
 	@Override
 	public Program visitMain(AsmX86Parser.MainContext ctx) {
-		for(AsmX86Parser.VarsizeContext gblCtx : ctx.line().stream().filter(c -> c.lbl() != null).map(c -> c.lbl().varsize()).collect(Collectors.toList())) {
-			if(gblCtx != null) {
-				visitVarsize(gblCtx);
-			}
-		}
 		for(VardefContext gblCtx : ctx.line().stream().filter(c -> c.lbl() != null).map(c -> c.lbl().vardef()).collect(Collectors.toList())) {
 			if(gblCtx != null) {
 				visitVardef(gblCtx);
@@ -139,8 +132,6 @@ public class VisitorAsmX86
 			String name = ctx.getText().substring(0, ctx.getText().length()-1);
 			if(functions.containsKey(name)) {
 				current_function = name;
-			} else {
-				currentVar = name;
 			}
 		}
 		return visitChildren(ctx);
@@ -292,25 +283,23 @@ public class VisitorAsmX86
 	}
 	
 	@Override
-	public Object visitVarinit(AsmX86Parser.VarinitContext ctx) {
-		System.out.println(currentVar);
-		System.out.println(ctx.getText());
-		System.out.println("===");
-		return visitChildren(ctx);
+	public Object visitArraysize(AsmX86Parser.ArraysizeContext ctx) {
+		String name = ctx.expressionlist().expression(0).getText();
+		int size = Integer.decode(ctx.expressionlist().expression(1).getText());
+		programBuilder.addDeclarationArray(name, Collections.nCopies(size, new IConst(0, -1)));
+		arrays.add(name);
+		System.out.println("Adding array " + name + " with size " + size);
+		return null;
 	}
 
-	
 	@Override
-	public Object visitVarsize(AsmX86Parser.VarsizeContext ctx) {
-		try {
-			int size = Integer.decode(ctx.expressionlist().expression(1).getText());			
-			String name = ctx.expressionlist().expression(0).getText();
-			programBuilder.addDeclarationArray(name, Collections.nCopies(size, new IConst(0, -1)));
-			arrays.add(name);
-			System.out.println("Adding array " + name);
-		} catch (Exception e) {
-			// Nothing to do here
-		}
+	public Object visitArrayinit(AsmX86Parser.ArrayinitContext ctx) {
+		List<ExpressionContext> exprs = ctx.expressionlist().expression();
+		String name = exprs.remove(0).getText();
+		List<IConst> values = exprs.stream().map(e -> (IConst)e.accept(this)).collect(Collectors.toList());
+		programBuilder.addDeclarationArray(name, values);
+		arrays.add(name);
+		System.out.println("Init array " + name + " with values " + values);
 		return null;
 	}
 
