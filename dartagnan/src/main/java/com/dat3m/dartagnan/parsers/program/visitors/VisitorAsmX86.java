@@ -149,6 +149,10 @@ public class VisitorAsmX86
 		return visitChildren(ctx);
 	}
 	
+	@Override public Object visitLine(AsmX86Parser.LineContext ctx) {
+		return visitChildren(ctx);
+	}
+
 	@Override
 	public Object visitInstruction(AsmX86Parser.InstructionContext ctx) {
 		if(ctx.opcode().getText().equals("lfence")) {
@@ -301,7 +305,6 @@ public class VisitorAsmX86
 			int size = Integer.decode(ctx.expressionlist().expression(1).getText());
 			programBuilder.addDeclarationArray(name, Collections.nCopies(size, new IConst(0, -1)));
 			arrays.add(name);
-			System.out.println("Adding array " + name + " with size " + size);
 		}
 		return null;
 	}
@@ -332,8 +335,7 @@ public class VisitorAsmX86
 	public Object visitVardef(AsmX86Parser.VardefContext ctx) {
 		if(ctx.type().getText().equals("object")) {
 			String name = ctx.variable().getText();
-			if(!arrays.contains(name)) {
-				System.out.println("Adding variable " + name);
+			if(!arrays.contains(name) && programBuilder.getLocation(ctx.variable().getText()) == null) {
 				programBuilder.getOrCreateLocation(ctx.variable().getText(), -1);				
 			}
 			return null;

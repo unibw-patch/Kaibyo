@@ -39,7 +39,7 @@ global
    ;
 
 vardef
-   : variable ',' type
+   : variable ',' AT type
    ;
 
 variable
@@ -165,7 +165,7 @@ argument
    : number
    | dollar
    | register_
-   | name
+   | AT? name
    | string
    | ('(' expression ')')
    | ((number | name)? '[' expression ']')
@@ -387,6 +387,11 @@ REP
 
 DOLLAR
    : '$'
+   ;
+
+
+AT
+   : '@'
    ;
 
 
