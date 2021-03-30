@@ -11,6 +11,7 @@ import com.dat3m.dartagnan.program.memory.Address;
 import com.dat3m.dartagnan.program.utils.EType;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.dartagnan.wmm.filter.FilterBasic;
+import com.dat3m.dartagnan.wmm.filter.FilterMinus;
 import com.dat3m.dartagnan.wmm.utils.Tuple;
 import com.dat3m.dartagnan.wmm.utils.Utils;
 import com.dat3m.zombmc.utils.options.ZomBMCOptions;
@@ -23,7 +24,7 @@ public class Encodings {
     	BoolExpr enc = ctx.mkFalse();
     	List<Event> writes = options.getReadFrom() == -1 ? getSecretInit(p, options.getSecretOption()) : 
     		p.getCache().getEvents(FilterBasic.get(EType.WRITE)).stream().filter(e -> e.getOId() == options.getReadFrom()).collect(Collectors.toList());
-    	for(Event r : p.getCache().getEvents(FilterBasic.get(EType.READ))){
+    	for(Event r : p.getCache().getEvents(FilterMinus.get(FilterBasic.get(EType.READ), FilterBasic.get(EType.STACK)))){
     		for(Event w : writes) {
     			if(!wmm.getRelationRepository().getRelation("rf").getMaxTupleSet().contains(new Tuple(w,r))) {
     				continue;
@@ -41,7 +42,7 @@ public class Encodings {
     	return enc;
     }
 
-    private static List<Event> getSecretInit(Program p, String secret) {
+    public static List<Event> getSecretInit(Program p, String secret) {
     	try {
     		List<Address> secretAddr = p.getMemory().getArrayAddresses(secret);
             return p.getCache().getEvents(FilterBasic.get(EType.INIT)).stream().

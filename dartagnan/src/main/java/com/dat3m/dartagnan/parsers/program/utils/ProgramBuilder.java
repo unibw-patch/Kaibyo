@@ -95,6 +95,12 @@ public class ProgramBuilder {
         iValueMap.put(address, iValue);
     }
 
+    public void initRegEqArrayPtr(int regThread, String regName, String arrayName, int precision){
+        Address pointer = getPointer(arrayName);
+        Register reg = getOrCreateRegister(regThread, regName, precision);
+        addChild(regThread, new Local(reg, pointer));
+    }
+
     public void initRegEqLocPtr(int regThread, String regName, String locName, int precision){
         Location loc = getOrCreateLocation(locName, precision);
         Register reg = getOrCreateRegister(regThread, regName, precision);

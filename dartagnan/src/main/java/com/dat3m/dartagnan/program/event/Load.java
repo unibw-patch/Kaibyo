@@ -16,6 +16,9 @@ public class Load extends MemEvent implements RegWriter {
         super(address, mo);
         this.resultRegister = register;
         addFilters(EType.ANY, EType.VISIBLE, EType.MEMORY, EType.READ, EType.REG_WRITER);
+		if(address.getRegs().stream().anyMatch(e -> e.getName().equals("esp"))) {
+			addFilters(EType.STACK);;
+		}
     }
 
     protected Load(Load other){

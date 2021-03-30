@@ -1,6 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors;
 
-import static com.dat3m.dartagnan.expression.INonDetTypes.UINT;
+import static com.dat3m.dartagnan.expression.INonDetTypes.INT;
 import static com.dat3m.dartagnan.expression.op.BOpUn.NOT;
 import static com.dat3m.dartagnan.expression.op.IOpBin.AND;
 import static com.dat3m.dartagnan.expression.op.IOpBin.DIV;
@@ -113,8 +113,8 @@ public class VisitorAsmX86
 		// Before calling the entry point, the stack is initialized we nondet  values
 		// TODO: here we fix the size of the stack to 10. This should be handle better
 		// i.e. compute the actual size of make it parametric
-		programBuilder.addDeclarationArray("stack", Collections.nCopies(10, new INonDet(UINT, -1)));
-		programBuilder.initRegEqConst(currenThread, "esp", programBuilder.getPointer("stack"));
+		programBuilder.addDeclarationArray("stack", Collections.nCopies(10, new INonDet(INT, -1)));
+		programBuilder.initRegEqArrayPtr(currenThread, "esp", "stack", -1);
 		visitChildren(ctx);
 		if(!functions.containsKey(entry)) {
     		throw new ParsingException("Entry procedure " + entry + " has not been found");
@@ -317,7 +317,6 @@ public class VisitorAsmX86
 			List<IConst> values = exprs.stream().map(e -> (IConst)e.accept(this)).collect(Collectors.toList());
 			programBuilder.addDeclarationArray(name, values);
 			arrays.add(name);
-			System.out.println("Init array " + name + " with values " + values);
 		}
 		return null;
 	}
@@ -327,7 +326,6 @@ public class VisitorAsmX86
 		String name = ctx.expressionlist().expression(0).getText();
 		IConst value = (IConst)ctx.expressionlist().expression(1).accept(this);
 		programBuilder.initLocEqConst(name, value);
-		System.out.println("Init " + name + " with value " + value);
 		return visitChildren(ctx);
 	}
 
