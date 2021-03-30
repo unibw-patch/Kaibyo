@@ -74,6 +74,13 @@ public class Memory {
         return locationIndex.get(name);
     }
 
+    public Address getPointer(String name){
+        if(!arrays.containsKey(name)){
+        	throw new RuntimeException("No array named " + name);
+        }
+        return arrays.get(name).get(0);
+    }
+
     public List<Address> getArrayAddresses(String name){
         if(!arrays.containsKey(name)){
         	throw new RuntimeException("No Array named " + name);
