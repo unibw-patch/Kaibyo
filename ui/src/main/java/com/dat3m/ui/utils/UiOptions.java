@@ -11,15 +11,21 @@ public class UiOptions {
 	private Arch source;
 	private Arch target;
 	private final Settings settings;
+	private final String entry;
 
 
-	public UiOptions(Task task, Arch source, Arch target, Settings settings) {
+	public UiOptions(Task task, Arch source, Arch target, Settings settings, String entry) {
 		this.task = task;
 		this.source = source;
 		this.target = target;
 		this.settings = settings;
+		this.entry = entry;
 	}
 	
+	public String getEntry() {
+		return entry;
+	}
+
 	public Task getTask() {
 		return task;
 	}

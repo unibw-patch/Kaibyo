@@ -44,7 +44,8 @@ public class OptionsPane extends JPanel implements ActionListener {
     private final Selector<Arch> targetPane;
 
     private final BoundField boundField;
-
+    private final EntryField entryField;
+    
     private final JButton testButton;
     private final JButton clearButton;
     private final GraphButton graphButton;
@@ -71,7 +72,8 @@ public class OptionsPane extends JPanel implements ActionListener {
         archManager = new ArchManager(sourcePane, targetPane);
 
         boundField = new BoundField();
-
+        entryField = new EntryField();
+        
         testButton = new TestButton();
         clearButton = new ClearButton();
         graphButton = new GraphButton();
@@ -95,6 +97,7 @@ public class OptionsPane extends JPanel implements ActionListener {
 		targetPane.addActionListener(this);
 		sourcePane.addActionListener(this);
 		boundField.addActionListener(this);
+		entryField.addActionListener(this);
 		clearButton.addActionListener(this);
 		// Enabling graph options depends on mode
 		modePane.addActionListener(graphButton);
@@ -139,7 +142,8 @@ public class OptionsPane extends JPanel implements ActionListener {
         Task task = (Task)taskPane.getSelectedItem();
         Arch source = (Arch)sourcePane.getSelectedItem();
         Arch target = (Arch)targetPane.getSelectedItem();
-        return new UiOptions(task, source, target, settings);
+        String entry = entryField.getText();
+        return new UiOptions(task, source, target, settings, entry);
     }
 
     private int getIconHeight(){
@@ -154,6 +158,8 @@ public class OptionsPane extends JPanel implements ActionListener {
 
         JPanel boundPane = new BoundPane();
         boundPane.add(boundField);
+        JPanel entryPane = new EntryPane();
+        entryPane.add(entryField);
 
         JSplitPane archPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         archPane.setLeftComponent(sourcePane);
@@ -168,7 +174,7 @@ public class OptionsPane extends JPanel implements ActionListener {
         graphPane.setLeftComponent(graphButton);
         graphPane.setRightComponent(relsButton);
         graphPane.setDividerSize(0);
-        JComponent[] panes = { taskPane, archPane, modePane, aliasPane, boundPane, testButton, clearButton, graphPane, scrollConsole };
+        JComponent[] panes = { taskPane, archPane, modePane, aliasPane, boundPane, entryPane, testButton, clearButton, graphPane, scrollConsole };
         Iterator<JComponent> it = Arrays.asList(panes).iterator();
         JComponent current = iconPane;
         current.setBorder(emptyBorder);

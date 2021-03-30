@@ -71,7 +71,11 @@ public class Printer {
         Stack<Event> elseStack = new Stack<>();
         Stack<Event> endStack = new Stack<>();
 
-        result.append("\nthread_").append(thread.getName()).append("\n");
+        if(thread.getName() != null) {
+            result.append("\nthread_").append(thread.getName()).append("\n");        	
+        } else {
+        	result.append("\nthread_").append(thread.getId()).append("\n");
+        }
         for(Event e : thread.getCache().getEvents(FilterBasic.get(EType.ANY))){
 
             appendEvent(e);
