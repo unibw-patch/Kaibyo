@@ -1,9 +1,9 @@
 package com.dat3m.zombmc;
 
 import static com.dat3m.zombmc.utils.Encodings.encodeLeakage;
-import static com.dat3m.zombmc.utils.Result.UNKNOWN;
 import static com.dat3m.zombmc.utils.Result.UNSAFE;
 import static com.dat3m.zombmc.utils.Result.SAFE;
+import static com.dat3m.zombmc.utils.Result.TIMEOUT;
 import static com.dat3m.zombmc.utils.options.ZomBMCOptions.BRANCHSPECULATIONSTRING;
 import static com.dat3m.zombmc.utils.options.ZomBMCOptions.ONLYSPECULATIVESTRING;
 import java.io.File;
@@ -71,7 +71,6 @@ public class ZomBMC {
     public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, ZomBMCOptions options) {
     	program.unroll(options.getSettings().getBound(), 0);
         program.compile(Arch.NONE, options.getMitigations(), 0);
-    	System.out.println(new Printer().print(program));
 
         Solver solver = ctx.mkSolver();
         Params p = ctx.mkParams();
@@ -89,7 +88,7 @@ public class ZomBMC {
         	case UNSATISFIABLE: 
         		return SAFE;
         	default:
-        		return UNKNOWN;	
+            	return solver.getReasonUnknown().equals("timeout") ? TIMEOUT : Result.UNKNOWN;
         }
     }
 }
