@@ -3,6 +3,7 @@ package com.dat3m.dartagnan.parsers.program.visitors.utils;
 import static com.dat3m.dartagnan.expression.op.COpBin.GTE;
 import static com.dat3m.dartagnan.expression.op.COpBin.LT;
 import static com.dat3m.dartagnan.expression.op.COpBin.ULT;
+import static com.dat3m.dartagnan.parsers.program.visitors.VisitorAsmX86.PRECISION;
 
 import com.dat3m.dartagnan.expression.Atom;
 import com.dat3m.dartagnan.expression.BExpr;
@@ -20,7 +21,7 @@ public enum X86Flags {
 	}
 	
 	public BExpr getFlagDef(ExprInterface op1, ExprInterface op2) {
-		IConst zero = new IConst(0, -1);
+		IConst zero = new IConst(0, PRECISION);
 		Atom a1 = new Atom(op1, GTE, op2);
 		Atom a2 = new Atom(op1, LT, zero);
 		Atom a3 = new Atom(op2, GTE, zero);
