@@ -6,11 +6,14 @@ import com.google.common.collect.ImmutableSet;
 import com.dat3m.dartagnan.asserts.AbstractAssert;
 import com.dat3m.dartagnan.expression.IConst;
 import com.dat3m.dartagnan.expression.IExpr;
+import com.dat3m.dartagnan.expression.IExprBin;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.memory.Address;
 import com.dat3m.dartagnan.program.memory.Location;
 import com.dat3m.dartagnan.program.memory.Memory;
+
+import static com.dat3m.dartagnan.expression.op.IOpBin.PLUS;
 
 import java.util.*;
 
@@ -95,10 +98,10 @@ public class ProgramBuilder {
         iValueMap.put(address, iValue);
     }
 
-    public void initRegEqArrayPtr(int regThread, String regName, String arrayName, int precision){
+    public void initRegEqArrayPtr(int regThread, String regName, String arrayName, int offset, int precision){
         Address pointer = getPointer(arrayName);
         Register reg = getOrCreateRegister(regThread, regName, precision);
-        addChild(regThread, new Local(reg, pointer));
+        addChild(regThread, new Local(reg, new IExprBin(pointer, PLUS, new IConst(offset, precision))));
     }
 
     public void initRegEqLocPtr(int regThread, String regName, String locName, int precision){

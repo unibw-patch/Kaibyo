@@ -55,6 +55,7 @@ import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Fence;
 import com.dat3m.dartagnan.program.event.CondJump;
 import com.dat3m.dartagnan.program.event.FunCall;
+import com.dat3m.dartagnan.program.event.FunRet;
 import com.dat3m.dartagnan.program.event.Label;
 import com.dat3m.dartagnan.program.event.Load;
 import com.dat3m.dartagnan.program.event.Local;
@@ -78,6 +79,9 @@ public class VisitorAsmX86
 	private BExpr of;
 	private BExpr zf;
 	private BExpr sf;
+	
+	private int stackUpperBound = 8;
+	private int stackLowerBound = 12;
 
     public VisitorAsmX86(ProgramBuilder pb){
         this.programBuilder = pb;
@@ -115,13 +119,15 @@ public class VisitorAsmX86
 		// Before calling the entry point, the stack is initialized we nondet  values
 		// TODO: here we fix the size of the stack to 10. This should be handle better
 		// i.e. compute the actual size of make it parametric
-//		programBuilder.addDeclarationArray("stack", Collections.nCopies(10, new INonDet(UINT, -1)));
-		programBuilder.addDeclarationArray("stack", Collections.nCopies(10, new IConst(16, -1)));
-		programBuilder.initRegEqArrayPtr(currenThread, "esp", "stack", -1);
+		int stackSize = stackLowerBound + stackUpperBound;
+//		programBuilder.addDeclarationArray("stack", Collections.nCopies(stackSize, new INonDet(UINT, -1)));
+		programBuilder.addDeclarationArray("stack", Collections.nCopies(stackSize, new IConst(16, -1)));
+		programBuilder.initRegEqArrayPtr(currenThread, "esp", "stack", stackLowerBound, -1);
 		visitChildren(ctx);
 		if(!functions.containsKey(entry)) {
     		throw new ParsingException("Entry procedure " + entry + " has not been found");
 		}
+		programBuilder.addChild(currenThread, new FunCall(entry));
 		for(Event e : functions.get(entry)) {
 			programBuilder.addChild(currenThread, e);
 			if(e instanceof FunCall) {
@@ -161,6 +167,7 @@ public class VisitorAsmX86
 		Register esp = programBuilder.getRegister(currenThread, "esp");
 		if(ctx.opcode().getText().equals("ret")) {
 			functions.get(current_function).add(new Local(esp, new IExprBin(esp, PLUS, new IConst(4, -1))));
+			functions.get(current_function).add(new FunRet(current_function));
 			return null;
 		}
 		if(ctx.opcode().getText().equals("lfence")) {
@@ -195,12 +202,12 @@ public class VisitorAsmX86
 			Label label = programBuilder.getOrCreateLabel(name);
 			switch(ctx.opcode().getText()) {
 			case "push":
-				functions.get(current_function).add(new Local(esp, new IExprBin(esp, MINUS, new IConst(8, -1))));
+				functions.get(current_function).add(new Local(esp, new IExprBin(esp, MINUS, new IConst(4, -1))));
 				functions.get(current_function).add(new Store(esp, reg, "NA"));
 				break;
 			case "pop":
 				functions.get(current_function).add(new Load(reg, esp, "NA"));
-				functions.get(current_function).add(new Local(esp, new IExprBin(esp, PLUS, new IConst(8, -1))));
+				functions.get(current_function).add(new Local(esp, new IExprBin(esp, PLUS, new IConst(4, -1))));
 				break;
 			case "jae":
 				functions.get(current_function).add(new CondJump(new BExprUn(NOT, cf), label));
@@ -236,13 +243,13 @@ public class VisitorAsmX86
 		}
 		if(ctx.expressionlist() != null && ctx.expressionlist().expression().size() == 2) {
 			ExprInterface v1 = (ExprInterface)ctx.expressionlist().expression(0).accept(this);
-			ExprInterface v2 = (ExprInterface)ctx.expressionlist().expression(1).accept(this);
-			if(v1 instanceof Address) {
+			if(ctx.expressionlist().expression(0).multiplyingExpression(0).argument(0).address() !=  null) {
 				Register dummy = programBuilder.getOrCreateRegister(currenThread, null, -1);
 				functions.get(current_function).add(new Load(dummy, (IExpr)v1, "NA"));
 				v1 = dummy;
 			}
-			if(v2 instanceof Address) {
+			ExprInterface v2 = (ExprInterface)ctx.expressionlist().expression(1).accept(this);
+			if(ctx.expressionlist().expression(1).multiplyingExpression(0).argument(0).address() !=  null) {
 				Register dummy = programBuilder.getOrCreateRegister(currenThread, null, -1);
 				functions.get(current_function).add(new Load(dummy, (IExpr)v2, "NA"));
 				v2 = dummy;
