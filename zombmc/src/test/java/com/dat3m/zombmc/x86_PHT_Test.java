@@ -51,6 +51,10 @@ public class x86_PHT_Test {
         		data.add(new Object[]{program, sc, none, UNSAFE});
         	}
         }
+        for(int i = 1; i <= 15; i++) {
+        	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht-lfence.s"));
+        	data.add(new Object[]{program, sc, none, SAFE});	
+        }
         return data;
     }
     
