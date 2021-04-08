@@ -2,11 +2,13 @@ package com.dat3m.dartagnan.parsers.program.visitors;
 
 import static com.dat3m.dartagnan.expression.op.BOpUn.NOT;
 import static com.dat3m.dartagnan.expression.op.IOpBin.AND;
+import static com.dat3m.dartagnan.expression.op.IOpBin.AR_SHIFT;
 import static com.dat3m.dartagnan.expression.op.IOpBin.DIV;
 import static com.dat3m.dartagnan.expression.op.IOpBin.L_SHIFT;
 import static com.dat3m.dartagnan.expression.op.IOpBin.MINUS;
 import static com.dat3m.dartagnan.expression.op.IOpBin.MOD;
 import static com.dat3m.dartagnan.expression.op.IOpBin.MULT;
+import static com.dat3m.dartagnan.expression.op.IOpBin.OR;
 import static com.dat3m.dartagnan.expression.op.IOpBin.PLUS;
 import static com.dat3m.dartagnan.expression.op.IOpBin.XOR;
 import static com.dat3m.dartagnan.parsers.program.visitors.utils.X86Flags.CF;
@@ -163,16 +165,18 @@ public class VisitorAsmX86
 	@Override
 	public Object visitInstruction(AsmX86Parser.InstructionContext ctx) {
 		Register esp = programBuilder.getRegister(currenThread, "esp");
-		if(ctx.opcode().getText().equals("ret")) {
+		String opcode = ctx.opcode().getText();
+		if(opcode.equals("ret")) {
 			functions.get(current_function).add(new Local(esp, new IExprBin(esp, PLUS, new IConst(4, PRECISION))));
 			functions.get(current_function).add(new FunRet(current_function));
 			return null;
 		}
-		if(ctx.opcode().getText().equals("lfence")) {
+		if(opcode.equals("lfence")) {
 			functions.get(current_function).add(new Fence("lfence"));
 			return null;
 		}
-		if(ctx.opcode().getText().equals("mov")) {
+		// TODO: treat properly different instructions (based on type of extension)
+		if(opcode.startsWith("mov")) {
 			ExprInterface op1 = (ExprInterface)ctx.expressionlist().expression(0).accept(this);
 			ExprInterface op2 = (ExprInterface)ctx.expressionlist().expression(1).accept(this);
 			if(ctx.expressionlist().expression(0).multiplyingExpression(0).argument(0).address() != null) {
@@ -188,17 +192,11 @@ public class VisitorAsmX86
 			functions.get(current_function).add(new Local((Register)op1, op2));
 			return null;
 		}
-		if(ctx.opcode().getText().equals("movzx")) {
-			ExprInterface op1 = (ExprInterface)ctx.expressionlist().expression(0).accept(this);
-			ExprInterface op2 = (ExprInterface)ctx.expressionlist().expression(1).accept(this);
-			functions.get(current_function).add(new Load((Register)op1, (IExpr)op2, "NA"));
-			return null;
-		}
 		if(ctx.expressionlist() != null && ctx.expressionlist().expression().size() == 1) {
 			Register reg = programBuilder.getRegister(currenThread, ctx.expressionlist().getText());
 			String name = ctx.expressionlist().getText().substring(2);
 			Label label = programBuilder.getOrCreateLabel(name);
-			switch(ctx.opcode().getText()) {
+			switch(opcode) {
 			case "push":
 				functions.get(current_function).add(new Local(esp, new IExprBin(esp, MINUS, new IConst(4, PRECISION))));
 				functions.get(current_function).add(new Store(esp, reg, "NA"));
@@ -253,9 +251,12 @@ public class VisitorAsmX86
 				v2 = dummy;
 			}
 			ExprInterface exp;
-			switch(ctx.opcode().getText()) {
+			switch(opcode) {
 			case "shl":
 				exp = new IExprBin(v1, L_SHIFT, v2);
+				break;
+			case "sar":
+				exp = new IExprBin(v1, AR_SHIFT, v2);
 				break;
 			case "imul":
 				exp = new IExprBin(v1, MULT, v2);
@@ -265,6 +266,9 @@ public class VisitorAsmX86
 				break;
 			case "and":
 				exp = new IExprBin(v1, AND, v2);
+				break;
+			case "or":
+				exp = new IExprBin(v1, OR, v2);
 				break;
 			case "add":
 				exp = new IExprBin(v1, PLUS, v2);

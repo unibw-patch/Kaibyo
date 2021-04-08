@@ -10,6 +10,8 @@ import com.microsoft.z3.Expr;
 import com.microsoft.z3.IntExpr;
 import com.dat3m.dartagnan.program.memory.utils.IllegalMemoryAccessException;
 
+import static com.dat3m.dartagnan.parsers.program.visitors.VisitorAsmX86.PRECISION;
+
 import java.util.*;
 
 public class Memory {
@@ -41,7 +43,7 @@ public class Memory {
                 e1 = e2;
             }
         }
-        enc = ctx.mkAnd(enc, ctx.mkAnd(getAllAddresses().stream().map(a -> ctx.mkBVSGT((BitVecExpr) a.toZ3Int(ctx), ctx.mkBV(0, 32))).toArray(BoolExpr[]::new)));
+        enc = ctx.mkAnd(enc, ctx.mkAnd(getAllAddresses().stream().map(a -> ctx.mkBVSGT((BitVecExpr) a.toZ3Int(ctx), ctx.mkBV(0, PRECISION))).toArray(BoolExpr[]::new)));
         return ctx.mkAnd(enc, ctx.mkDistinct(getAllAddresses().stream().map(a -> a.toZ3Int(ctx)).toArray(Expr[]::new)));
     }
 

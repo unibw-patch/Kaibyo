@@ -357,7 +357,7 @@ REGISTER
 
 OPCODE
    : A A A | A A D | A A M | A A S | A D C | A D D | A N D 
-   | C A L L | C B W | C L C | C L D | C L I | C M C | C M P | C M P S B | C M P S W | C W D 
+   | C A L L | C B W | C L C | C L D | C L I | C M C | C M P | C M P S B | C M P S W | C W D | C M O V A E
    | D A A | D A S | D E C | D I V 
    | E S C 
    | H L T 
