@@ -18,6 +18,7 @@ import org.junit.runners.Parameterized;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.dat3m.zombmc.utils.ResourceHelper.TEST_RESOURCE_PATH;
@@ -42,7 +43,12 @@ public class x86_PHT_Test {
         Settings s = new Settings(Mode.KNASTER, Alias.CFIS, 1, false);
         Wmm sc = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/sc.cat"));
 		ZomBMCOptions none = new ZomBMCOptions("secret", true, new ArrayList<Mitigation>(), s);
+		ZomBMCOptions ns = new ZomBMCOptions("secret", true, Collections.singletonList(Mitigation.NOBRANCHSPECULATION), s);
         
+        for(int i = 1; i <= 15; i++) {
+        	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht.s"));
+        	data.add(new Object[]{program, sc, ns, SAFE});	
+        }
         for(int i = 1; i <= 15; i++) {
         	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht.s"));
         	if(i == 5) {
@@ -65,7 +71,7 @@ public class x86_PHT_Test {
         this.expected = expected;
     }
 
-    @Test//(timeout = 180000)
+    @Test(timeout = 180000)
     public void litmus() {
         Context ctx = new Context();
 		assertTrue(testMemorySafety(ctx, program, wmm, options).equals(expected));

@@ -1,5 +1,6 @@
 package com.dat3m.zombmc;
 
+import static com.dat3m.dartagnan.compiler.Mitigation.NOBRANCHSPECULATION;
 import static com.dat3m.zombmc.utils.Encodings.encodeLeakage;
 import static com.dat3m.zombmc.utils.Result.UNSAFE;
 import static com.dat3m.zombmc.utils.Result.SAFE;
@@ -16,6 +17,7 @@ import com.dat3m.dartagnan.compiler.Arch;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.parsers.program.ParserAsmX86;
 import com.dat3m.dartagnan.program.Program;
+import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.utils.printer.Printer;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.zombmc.utils.Result;
@@ -78,6 +80,12 @@ public class ZomBMC {
 		solver.setParameters(p);
 
 		solver.add(program.encodeSCF(ctx, options.getMitigations()));
+		if(options.getMitigations().contains(NOBRANCHSPECULATION)) {
+			for(Event e : program.getEvents()){
+				solver.add(ctx.mkNot(e.se()));
+	        }			
+		}
+
         solver.add(wmm.encode(program, ctx, options.getSettings()));
         solver.add(wmm.consistent(program, ctx));
         solver.add(encodeLeakage(program, wmm, options, ctx));
