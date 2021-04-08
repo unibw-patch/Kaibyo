@@ -153,6 +153,9 @@ public class ZomBMCOptions extends BaseOptions {
     
     @Override
     public String toString() {
-		return secret + ", only-speculative: " + onlySpeculative + ", mitigations: " + getMitigations();
+		return 
+				SECRETSTRING + ": " + secret + ", " + 
+				ONLYSPECULATIVESTRING + ": " + onlySpeculative + 
+				", mitigations: " + getMitigations();
     }
 }

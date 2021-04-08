@@ -61,6 +61,11 @@ public class Program {
         return name;
     }
 
+	@Override
+    public String toString() {
+		return name;
+    }
+
 	public void setName(String name){
 	    this.name = name;
     }
