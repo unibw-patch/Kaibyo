@@ -402,11 +402,6 @@ public class VisitorAsmX86
 
 	@Override
 	public IConst visitNumber(AsmX86Parser.NumberContext ctx) {
-		try {
-			return new IConst(Integer.decode(ctx.getText()), PRECISION);			
-		} catch (Exception e) {
-			System.out.println("WARNING: " + ctx.getText() + " cannot be parsed");
-			return null;
-		}
+		return new IConst(ctx.getText(), PRECISION);
 	}
 }
