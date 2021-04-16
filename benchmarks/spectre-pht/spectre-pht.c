@@ -27,25 +27,27 @@ void victim_function_v1(size_t x) {
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 2:  Moving the leak to a local function that can be inlined.
 // ----------------------------------------------------------------------------------------
+#ifndef slh
 void leakByteLocalFunction(uint8_t k) { temp &= publicarray2[(k)]; }
 void victim_function_v2(size_t x) {
      if (x < publicarray_size) {
           leakByteLocalFunction(publicarray[x]);
      }
 }
-
+#endif
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 3:  Moving the leak to a function that cannot be inlined.
 //
 // Comments: Output is unsafe.  The same results occur if leakByteNoinlineFunction()
 // is in another source module.
 // ----------------------------------------------------------------------------------------
+#ifndef slh
 __declspec(noinline) void leakByteNoinlineFunction(uint8_t k) { temp &= publicarray2[(k)]; }
 void victim_function_v3(size_t x) {
      if (x < publicarray_size)
           leakByteNoinlineFunction(publicarray[x]);
 }
-
+#endif
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 4:  Add a left shift by one on the index.
 //
@@ -106,11 +108,12 @@ void victim_function_v8(size_t x) {
 //
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
+#ifndef slh
 void victim_function_v9(size_t x, int *x_is_safe) {
      if (*x_is_safe)
           temp &= publicarray2[publicarray[x]];
 }
-
+#endif
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 10:  Leak a comparison result.
 //
@@ -147,7 +150,6 @@ void victim_function_v11(size_t x) {
      if (x < publicarray_size)
           temp = mymemcmp(&temp, publicarray2 + (publicarray[x]), 1);
 }
-
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 12:  Make the index be the sum of two input parameters.
 //
@@ -163,6 +165,7 @@ void victim_function_v12(size_t x, size_t y) {
 //
 // Comments: Output is unsafe. We removed the "__inline" since anyways BMC inlines all the calls
 // ----------------------------------------------------------------------------------------
+#ifndef slh
 int is_x_safe(size_t x) {
     if (x < publicarray_size) {
         return 1;
@@ -173,7 +176,7 @@ void victim_function_v13(size_t x) {
      if (is_x_safe(x))
           temp &= publicarray2[publicarray[x]];
 }
-
+#endif
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 14:  Invert the low bits of x
 //
