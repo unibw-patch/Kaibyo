@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-m32 -S -masm=intel -fomit-frame-pointer -fno-pic
+CFLAGS=-m32 -S -masm=intel -fomit-frame-pointer -fno-pie
 
 .PHONY: clean spectre-stl.s
 
