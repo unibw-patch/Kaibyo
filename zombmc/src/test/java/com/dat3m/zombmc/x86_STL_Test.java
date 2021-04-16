@@ -18,18 +18,16 @@ import org.junit.runners.Parameterized;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static com.dat3m.zombmc.utils.ResourceHelper.TEST_RESOURCE_PATH;
-import static com.dat3m.zombmc.utils.Result.SAFE;
 import static com.dat3m.zombmc.utils.Result.UNSAFE;
 import static com.dat3m.zombmc.utils.ResourceHelper.CAT_RESOURCE_PATH;
 import static com.dat3m.zombmc.ZomBMC.testMemorySafety;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
-public class x86_PHT_Test {
+public class x86_STL_Test {
 
     private Program program;
     private Wmm wmm;
@@ -41,32 +39,17 @@ public class x86_PHT_Test {
         List<Object[]> data = new ArrayList<>();
 
         Settings s = new Settings(Mode.KNASTER, Alias.CFIS, 1, false);
-        Wmm sc = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/sc.cat"));
-		ZomBMCOptions none = new ZomBMCOptions("secret", true, new ArrayList<Mitigation>(), s);
-		ZomBMCOptions ns = new ZomBMCOptions("secret", true, Collections.singletonList(Mitigation.NOBRANCHSPECULATION), s);
+        Wmm stl = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/stl.cat"));
+		ZomBMCOptions none = new ZomBMCOptions("secretarray", false, new ArrayList<Mitigation>(), s);
         
-        for(int i = 1; i <= 15; i++) {
-        	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht.s"));
-        	data.add(new Object[]{program, sc, ns, SAFE});	
-        }
-
-        for(int i = 1; i <= 15; i++) {
-        	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht.s"));
-        	if(i == 5) {
-        		data.add(new Object[]{program, sc, none, SAFE});	
-        	} else {
-        		data.add(new Object[]{program, sc, none, UNSAFE});
-        	}
-        }
-
-        for(int i = 1; i <= 15; i++) {
-        	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht-lfence.s"));
-        	data.add(new Object[]{program, sc, none, SAFE});	
+        for(int i = 1; i <= 13; i++) {
+        	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-stl.s"));
+        	data.add(new Object[]{program, stl, none, UNSAFE});	
         }
         return data;
     }
     
-    public x86_PHT_Test(Program program, Wmm wmm, ZomBMCOptions options, Result expected) {
+    public x86_STL_Test(Program program, Wmm wmm, ZomBMCOptions options, Result expected) {
         this.program = program;
         this.wmm = wmm;
         this.options = options;

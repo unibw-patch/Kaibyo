@@ -120,7 +120,7 @@ public class VisitorAsmX86
 		// TODO: here we fix the size of the stack to 10. This should be handle better
 		// i.e. compute the actual size of make it parametric
 		int stackSize = stackLowerBound + stackUpperBound;
-//		programBuilder.addDeclarationArray("stack", Collections.nCopies(stackSize, new INonDet(UINT, -1)));
+//		programBuilder.addDeclarationArray("stack", Collections.nCopies(stackSize, new INonDet(UINT, PRECISION)));
 		programBuilder.addDeclarationArray("stack", Collections.nCopies(stackSize, new IConst(16, PRECISION)));
 		programBuilder.initRegEqArrayPtr(currenThread, "esp", "stack", stackLowerBound, PRECISION);
 		visitChildren(ctx);
