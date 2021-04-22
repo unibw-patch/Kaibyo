@@ -59,6 +59,7 @@ import com.dat3m.dartagnan.program.event.Label;
 import com.dat3m.dartagnan.program.event.Load;
 import com.dat3m.dartagnan.program.event.Local;
 import com.dat3m.dartagnan.program.event.Store;
+import com.dat3m.dartagnan.program.memory.Address;
 import com.dat3m.dartagnan.program.memory.Location;
 
 public class VisitorAsmX86
@@ -166,134 +167,179 @@ public class VisitorAsmX86
 	public Object visitInstruction(AsmX86Parser.InstructionContext ctx) {
 		Register esp = programBuilder.getRegister(currenThread, "esp");
 		String opcode = ctx.opcode().getText();
-		if(opcode.equals("ret")) {
-			functions.get(current_function).add(new Local(esp, new IExprBin(esp, PLUS, new IConst(4, PRECISION))));
-			functions.get(current_function).add(new FunRet(current_function));
-			return null;
+		
+		// Operations with no arguments
+		switch(opcode) {
+			case "nop":
+				return  null;
+			case "ret":
+				functions.get(current_function).add(new Local(esp, new IExprBin(esp, PLUS, new IConst(4, PRECISION))));
+				functions.get(current_function).add(new FunRet(current_function));
+				return null;
+			case "lfence":
+				functions.get(current_function).add(new Fence("lfence"));
+				return null;
 		}
-		if(opcode.equals("lfence")) {
-			functions.get(current_function).add(new Fence("lfence"));
-			return null;
-		}
+
+		ExpressionContext e1 = ctx.expressionlist().expression(0);
+		ExpressionContext e2 = ctx.expressionlist().expression(1);
+		
+		ExprInterface op1 = e1 != null ? (ExprInterface)e1.accept(this) : null;
+		ExprInterface op2 = e2 != null ? (ExprInterface)e2.accept(this) : null;
+
+		Register dummy = null;
+
 		// TODO: treat properly different instructions (based on type of extension)
 		if(opcode.startsWith("mov")) {
-			ExprInterface op1 = (ExprInterface)ctx.expressionlist().expression(0).accept(this);
-			ExprInterface op2 = (ExprInterface)ctx.expressionlist().expression(1).accept(this);
-			if(ctx.expressionlist().expression(0).multiplyingExpression(0).argument(0).address() != null) {
-				IExpr address = (IExpr)ctx.expressionlist().expression(0).accept(this);
-				functions.get(current_function).add(new Store(address, (ExprInterface)op2, "NA"));
+			if(op2 instanceof Address || e2.getText().contains("[")) {
+				if(op1 instanceof Register) {
+					functions.get(current_function).add(new Load((Register)op1, (IExpr)op2, "NA"));
+					return null;
+				}
+				dummy = programBuilder.getOrCreateRegister(currenThread, null, PRECISION);
+				functions.get(current_function).add(new Load(dummy, (IExpr)op2, "NA"));
+			}
+			if(op1 instanceof Address || e1.getText().contains("[")) {
+				ExprInterface value = dummy == null ? op2 :  dummy;
+				functions.get(current_function).add(new Store((IExpr)op1, value, "NA"));
 				return null;
 			}
-			if(ctx.expressionlist().expression(1).multiplyingExpression(0).argument(0).address() != null) {
-				IExpr address = (IExpr)ctx.expressionlist().expression(1).accept(this);
-				functions.get(current_function).add(new Load((Register)op1, address, "NA"));
-				return null;
-			}
-			functions.get(current_function).add(new Local((Register)op1, op2));
+			ExprInterface value = dummy == null ? op2 : dummy; 
+			functions.get(current_function).add(new Local((Register)op1, value));
 			return null;
 		}
+
 		if(ctx.expressionlist() != null && ctx.expressionlist().expression().size() == 1) {
+			ExprInterface value = op1;
+			if(op1 instanceof Address || e1.getText().contains("[")) {
+				dummy = programBuilder.getOrCreateRegister(currenThread, null, PRECISION);
+				functions.get(current_function).add(new Load(dummy, (IExpr)op1, "NA"));
+				value = dummy;
+			}
 			Register reg = programBuilder.getRegister(currenThread, ctx.expressionlist().getText());
 			String name = ctx.expressionlist().getText().substring(2);
 			Label label = programBuilder.getOrCreateLabel(name);
 			switch(opcode) {
-			case "push":
-				functions.get(current_function).add(new Local(esp, new IExprBin(esp, MINUS, new IConst(4, PRECISION))));
-				functions.get(current_function).add(new Store(esp, reg, "NA"));
-				break;
-			case "pop":
-				functions.get(current_function).add(new Load(reg, esp, "NA"));
-				functions.get(current_function).add(new Local(esp, new IExprBin(esp, PLUS, new IConst(4, PRECISION))));
-				break;
-			case "jae":
-				functions.get(current_function).add(new CondJump(new BExprUn(NOT, cf), label));
-				break;
-			case "jmp":
-				functions.get(current_function).add(new CondJump(new BConst(true), label));
-				break;
-			case "jle":
-				functions.get(current_function).add(new CondJump(new BExprBin(new BExprBin(sf, BOpBin.XOR, of), BOpBin.OR, zf), label));
-				break;
-			case "jge":				
-				functions.get(current_function).add(new CondJump(new Atom(sf, COpBin.EQ, of), label));
-				break;
-			case "jl":
-				functions.get(current_function).add(new CondJump(new BExprBin(sf, BOpBin.XOR, of), label));
-				break;
-			case "jne":
-				functions.get(current_function).add(new CondJump(new BExprUn(BOpUn.NOT, zf), label));
-				break;
-			case "je":
-				functions.get(current_function).add(new CondJump(zf, label));
-				break;
-			case "call":
-				String function_name = ctx.expressionlist().expression(0).getText();
-				functions.get(current_function).add(new Local(esp, new IExprBin(esp, MINUS, new IConst(4, PRECISION))));
-				functions.get(current_function).add(new FunCall(function_name));
-				break;
-			default:
-				System.out.println("WARNING-2: " + ctx.getText());
-				return null;
+				case "push":
+					functions.get(current_function).add(new Local(esp, new IExprBin(esp, MINUS, new IConst(4, PRECISION))));
+					functions.get(current_function).add(new Store(esp, value, "NA"));
+					break;
+				case "pop":
+					functions.get(current_function).add(new Load(reg, esp, "NA"));
+					functions.get(current_function).add(new Local(esp, new IExprBin(esp, PLUS, new IConst(4, PRECISION))));
+					break;
+				case "jae":
+					functions.get(current_function).add(new CondJump(new BExprUn(NOT, cf), label));
+					break;
+				case "jmp":
+					functions.get(current_function).add(new CondJump(new BConst(true), label));
+					break;
+				case "jle":
+					functions.get(current_function).add(new CondJump(new BExprBin(new BExprBin(sf, BOpBin.XOR, of), BOpBin.OR, zf), label));
+					break;
+				case "jge":				
+					functions.get(current_function).add(new CondJump(new Atom(sf, COpBin.EQ, of), label));
+					break;
+				case "jl":
+					functions.get(current_function).add(new CondJump(new BExprBin(sf, BOpBin.XOR, of), label));
+					break;
+				case "jne":
+					functions.get(current_function).add(new CondJump(new BExprUn(BOpUn.NOT, zf), label));
+					break;
+				case "je":
+					functions.get(current_function).add(new CondJump(zf, label));
+					break;
+				case "jbe":
+					functions.get(current_function).add(new CondJump(new BExprBin(cf, BOpBin.OR, zf), label));
+					break;
+				case "call":
+					String function_name = e1.getText();
+					functions.get(current_function).add(new Local(esp, new IExprBin(esp, MINUS, new IConst(4, PRECISION))));
+					functions.get(current_function).add(new FunCall(function_name));
+					break;
+				case "dec":
+					functions.get(current_function).add(new Local(reg, new IExprBin(reg, MINUS, new IConst(1, PRECISION))));
+					break;
+				case "inc":
+					functions.get(current_function).add(new Local(reg, new IExprBin(reg, PLUS, new IConst(1, PRECISION))));
+					break;
+				default:
+					System.out.println("WARNING-2: " + ctx.getText());
+					return null;
 			}
 			return null;
 		}
+
 		if(ctx.expressionlist() != null && ctx.expressionlist().expression().size() == 2) {
-			ExprInterface v1 = (ExprInterface)ctx.expressionlist().expression(0).accept(this);
-			if(ctx.expressionlist().expression(0).multiplyingExpression(0).argument(0).address() !=  null) {
-				Register dummy = programBuilder.getOrCreateRegister(currenThread, null, PRECISION);
-				functions.get(current_function).add(new Load(dummy, (IExpr)v1, "NA"));
-				v1 = dummy;
+			
+			if(opcode.equals("lea")) {
+				functions.get(current_function).add(new Local((Register)op1, op2));
+				return null;
 			}
-			ExprInterface v2 = (ExprInterface)ctx.expressionlist().expression(1).accept(this);
-			if(ctx.expressionlist().expression(1).multiplyingExpression(0).argument(0).address() !=  null) {
-				Register dummy = programBuilder.getOrCreateRegister(currenThread, null, PRECISION);
-				functions.get(current_function).add(new Load(dummy, (IExpr)v2, "NA"));
-				v2 = dummy;
+			
+			Register dummy1 = null;
+			Register dummy2 = null;
+			
+			if(op1 instanceof Address || e1.getText().contains("[")) {
+				dummy1 = programBuilder.getOrCreateRegister(currenThread, null, PRECISION);
+				functions.get(current_function).add(new Load(dummy1, (IExpr)op1, "NA"));
 			}
+			
+			if(op2 instanceof Address || ctx.expressionlist().expression(1).getText().contains("[")) {
+				dummy2 = programBuilder.getOrCreateRegister(currenThread, null, PRECISION);
+				functions.get(current_function).add(new Load(dummy2, (IExpr)op2, "NA"));
+			}
+			
+			ExprInterface v1p = dummy1 == null ? op1 : dummy1;
+			ExprInterface v2p = dummy2 == null ? op2 : dummy2;
 			ExprInterface exp;
+
 			switch(opcode) {
-			case "shl":
-				exp = new IExprBin(v1, L_SHIFT, v2);
-				break;
-			case "sar":
-				exp = new IExprBin(v1, AR_SHIFT, v2);
-				break;
-			case "imul":
-				exp = new IExprBin(v1, MULT, v2);
-				break;
-			case "xor":
-				exp = new IExprBin(v1, XOR, v2);
-				break;
-			case "and":
-				exp = new IExprBin(v1, AND, v2);
-				break;
-			case "or":
-				exp = new IExprBin(v1, OR, v2);
-				break;
-			case "add":
-				exp = new IExprBin(v1, PLUS, v2);
-				break;
-			case "sub":
-				exp = new IExprBin(v1, MINUS, v2);
-				break;
-			case "lea":
-				exp = (ExprInterface)ctx.expressionlist().expression(1).multiplyingExpression(0).argument(0).expression().accept(this);
-				break;
-			case "cmp":
-				cf = CF.getFlagDef(v1, v2);
-				of = OF.getFlagDef(v1, v2);
-				zf = ZF.getFlagDef(v1, v2);
-				sf = SF.getFlagDef(v1, v2);
-				return null;
-			default:
-				System.out.println("WARNING-3: " + ctx.getText());
+				case "shl":
+					exp = new IExprBin(v1p, L_SHIFT, v2p);
+					break;
+				case "sar":
+					exp = new IExprBin(v1p, AR_SHIFT, v2p);
+					break;
+				case "imul":
+					exp = new IExprBin(v1p, MULT, v2p);
+					break;
+				case "xor":
+					exp = new IExprBin(v1p, XOR, v2p);
+					break;
+				case "and":
+					exp = new IExprBin(v1p, AND, v2p);
+					break;
+				case "or":
+					exp = new IExprBin(v1p, OR, v2p);
+					break;
+				case "add":
+					exp = new IExprBin(v1p, PLUS, v2p);
+					break;
+				case "sub":
+					exp = new IExprBin(v1p, MINUS, v2p);
+					break;
+				case "cmp":
+					cf = CF.getFlagDef(v1p, v2p);
+					of = OF.getFlagDef(v1p, v2p);
+					zf = ZF.getFlagDef(v1p, v2p);
+					sf = SF.getFlagDef(v1p, v2p);
+					return null;
+				default:
+					System.out.println("WARNING-3: " + ctx.getText());
+					return null;
+			}
+			
+			if(op1 instanceof Address || e1.getText().contains("[")) {
+				ExprInterface value = dummy == null ? exp :  dummy;
+				functions.get(current_function).add(new Store((IExpr)op1, value, "NA"));
 				return null;
 			}
-			functions.get(current_function).add(new Local((Register)v1, exp));
+			functions.get(current_function).add(new Local((Register)v1p, exp));
 			return null;
 		}
 		System.out.println("WARNING-4: " + ctx.getText());
-		return visitChildren(ctx);
+		return null;
 	}
 	
 	@Override
@@ -357,11 +403,15 @@ public class VisitorAsmX86
 		return visitChildren(ctx);
 	}
 
-	@Override
-	public Object visitAddress(AsmX86Parser.AddressContext ctx) {
-		return (IExpr)ctx.expression().accept(this);
+	@Override public Object visitArrayAccess(AsmX86Parser.ArrayAccessContext ctx) {
+		if(ctx.name() != null) {
+			IExpr base = (IExpr)ctx.name().accept(this);
+			IExpr index = (IExpr)ctx.expression().accept(this);
+			return new IExprBin(base, PLUS, index);
+		}
+		return ctx.expression().accept(this);
 	}
-
+	
 	@Override
 	public Object visitExpression(AsmX86Parser.ExpressionContext ctx) {
 		if(!ctx.SIGN().isEmpty()) {

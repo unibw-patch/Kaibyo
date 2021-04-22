@@ -15,6 +15,7 @@ instruction
 lbl
    : GLOB global
    | TYPE vardef
+   | SIZE sizedef
    | arraysize
    | arrayinit
    | varinit
@@ -40,6 +41,11 @@ global
 
 vardef
    : variable ',' AT type
+   ;
+
+sizedef
+   : variable ',' '.-' variable
+   | variable ',' expression
    ;
 
 variable
@@ -168,17 +174,18 @@ argument
    | AT? name
    | string
    | ('(' expression ')')
-   | ((number | name)? '[' expression ']')
-   | address
+   | arrayAccess
+   | ptr expression
    | NOT expression
+   | OFFSET FLAT ':' expression
    | OFFSET expression
    | LENGTH expression
    | (register_ ':') expression
    | LABEL
    ;
 
-address
-   : ptr '[' expression ']'
+arrayAccess
+   : ((number | name)? '[' expression ']')
    ;
 
 ptr
@@ -313,6 +320,11 @@ OFFSET
    ;
 
 
+FLAT
+   : F L A T
+   ;
+
+
 RW
    : R W
    ;
@@ -414,6 +426,10 @@ GLOB
    
 TYPE
    : '.' T Y P E
+   ;
+   
+SIZE
+   : '.' S I Z E
    ;
    
 ARRAYSIZE
