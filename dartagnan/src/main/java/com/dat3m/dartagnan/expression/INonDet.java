@@ -43,6 +43,12 @@ public class INonDet extends IConst implements ExprInterface {
 	}
 
 	@Override
+	public Expr toZ3Int(Context ctx) {
+		String name = Integer.toString(hashCode());
+		return precision > 0 ? ctx.mkBVConst(name, precision) : ctx.mkIntConst(name);
+    }
+
+	@Override
 	public Expr getLastValueExpr(Context ctx) {
 		String name = Integer.toString(hashCode());
 		return precision > 0 ? ctx.mkBVConst(name, precision) : ctx.mkIntConst(name);
