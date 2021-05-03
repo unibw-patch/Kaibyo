@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.dat3m.zombmc.utils.ResourceHelper.TEST_RESOURCE_PATH;
+import static com.dat3m.zombmc.utils.Result.SAFE;
 import static com.dat3m.zombmc.utils.Result.UNSAFE;
 import static com.dat3m.zombmc.utils.ResourceHelper.CAT_RESOURCE_PATH;
 import static com.dat3m.zombmc.ZomBMC.testMemorySafety;
@@ -39,12 +40,26 @@ public class x86_STL_Test {
         List<Object[]> data = new ArrayList<>();
 
         Settings s = new Settings(Mode.KNASTER, Alias.CFIS, 1, false);
+        Wmm sc = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/sc.cat"));
         Wmm stl = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/stl.cat"));
 		ZomBMCOptions none = new ZomBMCOptions("secretarray", false, new ArrayList<Mitigation>(), s);
         
         for(int i = 1; i <= 13; i++) {
         	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-stl.s"));
-        	data.add(new Object[]{program, stl, none, UNSAFE});	
+        	switch(i) {
+        	case 3:
+        	case 9:
+        	case 12:
+        	case 13:
+        		data.add(new Object[]{program, stl, none, SAFE});
+        		break;
+        	default:
+        		data.add(new Object[]{program, stl, none, UNSAFE});
+        	}
+        }
+        for(int i = 1; i <= 13; i++) {
+        	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-stl.s"));
+        	data.add(new Object[]{program, sc, none, SAFE});
         }
         return data;
     }

@@ -445,7 +445,7 @@ VARINIT
    ;
    
 LABEL
-   : '.L' NAME
+   : '.L' (NAME | NUMBER)
    ;
    
 NAME

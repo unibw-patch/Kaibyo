@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors;
 
+import static com.dat3m.dartagnan.expression.INonDetTypes.UINT;
 import static com.dat3m.dartagnan.expression.op.BOpUn.NOT;
 import static com.dat3m.dartagnan.expression.op.IOpBin.AND;
 import static com.dat3m.dartagnan.expression.op.IOpBin.AR_SHIFT;
@@ -34,6 +35,7 @@ import com.dat3m.dartagnan.expression.ExprInterface;
 import com.dat3m.dartagnan.expression.IConst;
 import com.dat3m.dartagnan.expression.IExpr;
 import com.dat3m.dartagnan.expression.IExprBin;
+import com.dat3m.dartagnan.expression.INonDet;
 import com.dat3m.dartagnan.expression.op.BOpBin;
 import com.dat3m.dartagnan.expression.op.BOpUn;
 import com.dat3m.dartagnan.expression.op.COpBin;
@@ -59,7 +61,6 @@ import com.dat3m.dartagnan.program.event.Label;
 import com.dat3m.dartagnan.program.event.Load;
 import com.dat3m.dartagnan.program.event.Local;
 import com.dat3m.dartagnan.program.event.Store;
-import com.dat3m.dartagnan.program.memory.Address;
 import com.dat3m.dartagnan.program.memory.Location;
 
 public class VisitorAsmX86
@@ -80,7 +81,7 @@ public class VisitorAsmX86
 	private BExpr sf;
 	
 	private int stackUpperBound = 8;
-	private int stackLowerBound = 12;
+	private int stackLowerBound = 36;
 	
 	public static final int PRECISION = 32;
 
@@ -118,11 +119,10 @@ public class VisitorAsmX86
 			programBuilder.getOrCreateRegister(currenThread, reg.getName(), PRECISION);
 		}
 		// Before calling the entry point, the stack is initialized we nondet  values
-		// TODO: here we fix the size of the stack to 10. This should be handle better
-		// i.e. compute the actual size of make it parametric
-		int stackSize = stackLowerBound + stackUpperBound;
-//		programBuilder.addDeclarationArray("stack", Collections.nCopies(stackSize, new INonDet(UINT, PRECISION)));
-		programBuilder.addDeclarationArray("stack", Collections.nCopies(stackSize, new IConst(16, PRECISION)));
+		// TODO: here we fix the size of the stack based on the stackLowerBound and 
+		// stackUpperBound variables (which are had-coded). This should be handle better
+		int stackSize = stackLowerBound + stackUpperBound + 1;
+		programBuilder.addDeclarationArray("stack", Collections.nCopies(stackSize, new INonDet(UINT, PRECISION)));
 		programBuilder.initRegEqArrayPtr(currenThread, "esp", "stack", stackLowerBound, PRECISION);
 		visitChildren(ctx);
 		if(!functions.containsKey(entry)) {
@@ -146,7 +146,7 @@ public class VisitorAsmX86
 	@Override
 	public Object visitLbl(AsmX86Parser.LblContext ctx) {
 		if(ctx.LABEL() != null) {
-			String name = ctx.getText().substring(2, ctx.getText().length()-1);
+			String name = ctx.getText().substring(1, ctx.getText().length()-1);
 			functions.get(current_function).add(programBuilder.getOrCreateLabel(name));
 			return null;			
 		}
@@ -191,7 +191,7 @@ public class VisitorAsmX86
 
 		// TODO: treat properly different instructions (based on type of extension)
 		if(opcode.startsWith("mov")) {
-			if(op2 instanceof Address || e2.getText().contains("[")) {
+			if(e2.multiplyingExpression(0).argument(0).ptr() != null) {
 				if(op1 instanceof Register) {
 					functions.get(current_function).add(new Load((Register)op1, (IExpr)op2, "NA"));
 					return null;
@@ -199,7 +199,7 @@ public class VisitorAsmX86
 				dummy = programBuilder.getOrCreateRegister(currenThread, null, PRECISION);
 				functions.get(current_function).add(new Load(dummy, (IExpr)op2, "NA"));
 			}
-			if(op1 instanceof Address || e1.getText().contains("[")) {
+			if(e1.multiplyingExpression(0).argument(0).ptr() != null) {
 				ExprInterface value = dummy == null ? op2 :  dummy;
 				functions.get(current_function).add(new Store((IExpr)op1, value, "NA"));
 				return null;
@@ -211,13 +211,13 @@ public class VisitorAsmX86
 
 		if(ctx.expressionlist() != null && ctx.expressionlist().expression().size() == 1) {
 			ExprInterface value = op1;
-			if(op1 instanceof Address || e1.getText().contains("[")) {
+			if(e1.multiplyingExpression(0).argument(0).ptr() != null) {
 				dummy = programBuilder.getOrCreateRegister(currenThread, null, PRECISION);
 				functions.get(current_function).add(new Load(dummy, (IExpr)op1, "NA"));
 				value = dummy;
 			}
 			Register reg = programBuilder.getRegister(currenThread, ctx.expressionlist().getText());
-			String name = ctx.expressionlist().getText().substring(2);
+			String name = ctx.expressionlist().getText().substring(1);
 			Label label = programBuilder.getOrCreateLabel(name);
 			switch(opcode) {
 				case "push":
@@ -280,12 +280,12 @@ public class VisitorAsmX86
 			Register dummy1 = null;
 			Register dummy2 = null;
 			
-			if(op1 instanceof Address || e1.getText().contains("[")) {
+			if(e1.multiplyingExpression(0).argument(0).ptr() != null) {
 				dummy1 = programBuilder.getOrCreateRegister(currenThread, null, PRECISION);
 				functions.get(current_function).add(new Load(dummy1, (IExpr)op1, "NA"));
 			}
 			
-			if(op2 instanceof Address || ctx.expressionlist().expression(1).getText().contains("[")) {
+			if(e2.multiplyingExpression(0).argument(0).ptr() != null) {
 				dummy2 = programBuilder.getOrCreateRegister(currenThread, null, PRECISION);
 				functions.get(current_function).add(new Load(dummy2, (IExpr)op2, "NA"));
 			}
@@ -330,7 +330,7 @@ public class VisitorAsmX86
 					return null;
 			}
 			
-			if(op1 instanceof Address || e1.getText().contains("[")) {
+			if(e1.multiplyingExpression(0).argument(0).ptr() != null) {
 				ExprInterface value = dummy == null ? exp :  dummy;
 				functions.get(current_function).add(new Store((IExpr)op1, value, "NA"));
 				return null;
