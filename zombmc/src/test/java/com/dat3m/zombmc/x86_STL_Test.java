@@ -74,7 +74,7 @@ public class x86_STL_Test {
     @Test(timeout = 180000)
     public void litmus() {
         Context ctx = new Context();
-		assertTrue(testMemorySafety(ctx, program, wmm, options).equals(expected));
+		assertEquals(expected, testMemorySafety(ctx, program, wmm, options));
 		ctx.close();
     }
 }
