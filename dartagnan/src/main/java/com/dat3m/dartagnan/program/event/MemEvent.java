@@ -5,6 +5,8 @@ import com.google.common.collect.Sets;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Expr;
 
+import static com.dat3m.dartagnan.parsers.program.visitors.VisitorAsmX86.PRECISION;
+
 import com.dat3m.dartagnan.expression.ExprInterface;
 import com.dat3m.dartagnan.expression.IExpr;
 import com.dat3m.dartagnan.program.memory.Address;
@@ -47,7 +49,8 @@ public abstract class MemEvent extends Event {
     @Override
     public void initialise(Context ctx, boolean slh) {
         super.initialise(ctx, slh);
-        memAddressExpr = slh ? ctx.mkITE(cfVar, address.toZ3Int(this, ctx), ctx.mkInt(0)) : address.toZ3Int(this, ctx);
+        Expr addEnc = address.toZ3Int(this, ctx);
+		memAddressExpr = slh ? ctx.mkITE(cfVar, addEnc, ctx.mkBV(0, PRECISION)) : addEnc;
     }
 
     public Expr getMemAddressExpr(){
