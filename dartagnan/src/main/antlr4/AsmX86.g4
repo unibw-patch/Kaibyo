@@ -363,12 +363,12 @@ OPCODE
    | J N B E | J N C | J N E | J N G | J N G E | J N L | J N L E | J N O | J N P | J N S | J N Z 
    | J O | J P | J P E | J P O | J S | J Z | J C X Z | J M P | J M P S | J M P F 
    | L A H F | L D S | L E A | L E S | L F E N C E | L O C K | L O D S | L O D S B | L O D S W | L O O P | L O O P E | L O O P N E | L O O P N Z | L O O P Z 
-   | M O V | M O V S | M O V S B | M O V S W  | M O V S X D | M O V Z X | M U L 
+   | M F E N C E  | M O V | M O V S | M O V S B | M O V S W  | M O V S X D | M O V Z X | M U L 
    | N E G | N O P | N O T 
    | O R | O U T 
    | P O P | P O P F | P U S H | P U S H F 
    | R C L | R C R | R E T | R E T N | R E T F | R O L | R O R 
-   | S A H F | S A L | S A R | S A L C | S B B | S C A S B | S C A S W | S H L | S H R | S T C | S T D | S T I | S T O S B | S T O S W | S U B 
+   | S A H F | S A L | S A R | S A L C | S B B | S C A S B | S C A S W | S F E N C E | S H L | S H R | S T C | S T D | S T I | S T O S B | S T O S W | S U B 
    | T E S T 
    | W A I T 
    | X C H G 

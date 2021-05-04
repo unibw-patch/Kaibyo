@@ -157,10 +157,6 @@ public class VisitorAsmX86
 		return visitChildren(ctx);
 	}
 	
-	@Override public Object visitLine(AsmX86Parser.LineContext ctx) {
-		return visitChildren(ctx);
-	}
-
 	@Override
 	public Object visitInstruction(AsmX86Parser.InstructionContext ctx) {
 		Register esp = programBuilder.getRegister(currenThread, "esp");
@@ -176,6 +172,12 @@ public class VisitorAsmX86
 				return null;
 			case "lfence":
 				functions.get(current_function).add(new Fence("lfence"));
+				return null;
+			case "sfence":
+				functions.get(current_function).add(new Fence("sfence"));
+				return null;
+			case "mfence":
+				functions.get(current_function).add(new Fence("mfence"));
 				return null;
 		}
 
@@ -380,7 +382,7 @@ public class VisitorAsmX86
 		if(loc != null) {
 			return loc.getAddress();
 		}
-		return visitChildren(ctx);
+		return null;
 	}
 
 	@Override public Object visitArrayAccess(AsmX86Parser.ArrayAccessContext ctx) {
@@ -427,7 +429,29 @@ public class VisitorAsmX86
 
 	@Override
 	public Register visitRegister_(AsmX86Parser.Register_Context ctx) {
-		return programBuilder.getRegister(currenThread, ctx.getText());
+		String name;
+		switch (ctx.getText()) {
+		case "rax": case "ax": case "ah": case "al":
+			System.out.println(String.format("WARNING: Register %s is being cast to eax", ctx.getText()));
+			name = "eax";
+			break;
+		case "bax": case "bx": case "bh": case "bl":
+			System.out.println(String.format("WARNING: Register %s is being cast to ebx", ctx.getText()));
+			name = "ebx";
+			break;
+		case "cax": case "cx": case "ch": case "cl":
+			System.out.println(String.format("WARNING: Register %s is being cast to ecx", ctx.getText()));
+			name = "ecx";
+			break;
+		case "rdx": case "dx": case "dh": case "dl":
+			System.out.println(String.format("WARNING: Register %s is being cast to edx", ctx.getText()));
+			name = "edx";
+			break;
+		default:
+			name = ctx.getText();
+			break;
+		}
+		return programBuilder.getRegister(currenThread, name);
 	}
 
 	@Override
