@@ -7,6 +7,8 @@ import static com.dat3m.zombmc.utils.Result.SAFE;
 import static com.dat3m.zombmc.utils.Result.TIMEOUT;
 import static com.dat3m.zombmc.utils.options.ZomBMCOptions.BRANCHSPECULATIONSTRING;
 import static com.dat3m.zombmc.utils.options.ZomBMCOptions.ONLYSPECULATIVESTRING;
+import static com.microsoft.z3.Status.SATISFIABLE;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -76,7 +78,7 @@ public class ZomBMC {
 
         Solver solver = ctx.mkSolver();
         Params p = ctx.mkParams();
-		p.add("timeout", 10000);
+		p.add("timeout", 30000);
 		solver.setParameters(p);
 
 		solver.add(program.encodeSCF(ctx, options.getMitigations()));
@@ -88,15 +90,19 @@ public class ZomBMC {
 
         solver.add(wmm.encode(program, ctx, options.getSettings()));
         solver.add(wmm.consistent(program, ctx));
+        solver.push();
         solver.add(encodeLeakage(program, wmm, options, ctx));
 
         switch(solver.check()) {
-        	case SATISFIABLE: 
-        		return UNSAFE;
-        	case UNSATISFIABLE: 
-        		return SAFE;
+        	case SATISFIABLE:
+            	solver.add(program.encodeNoBoundEventExec(ctx));
+    			return solver.check() == SATISFIABLE ? UNSAFE : Result.UNKNOWN;
+        	case UNSATISFIABLE:
+            	solver.pop();
+    			solver.add(ctx.mkNot(program.encodeNoBoundEventExec(ctx)));
+    			return solver.check() == SATISFIABLE ? Result.UNKNOWN : SAFE;
         	default:
-            	return solver.getReasonUnknown().equals("timeout") ? TIMEOUT : Result.UNKNOWN;
+        		return solver.getReasonUnknown().equals("canceled") ? TIMEOUT : Result.UNKNOWN;
         }
     }
 }

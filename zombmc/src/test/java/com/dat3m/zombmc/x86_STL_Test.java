@@ -47,10 +47,12 @@ public class x86_STL_Test {
         	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-stl.s"));
         	switch(i) {
         	case 3:
-        	case 9:
         	case 12:
         	case 13:
         		data.add(new Object[]{program, stl, none, SAFE});
+        		break;
+        	case 9:
+        		data.add(new Object[]{program, stl, none, Result.UNKNOWN});
         		break;
         	default:
         		data.add(new Object[]{program, stl, none, UNSAFE});
