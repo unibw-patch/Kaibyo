@@ -16,25 +16,10 @@ lbl
    : GLOB global
    | TYPE vardef
    | SIZE sizedef
-   | arraysize
-   | arrayinit
-   | varinit
    | LABEL COLON
    | slabel COLON? expressionlist?
    ;
 
-arraysize
-   : ARRAYSIZE expressionlist?
-   ;
-   
-arrayinit
-   : ARRAYINIT expressionlist?
-   ;
-   
-varinit
-   : VARINIT expressionlist?
-   ;
-   
 global
    : NAME
    ;
@@ -430,18 +415,6 @@ TYPE
    
 SIZE
    : '.' S I Z E
-   ;
-   
-ARRAYSIZE
-   : '.' A R R A Y S I Z E
-   ;
-   
-ARRAYINIT
-   : '.' A R R A Y I N I T
-   ;
-   
-VARINIT
-   : '.' V A R I N I T
    ;
    
 LABEL

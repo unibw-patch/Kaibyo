@@ -40,7 +40,6 @@ public class x86_STL_Test {
         List<Object[]> data = new ArrayList<>();
 
         Settings s = new Settings(Mode.KNASTER, Alias.CFIS, 1, false);
-        Wmm sc = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/sc.cat"));
         Wmm stl = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/stl.cat"));
 		ZomBMCOptions none = new ZomBMCOptions("secretarray", false, new ArrayList<Mitigation>(), s);
         
@@ -57,10 +56,6 @@ public class x86_STL_Test {
         		data.add(new Object[]{program, stl, none, UNSAFE});
         	}
         }
-        for(int i = 1; i <= 13; i++) {
-        	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-stl.s"));
-        	data.add(new Object[]{program, sc, none, SAFE});
-        }
         return data;
     }
     
@@ -71,7 +66,7 @@ public class x86_STL_Test {
         this.expected = expected;
     }
 
-    @Test(timeout = 180000)
+    @Test(timeout = 60000)
     public void litmus() {
         Context ctx = new Context();
 		assertEquals(expected, testMemorySafety(ctx, program, wmm, options));

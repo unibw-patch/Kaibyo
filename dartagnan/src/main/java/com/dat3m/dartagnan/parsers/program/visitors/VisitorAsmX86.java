@@ -42,8 +42,6 @@ import com.dat3m.dartagnan.expression.op.COpBin;
 import com.dat3m.dartagnan.expression.op.IOpBin;
 import com.dat3m.dartagnan.parsers.AsmX86BaseVisitor;
 import com.dat3m.dartagnan.parsers.AsmX86Parser;
-import com.dat3m.dartagnan.parsers.AsmX86Parser.ArrayinitContext;
-import com.dat3m.dartagnan.parsers.AsmX86Parser.ArraysizeContext;
 import com.dat3m.dartagnan.parsers.AsmX86Parser.ExpressionContext;
 import com.dat3m.dartagnan.parsers.AsmX86Parser.VardefContext;
 import com.dat3m.dartagnan.parsers.AsmX86Visitor;
@@ -71,6 +69,9 @@ public class VisitorAsmX86
     private int currenThread = 0;
     private String entry = "main";
     private Set<String> arrays = new HashSet<>();
+    
+    private List<IConst> currentInitValues = new ArrayList<>();
+    private String varToInit = null;
     
     private Map<String, List<Event>> functions = new HashMap<>();
     private String current_function = "main";
@@ -100,16 +101,6 @@ public class VisitorAsmX86
 
 	@Override
 	public Program visitMain(AsmX86Parser.MainContext ctx) {
-		for(ArrayinitContext gblCtx : ctx.line().stream().filter(c -> c.lbl() != null).map(c -> c.lbl().arrayinit()).collect(Collectors.toList())) {
-			if(gblCtx != null) {
-				visitArrayinit(gblCtx);
-			}
-		}
-		for(ArraysizeContext gblCtx : ctx.line().stream().filter(c -> c.lbl() != null).map(c -> c.lbl().arraysize()).collect(Collectors.toList())) {
-			if(gblCtx != null) {
-				visitArraysize(gblCtx);
-			}
-		}
 		for(VardefContext gblCtx : ctx.line().stream().filter(c -> c.lbl() != null).map(c -> c.lbl().vardef()).collect(Collectors.toList())) {
 			if(gblCtx != null) {
 				visitVardef(gblCtx);
@@ -155,6 +146,13 @@ public class VisitorAsmX86
 			if(functions.containsKey(name)) {
 				current_function = name;
 			}
+		}
+		if(ctx.slabel() != null && (ctx.slabel().getText().contains(".byte") || ctx.slabel().getText().contains(".long")) && ctx.expressionlist() != null) {
+			currentInitValues.add((IConst)ctx.expressionlist().accept(this));
+		}
+		if(ctx.slabel() != null && ctx.slabel().getText().contains(".zero")) {
+			int nZeros = Integer.parseInt(ctx.expressionlist().getText());
+			currentInitValues.addAll(Collections.nCopies(nZeros, new IConst(0, PRECISION)));
 		}
 		return visitChildren(ctx);
 	}
@@ -343,42 +341,11 @@ public class VisitorAsmX86
 	}
 	
 	@Override
-	public Object visitArraysize(AsmX86Parser.ArraysizeContext ctx) {
-		String name = ctx.expressionlist().expression(0).getText();
-		if(!arrays.contains(name)) {
-			int size = Integer.decode(ctx.expressionlist().expression(1).getText());
-			programBuilder.addDeclarationArray(name, Collections.nCopies(size, new IConst(0, PRECISION)));
-			arrays.add(name);
-		}
-		return null;
-	}
-
-	@Override
-	public Object visitArrayinit(AsmX86Parser.ArrayinitContext ctx) {
-		List<ExpressionContext> exprs = ctx.expressionlist().expression();
-		String name = exprs.remove(0).getText();
-		if(!arrays.contains(name)) {
-			List<IConst> values = exprs.stream().map(e -> (IConst)e.accept(this)).collect(Collectors.toList());
-			programBuilder.addDeclarationArray(name, values);
-			arrays.add(name);
-		}
-		return null;
-	}
-
-	@Override 
-	public Object visitVarinit(AsmX86Parser.VarinitContext ctx) {
-		String name = ctx.expressionlist().expression(0).getText();
-		IConst value = (IConst)ctx.expressionlist().expression(1).accept(this);
-		programBuilder.initLocEqConst(name, value);
-		return visitChildren(ctx);
-	}
-
-	@Override
 	public Object visitVardef(AsmX86Parser.VardefContext ctx) {
 		if(ctx.type().getText().equals("object")) {
 			String name = ctx.variable().getText();
-			if(!arrays.contains(name) && programBuilder.getLocation(ctx.variable().getText()) == null) {
-				programBuilder.getOrCreateLocation(ctx.variable().getText(), PRECISION);				
+			if(programBuilder.getLocation(name) == null) {
+				programBuilder.getOrCreateLocation(name, PRECISION);
 			}
 			return null;
 		}
@@ -388,6 +355,19 @@ public class VisitorAsmX86
 				functions.put(name, new ArrayList<Event>());				
 			}
 		}
+		return null;
+	}
+
+	@Override
+	public Object visitGlobal(AsmX86Parser.GlobalContext ctx) {
+		if(currentInitValues.size() == 1) {
+			programBuilder.initLocEqConst(varToInit, currentInitValues.get(0));
+		} else if (currentInitValues.size() > 1) {
+			programBuilder.addDeclarationArray(varToInit, currentInitValues);
+			arrays.add(varToInit);
+		}
+		currentInitValues = new ArrayList<>();
+		varToInit = ctx.NAME().toString();
 		return null;
 	}
 
