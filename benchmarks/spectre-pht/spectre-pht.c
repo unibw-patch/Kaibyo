@@ -3,17 +3,18 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#ifdef klee
-#include <klee/klee.h>
-#endif
-
+#define SIZE 16                 /* Size fo secretarray and publicarray */
 uint32_t publicarray_size = 16;
-uint8_t publicarray[16] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
-uint8_t publicarray2[64];
 
-uint8_t secret __attribute__((used));
+// Public values
+uint8_t publicarray[SIZE] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
+uint8_t publicarray2[SIZE] = { 20 };
 
-uint8_t temp = 0; /* Used so compiler won’t optimize out victim_function() */
+// The attacker's goal in all of these examples is to learn any of the secret data in secretarray
+uint8_t secretarray[SIZE] __attribute__((used)) = { 10,21,32,43,54,65,76,87,98,109,110,121,132,143,154,165 };
+
+// This is mostly used to prevent the compiler from optimizing out certain operations
+volatile uint8_t temp = 0;
 
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 1:  This is the sample function from the Spectre paper.
@@ -27,27 +28,23 @@ void victim_function_v1(size_t x) {
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 2:  Moving the leak to a local function that can be inlined.
 // ----------------------------------------------------------------------------------------
-#ifndef slh
 void leakByteLocalFunction(uint8_t k) { temp &= publicarray2[(k)]; }
 void victim_function_v2(size_t x) {
      if (x < publicarray_size) {
           leakByteLocalFunction(publicarray[x]);
      }
 }
-#endif
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 3:  Moving the leak to a function that cannot be inlined.
 //
 // Comments: Output is unsafe.  The same results occur if leakByteNoinlineFunction()
 // is in another source module.
 // ----------------------------------------------------------------------------------------
-#ifndef slh
-__declspec(noinline) void leakByteNoinlineFunction(uint8_t k) { temp &= publicarray2[(k)]; }
+__attribute__ ((noinline)) void leakByteNoinlineFunction(uint8_t k) { temp &= publicarray2[(k)]; }
 void victim_function_v3(size_t x) {
      if (x < publicarray_size)
           leakByteNoinlineFunction(publicarray[x]);
 }
-#endif
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 4:  Add a left shift by one on the index.
 //
@@ -108,12 +105,10 @@ void victim_function_v8(size_t x) {
 //
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
-#ifndef slh
 void victim_function_v9(size_t x, int *x_is_safe) {
      if (*x_is_safe)
           temp &= publicarray2[publicarray[x]];
 }
-#endif
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 10:  Leak a comparison result.
 //
@@ -165,7 +160,6 @@ void victim_function_v12(size_t x, size_t y) {
 //
 // Comments: Output is unsafe. We removed the "__inline" since anyways BMC inlines all the calls
 // ----------------------------------------------------------------------------------------
-#ifndef slh
 int is_x_safe(size_t x) {
     if (x < publicarray_size) {
         return 1;
@@ -176,7 +170,6 @@ void victim_function_v13(size_t x) {
      if (is_x_safe(x))
           temp &= publicarray2[publicarray[x]];
 }
-#endif
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 14:  Invert the low bits of x
 //
@@ -197,30 +190,6 @@ void victim_function_v15(size_t *x) {
           temp &= publicarray2[publicarray[*x]];
 }
 
-#ifdef klee
-int main()
-{
-    size_t x;
-    int y;
-    
-    klee_make_symbolic(&x, sizeof(x), "x");
-    klee_make_symbolic(&y, sizeof(y), "y");
-    
-    victim_function_v1(x);
-    victim_function_v2(x);
-    victim_function_v3(x);
-    victim_function_v4(x);
-    victim_function_v5(x);
-    victim_function_v6(x);
-    victim_function_v7(x);
-    victim_function_v8(x);
-    victim_function_v9(x,&y);
-    victim_function_v10(x,10);
-    victim_function_v11(x);
-    victim_function_v12(x,x);
-    victim_function_v13(x);
-    victim_function_v14(x);
-    victim_function_v15(&x);
+int main() {
     return 0;
 }
-#endif

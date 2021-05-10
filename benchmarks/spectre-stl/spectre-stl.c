@@ -21,7 +21,7 @@
 uint32_t array_size = 16;
 
 // Public values
-uint8_t publicarray[SIZE] = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 };
+uint8_t publicarray[SIZE] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
 uint8_t publicarray2[SIZE] = { 20 };
 
 // The attacker's goal in all of these examples is to learn any of the secret data in secretarray

@@ -1,20 +1,17 @@
-CC=clang
-CFLAGS=-m32 -S -mllvm --x86-asm-syntax=intel -fdeclspec -fomit-frame-pointer
+CC=gcc
+CFLAGS=-m32 -masm=intel -fomit-frame-pointer  -fno-stack-protector -static -no-pie -fno-pic
 
 # Compilation
 
-all: spectre-pht.s spectre-pht-lfence.s spectre-pht-slh.s
+all: spectre-pht.s
 
 .DEFAULT_GOAL := all
 
 spectre-pht.s : spectre-pht.c
+	$(CC) -S $(CFLAGS) $< -o $@
+
+spectre-pht : spectre-pht.c
 	$(CC) $(CFLAGS) $< -o $@
 
-spectre-pht-lfence.s : spectre-pht.c
-	$(CC) $(CFLAGS) -mllvm -x86-speculative-load-hardening -mllvm -x86-slh-lfence $< -o $@
-
-spectre-pht-slh.s : spectre-pht.c
-	$(CC) $(CFLAGS) -mllvm -x86-speculative-load-hardening -Dslh $< -o $@
-
 clean :
-	rm spectre-pht.s spectre-pht-lfence.s spectre-pht-slh.s
+	rm spectre-pht.s
