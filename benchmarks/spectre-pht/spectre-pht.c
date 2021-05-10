@@ -129,21 +129,9 @@ void victim_function_v10(size_t x, uint8_t k) {
 //
 // Comments: Output is unsafe.
 // ----------------------------------------------------------------------------------------
-int mymemcmp(const void *cs, const void *ct, int count)
-{
-    const unsigned char *su1, *su2;
-    int res = 0;
-
-    for (su1 = cs, su2 = ct; 0 < count; ++su1, ++su2, count--) {
-        if ((res = *su1 - *su2) != 0) {
-            break;
-        }
-    }
-    return res;
-}
 void victim_function_v11(size_t x) {
      if (x < publicarray_size)
-          temp = mymemcmp(&temp, publicarray2 + (publicarray[x]), 1);
+          temp = memcmp(&temp, publicarray2 + (publicarray[x]), 1);
 }
 // ----------------------------------------------------------------------------------------
 // EXAMPLE 12:  Make the index be the sum of two input parameters.
