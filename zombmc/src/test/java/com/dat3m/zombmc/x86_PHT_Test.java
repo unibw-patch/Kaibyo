@@ -23,6 +23,7 @@ import java.util.List;
 
 import static com.dat3m.zombmc.utils.ResourceHelper.TEST_RESOURCE_PATH;
 import static com.dat3m.zombmc.utils.Result.SAFE;
+import static com.dat3m.zombmc.utils.Result.UNKNOWN;
 import static com.dat3m.zombmc.utils.Result.UNSAFE;
 import static com.dat3m.zombmc.utils.ResourceHelper.CAT_RESOURCE_PATH;
 import static com.dat3m.zombmc.ZomBMC.testMemorySafety;
@@ -40,34 +41,56 @@ public class x86_PHT_Test {
     public static Iterable<Object[]> data() throws IOException {        
         List<Object[]> data = new ArrayList<>();
 
-        Settings s = new Settings(Mode.KNASTER, Alias.CFIS, 1, false);
+        Settings s1 = new Settings(Mode.KNASTER, Alias.NONE, 1, false);
         Wmm sc = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/sc.cat"));
-		ZomBMCOptions none = new ZomBMCOptions("secret", true, new ArrayList<Mitigation>(), s);
-		ZomBMCOptions ns = new ZomBMCOptions("secret", true, Collections.singletonList(Mitigation.NOBRANCHSPECULATION), s);
-		ZomBMCOptions slh = new ZomBMCOptions("secret", true, Collections.singletonList(Mitigation.SLH), s);
+		ZomBMCOptions none = new ZomBMCOptions("secretarray", true, new ArrayList<Mitigation>(), s1);
+		ZomBMCOptions ns = new ZomBMCOptions("secretarray", true, Collections.singletonList(Mitigation.NOBRANCHSPECULATION), s1);
+		ZomBMCOptions slh = new ZomBMCOptions("secretarray", true, Collections.singletonList(Mitigation.SLH), s1);
         
         for(int i = 1; i <= 15; i++) {
         	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht.s"));
-        	data.add(new Object[]{program, sc, ns, SAFE});	
+        	switch(i) {
+        	case 5:
+        		data.add(new Object[]{program, sc, ns, UNKNOWN});
+        		break;
+        	default:
+        		data.add(new Object[]{program, sc, ns, SAFE});
+        	}	
         }
 
         for(int i = 1; i <= 15; i++) {
         	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht.s"));
-        	if(i == 5) {
-        		data.add(new Object[]{program, sc, none, SAFE});	
-        	} else {
+        	switch(i) {
+        	case 5:
+        		data.add(new Object[]{program, sc, none, UNKNOWN});
+        		break;
+        	default:
         		data.add(new Object[]{program, sc, none, UNSAFE});
         	}
         }
 
         for(int i = 1; i <= 15; i++) {
         	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht-lfence.s"));
-        	data.add(new Object[]{program, sc, none, SAFE});	
+        	switch(i) {
+        	case 5:
+        		data.add(new Object[]{program, sc, none, UNKNOWN});
+        		break;
+        	default:
+        		data.add(new Object[]{program, sc, none, SAFE});
+        	}
+	
         }
         
         for(int i = 1; i <= 15; i++) {
         	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht.s"));
-        	data.add(new Object[]{program, sc, slh, SAFE});	
+        	switch(i) {
+        	case 5:
+        		data.add(new Object[]{program, sc, slh, UNKNOWN});
+        		break;
+        	default:
+        		data.add(new Object[]{program, sc, slh, SAFE});
+        	}
+	
         }
 
         return data;
@@ -80,7 +103,7 @@ public class x86_PHT_Test {
         this.expected = expected;
     }
 
-    @Test(timeout = 60000)
+    @Test(timeout = 30000)
     public void litmus() {
         Context ctx = new Context();
 		assertEquals(expected, testMemorySafety(ctx, program, wmm, options));

@@ -58,6 +58,10 @@ public class x86_STL_Test {
         		data.add(new Object[]{program, stl, none, UNSAFE});
         	}
         }
+        for(int i = 1; i <= 13; i++) {
+//        	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-stl-mfence.s"));
+//        	data.add(new Object[]{program, stl, none, SAFE});
+        }
         return data;
     }
     

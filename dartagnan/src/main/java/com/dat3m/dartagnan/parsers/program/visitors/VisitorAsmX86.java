@@ -43,6 +43,7 @@ import com.dat3m.dartagnan.expression.op.IOpBin;
 import com.dat3m.dartagnan.parsers.AsmX86BaseVisitor;
 import com.dat3m.dartagnan.parsers.AsmX86Parser;
 import com.dat3m.dartagnan.parsers.AsmX86Parser.ExpressionContext;
+import com.dat3m.dartagnan.parsers.AsmX86Parser.LblContext;
 import com.dat3m.dartagnan.parsers.AsmX86Parser.VardefContext;
 import com.dat3m.dartagnan.parsers.AsmX86Visitor;
 import com.dat3m.dartagnan.parsers.program.utils.ParsingException;
@@ -54,11 +55,11 @@ import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Fence;
 import com.dat3m.dartagnan.program.event.CondJump;
 import com.dat3m.dartagnan.program.event.FunCall;
-import com.dat3m.dartagnan.program.event.FunRet;
 import com.dat3m.dartagnan.program.event.Label;
 import com.dat3m.dartagnan.program.event.Load;
 import com.dat3m.dartagnan.program.event.Local;
 import com.dat3m.dartagnan.program.event.Store;
+import com.dat3m.dartagnan.program.memory.Address;
 import com.dat3m.dartagnan.program.memory.Location;
 
 public class VisitorAsmX86
@@ -101,6 +102,11 @@ public class VisitorAsmX86
 
 	@Override
 	public Program visitMain(AsmX86Parser.MainContext ctx) {
+		for(LblContext lblCtx : ctx.line().stream().filter(c -> c.lbl() != null).map(c -> c.lbl()).collect(Collectors.toList())) {
+			if(lblCtx != null && lblCtx.getText().contains(".local")) {
+				visitLbl(lblCtx);
+			}
+		}
 		for(VardefContext gblCtx : ctx.line().stream().filter(c -> c.lbl() != null).map(c -> c.lbl().vardef()).collect(Collectors.toList())) {
 			if(gblCtx != null) {
 				visitVardef(gblCtx);
@@ -147,8 +153,19 @@ public class VisitorAsmX86
 				current_function = name;
 			}
 		}
-		if(ctx.slabel() != null && (ctx.slabel().getText().contains(".byte") || ctx.slabel().getText().contains(".long")) && ctx.expressionlist() != null) {
+		if(ctx.slabel() != null && ctx.slabel().getText().contains(".local") && ctx.expressionlist() != null) {
+			programBuilder.getOrCreateLocation(ctx.expressionlist().expression(0).getText(), PRECISION);			
+		}
+		if(ctx.slabel() != null && ctx.slabel().getText().contains(".byte") && ctx.expressionlist() != null) {
 			currentInitValues.add((IConst)ctx.expressionlist().accept(this));
+		}
+		if(ctx.slabel() != null && ctx.slabel().getText().contains(".long") && ctx.expressionlist() != null) {
+			IConst value = (IConst)ctx.expressionlist().accept(this);
+			if(value instanceof Address) {
+				currentInitValues.addAll(Collections.nCopies(4, value));
+			} else {
+				currentInitValues.add((IConst)ctx.expressionlist().accept(this));
+			}
 		}
 		if(ctx.slabel() != null && ctx.slabel().getText().contains(".zero")) {
 			int nZeros = Integer.parseInt(ctx.expressionlist().getText());
@@ -168,7 +185,10 @@ public class VisitorAsmX86
 				return  null;
 			case "ret":
 				functions.get(current_function).add(new Local(esp, new IExprBin(esp, PLUS, new IConst(4, PRECISION))));
-				functions.get(current_function).add(new FunRet(current_function));
+				if(!current_function.equals(entry)) {
+					Label end = programBuilder.getOrCreateLabel("END_OF_" + current_function);
+					functions.get(current_function).add(new CondJump(new BConst(true), end));
+				}
 				return null;
 			case "lfence":
 				functions.get(current_function).add(new Fence("lfence"));
@@ -228,11 +248,40 @@ public class VisitorAsmX86
 					functions.get(current_function).add(new Load(reg, esp, "NA"));
 					functions.get(current_function).add(new Local(esp, new IExprBin(esp, PLUS, new IConst(4, PRECISION))));
 					break;
-				case "jae":
-					functions.get(current_function).add(new CondJump(new BExprUn(NOT, cf), label));
-					break;
 				case "jmp":
 					functions.get(current_function).add(new CondJump(new BConst(true), label));
+					break;
+				case "call":
+					String function_name = e1.getText();
+					functions.get(current_function).add(new Local(esp, new IExprBin(esp, MINUS, new IConst(4, PRECISION))));
+					functions.get(current_function).add(new FunCall(function_name));
+					functions.get(current_function).add(programBuilder.getOrCreateLabel("END_OF_" + function_name));
+					break;
+				case "dec":
+					functions.get(current_function).add(new Local(reg, new IExprBin(reg, MINUS, new IConst(1, PRECISION))));
+					break;
+				case "inc":
+					functions.get(current_function).add(new Local(reg, new IExprBin(reg, PLUS, new IConst(1, PRECISION))));
+					break;
+
+				// Jumps which set flags
+				case "ja":
+					functions.get(current_function).add(new CondJump(new BExprUn(NOT, new BExprBin(cf, BOpBin.OR, zf)), label));
+					break;
+				case "jnbe":
+					functions.get(current_function).add(new CondJump(new BExprUn(NOT, new BExprBin(cf, BOpBin.OR, new BExprUn(NOT, zf))), label));
+					break;
+				case "jae":
+				case "jnb":
+					functions.get(current_function).add(new CondJump(new BExprUn(NOT, cf), label));
+					break;
+				case "jb":
+				case "jnae":
+					functions.get(current_function).add(new CondJump(cf, label));
+					break;
+				case "jbe":
+				case "jna":
+					functions.get(current_function).add(new CondJump(new BExprBin(cf, BOpBin.OR, zf), label));
 					break;
 				case "jle":
 					functions.get(current_function).add(new CondJump(new BExprBin(new BExprBin(sf, BOpBin.XOR, of), BOpBin.OR, zf), label));
@@ -246,22 +295,14 @@ public class VisitorAsmX86
 				case "jne":
 					functions.get(current_function).add(new CondJump(new BExprUn(BOpUn.NOT, zf), label));
 					break;
+				case "jns":
+					functions.get(current_function).add(new CondJump(new BExprUn(BOpUn.NOT, sf), label));
+					break;
 				case "je":
 					functions.get(current_function).add(new CondJump(zf, label));
 					break;
-				case "jbe":
-					functions.get(current_function).add(new CondJump(new BExprBin(cf, BOpBin.OR, zf), label));
-					break;
-				case "call":
-					String function_name = e1.getText();
-					functions.get(current_function).add(new Local(esp, new IExprBin(esp, MINUS, new IConst(4, PRECISION))));
-					functions.get(current_function).add(new FunCall(function_name));
-					break;
-				case "dec":
-					functions.get(current_function).add(new Local(reg, new IExprBin(reg, MINUS, new IConst(1, PRECISION))));
-					break;
-				case "inc":
-					functions.get(current_function).add(new Local(reg, new IExprBin(reg, PLUS, new IConst(1, PRECISION))));
+				case "jg":
+					functions.get(current_function).add(new CondJump(new BExprBin(new Atom(sf, COpBin.EQ, of), BOpBin.AND, new BExprUn(NOT, zf)) , label));
 					break;
 				default:
 					System.out.println("WARNING-2: " + ctx.getText());
@@ -324,6 +365,10 @@ public class VisitorAsmX86
 					of = OF.getFlagDef(v1p, v2p);
 					zf = ZF.getFlagDef(v1p, v2p);
 					sf = SF.getFlagDef(v1p, v2p);
+					return null;
+				case "test":
+					zf = new Atom(new IExprBin(v1p, AND, v2p), COpBin.EQ, new IConst(1, PRECISION));
+					sf = new Atom(new IExprBin(v1p, AND, v2p), COpBin.GT, new IConst(0, PRECISION));
 					return null;
 				default:
 					System.out.println("WARNING-3: " + ctx.getText());
@@ -432,19 +477,15 @@ public class VisitorAsmX86
 		String name;
 		switch (ctx.getText()) {
 		case "rax": case "ax": case "ah": case "al":
-			System.out.println(String.format("WARNING: Register %s is being cast to eax", ctx.getText()));
 			name = "eax";
 			break;
 		case "bax": case "bx": case "bh": case "bl":
-			System.out.println(String.format("WARNING: Register %s is being cast to ebx", ctx.getText()));
 			name = "ebx";
 			break;
 		case "cax": case "cx": case "ch": case "cl":
-			System.out.println(String.format("WARNING: Register %s is being cast to ecx", ctx.getText()));
 			name = "ecx";
 			break;
 		case "rdx": case "dx": case "dh": case "dl":
-			System.out.println(String.format("WARNING: Register %s is being cast to edx", ctx.getText()));
 			name = "edx";
 			break;
 		default:
