@@ -7,4 +7,4 @@ include "cos.cat"
 let com = (rf | fr | co)
 
 (* Sequential consistency *)
-acyclic ((po \ W*R) | mfence) | com
+acyclic ((po \ W*R) | lfence) | com

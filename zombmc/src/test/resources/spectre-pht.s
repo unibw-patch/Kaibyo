@@ -367,88 +367,42 @@ ret
 .cfi_endproc
 .LFE17:
 .size    victim_function_v10, .-victim_function_v10
-.globl    mymemcmp
-.type    mymemcmp, @function
-mymemcmp:
-.LFB18:
-.cfi_startproc
-sub    esp, 16
-.cfi_def_cfa_offset 20
-mov    DWORD PTR [esp+4], 0
-mov    eax, DWORD PTR [esp+20]
-mov    DWORD PTR [esp+12], eax
-mov    eax, DWORD PTR [esp+24]
-mov    DWORD PTR [esp+8], eax
-jmp    .L37
-.L40:
-mov    eax, DWORD PTR [esp+12]
-movzx    eax, BYTE PTR [eax]
-movzx    edx, al
-mov    eax, DWORD PTR [esp+8]
-movzx    eax, BYTE PTR [eax]
-movzx    eax, al
-sub    edx, eax
-mov    eax, edx
-mov    DWORD PTR [esp+4], eax
-cmp    DWORD PTR [esp+4], 0
-jne    .L42
-add    DWORD PTR [esp+12], 1
-add    DWORD PTR [esp+8], 1
-sub    DWORD PTR [esp+28], 1
-.L37:
-cmp    DWORD PTR [esp+28], 0
-jg    .L40
-jmp    .L39
-.L42:
-nop
-.L39:
-mov    eax, DWORD PTR [esp+4]
-add    esp, 16
-.cfi_def_cfa_offset 4
-ret
-.cfi_endproc
-.LFE18:
-.size    mymemcmp, .-mymemcmp
 .globl    victim_function_v11
 .type    victim_function_v11, @function
 victim_function_v11:
-.LFB19:
+.LFB18:
 .cfi_startproc
 mov    eax, DWORD PTR publicarray_size
 cmp    DWORD PTR [esp+4], eax
-jnb    .L45
+jnb    .L38
+mov    eax, OFFSET FLAT:temp
+movzx    edx, BYTE PTR [eax]
 mov    eax, DWORD PTR [esp+4]
 add    eax, OFFSET FLAT:publicarray
 movzx    eax, BYTE PTR [eax]
 movzx    eax, al
 add    eax, OFFSET FLAT:publicarray2
-push    1
-.cfi_def_cfa_offset 8
-push    eax
-.cfi_def_cfa_offset 12
-push    OFFSET FLAT:temp
-.cfi_def_cfa_offset 16
-call    mymemcmp
-add    esp, 12
-.cfi_def_cfa_offset 4
+movzx    eax, BYTE PTR [eax]
+sub    edx, eax
+mov    eax, edx
 mov    BYTE PTR temp, al
-.L45:
+.L38:
 nop
 ret
 .cfi_endproc
-.LFE19:
+.LFE18:
 .size    victim_function_v11, .-victim_function_v11
 .globl    victim_function_v12
 .type    victim_function_v12, @function
 victim_function_v12:
-.LFB20:
+.LFB19:
 .cfi_startproc
 mov    edx, DWORD PTR [esp+4]
 mov    eax, DWORD PTR [esp+8]
 add    edx, eax
 mov    eax, DWORD PTR publicarray_size
 cmp    edx, eax
-jnb    .L48
+jnb    .L41
 mov    edx, DWORD PTR [esp+4]
 mov    eax, DWORD PTR [esp+8]
 add    eax, edx
@@ -458,32 +412,32 @@ movzx    edx, BYTE PTR publicarray2[eax]
 movzx    eax, BYTE PTR temp
 and    eax, edx
 mov    BYTE PTR temp, al
-.L48:
+.L41:
 nop
 ret
 .cfi_endproc
-.LFE20:
+.LFE19:
 .size    victim_function_v12, .-victim_function_v12
 .globl    is_x_safe
 .type    is_x_safe, @function
 is_x_safe:
-.LFB21:
+.LFB20:
 .cfi_startproc
 mov    eax, DWORD PTR publicarray_size
 cmp    DWORD PTR [esp+4], eax
-jnb    .L50
+jnb    .L43
 mov    eax, 1
 ret
-.L50:
+.L43:
 mov    eax, 0
 ret
 .cfi_endproc
-.LFE21:
+.LFE20:
 .size    is_x_safe, .-is_x_safe
 .globl    victim_function_v13
 .type    victim_function_v13, @function
 victim_function_v13:
-.LFB22:
+.LFB21:
 .cfi_startproc
 push    DWORD PTR [esp+4]
 .cfi_def_cfa_offset 8
@@ -491,7 +445,7 @@ call    is_x_safe
 add    esp, 4
 .cfi_def_cfa_offset 4
 test    eax, eax
-je    .L54
+je    .L47
 mov    eax, DWORD PTR [esp+4]
 add    eax, OFFSET FLAT:publicarray
 movzx    eax, BYTE PTR [eax]
@@ -500,20 +454,20 @@ movzx    edx, BYTE PTR publicarray2[eax]
 movzx    eax, BYTE PTR temp
 and    eax, edx
 mov    BYTE PTR temp, al
-.L54:
+.L47:
 nop
 ret
 .cfi_endproc
-.LFE22:
+.LFE21:
 .size    victim_function_v13, .-victim_function_v13
 .globl    victim_function_v14
 .type    victim_function_v14, @function
 victim_function_v14:
-.LFB23:
+.LFB22:
 .cfi_startproc
 mov    eax, DWORD PTR publicarray_size
 cmp    DWORD PTR [esp+4], eax
-jnb    .L57
+jnb    .L50
 mov    eax, DWORD PTR [esp+4]
 xor    al, -1
 movzx    eax, BYTE PTR publicarray[eax]
@@ -522,22 +476,22 @@ movzx    edx, BYTE PTR publicarray2[eax]
 movzx    eax, BYTE PTR temp
 and    eax, edx
 mov    BYTE PTR temp, al
-.L57:
+.L50:
 nop
 ret
 .cfi_endproc
-.LFE23:
+.LFE22:
 .size    victim_function_v14, .-victim_function_v14
 .globl    victim_function_v15
 .type    victim_function_v15, @function
 victim_function_v15:
-.LFB24:
+.LFB23:
 .cfi_startproc
 mov    eax, DWORD PTR [esp+4]
 mov    edx, DWORD PTR [eax]
 mov    eax, DWORD PTR publicarray_size
 cmp    edx, eax
-jnb    .L60
+jnb    .L53
 mov    eax, DWORD PTR [esp+4]
 mov    eax, DWORD PTR [eax]
 movzx    eax, BYTE PTR publicarray[eax]
@@ -546,21 +500,21 @@ movzx    edx, BYTE PTR publicarray2[eax]
 movzx    eax, BYTE PTR temp
 and    eax, edx
 mov    BYTE PTR temp, al
-.L60:
+.L53:
 nop
 ret
 .cfi_endproc
-.LFE24:
+.LFE23:
 .size    victim_function_v15, .-victim_function_v15
 .globl    main
 .type    main, @function
 main:
-.LFB25:
+.LFB24:
 .cfi_startproc
 mov    eax, 0
 ret
 .cfi_endproc
-.LFE25:
+.LFE24:
 .size    main, .-main
 .local    last_x.2704
 .comm    last_x.2704,4,4

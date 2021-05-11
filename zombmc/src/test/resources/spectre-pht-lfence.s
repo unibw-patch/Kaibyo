@@ -72,6 +72,7 @@ victim_function_v1:
 mov    eax, DWORD PTR publicarray_size
 cmp    DWORD PTR [esp+4], eax
 jnb    .L3
+lfence
 mov    eax, DWORD PTR [esp+4]
 add    eax, OFFSET FLAT:publicarray
 movzx    eax, BYTE PTR [eax]
@@ -115,6 +116,7 @@ victim_function_v2:
 mov    eax, DWORD PTR publicarray_size
 cmp    DWORD PTR [esp+4], eax
 jnb    .L7
+lfence
 mov    eax, DWORD PTR [esp+4]
 add    eax, OFFSET FLAT:publicarray
 movzx    eax, BYTE PTR [eax]
@@ -159,6 +161,7 @@ victim_function_v3:
 mov    eax, DWORD PTR publicarray_size
 cmp    DWORD PTR [esp+4], eax
 jnb    .L11
+lfence
 mov    eax, DWORD PTR [esp+4]
 add    eax, OFFSET FLAT:publicarray
 movzx    eax, BYTE PTR [eax]
@@ -182,6 +185,7 @@ victim_function_v4:
 mov    eax, DWORD PTR publicarray_size
 cmp    DWORD PTR [esp+4], eax
 jnb    .L14
+lfence
 mov    eax, DWORD PTR [esp+4]
 add    eax, eax
 movzx    eax, BYTE PTR publicarray[eax]
@@ -206,6 +210,7 @@ sub    esp, 16
 mov    eax, DWORD PTR publicarray_size
 cmp    DWORD PTR [esp+20], eax
 jnb    .L19
+lfence
 mov    eax, DWORD PTR [esp+20]
 sub    eax, 1
 mov    DWORD PTR [esp+12], eax
@@ -248,6 +253,7 @@ mov    eax, DWORD PTR array_size_mask
 and    eax, DWORD PTR [esp+4]
 cmp    DWORD PTR [esp+4], eax
 jne    .L22
+lfence
 mov    eax, DWORD PTR [esp+4]
 add    eax, OFFSET FLAT:publicarray
 movzx    eax, BYTE PTR [eax]
@@ -270,6 +276,7 @@ victim_function_v7:
 mov    eax, DWORD PTR last_x.2704
 cmp    DWORD PTR [esp+4], eax
 jne    .L24
+lfence
 mov    eax, DWORD PTR [esp+4]
 add    eax, OFFSET FLAT:publicarray
 movzx    eax, BYTE PTR [eax]
@@ -304,6 +311,7 @@ jmp    .L29
 .L28:
 mov    eax, 0
 .L29:
+lfence
 movzx    eax, BYTE PTR publicarray[eax]
 movzx    eax, al
 movzx    edx, BYTE PTR publicarray2[eax]
@@ -324,6 +332,7 @@ mov    eax, DWORD PTR [esp+8]
 mov    eax, DWORD PTR [eax]
 test    eax, eax
 je    .L32
+lfence
 mov    eax, DWORD PTR [esp+4]
 add    eax, OFFSET FLAT:publicarray
 movzx    eax, BYTE PTR [eax]
@@ -350,6 +359,7 @@ mov    BYTE PTR [esp], al
 mov    eax, DWORD PTR publicarray_size
 cmp    DWORD PTR [esp+8], eax
 jnb    .L35
+lfence
 mov    eax, DWORD PTR [esp+8]
 add    eax, OFFSET FLAT:publicarray
 movzx    eax, BYTE PTR [eax]
@@ -375,6 +385,7 @@ victim_function_v11:
 mov    eax, DWORD PTR publicarray_size
 cmp    DWORD PTR [esp+4], eax
 jnb    .L38
+lfence
 mov    eax, OFFSET FLAT:temp
 movzx    edx, BYTE PTR [eax]
 mov    eax, DWORD PTR [esp+4]
@@ -403,6 +414,7 @@ add    edx, eax
 mov    eax, DWORD PTR publicarray_size
 cmp    edx, eax
 jnb    .L41
+lfence
 mov    edx, DWORD PTR [esp+4]
 mov    eax, DWORD PTR [esp+8]
 add    eax, edx
@@ -446,6 +458,7 @@ add    esp, 4
 .cfi_def_cfa_offset 4
 test    eax, eax
 je    .L47
+lfence
 mov    eax, DWORD PTR [esp+4]
 add    eax, OFFSET FLAT:publicarray
 movzx    eax, BYTE PTR [eax]
@@ -468,6 +481,7 @@ victim_function_v14:
 mov    eax, DWORD PTR publicarray_size
 cmp    DWORD PTR [esp+4], eax
 jnb    .L50
+lfence
 mov    eax, DWORD PTR [esp+4]
 xor    al, -1
 movzx    eax, BYTE PTR publicarray[eax]
@@ -492,6 +506,7 @@ mov    edx, DWORD PTR [eax]
 mov    eax, DWORD PTR publicarray_size
 cmp    edx, eax
 jnb    .L53
+lfence
 mov    eax, DWORD PTR [esp+4]
 mov    eax, DWORD PTR [eax]
 movzx    eax, BYTE PTR publicarray[eax]
