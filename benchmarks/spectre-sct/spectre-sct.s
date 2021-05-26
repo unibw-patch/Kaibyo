@@ -84,7 +84,7 @@ victim_function_v1:
 	mov	eax, DWORD PTR idx_array_size
 	cmp	edx, eax
 	jnb	.L3
-	mov	BYTE PTR idx_array, 64
+    mov	BYTE PTR idx_array, 64
 	movzx	eax, BYTE PTR [esp]
 	movzx	eax, BYTE PTR idx_array[eax]
 	movzx	edx, al
