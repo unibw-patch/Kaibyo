@@ -17,8 +17,8 @@ uint8_t secretarray[SIZE] __attribute__((used)) = { 10,21,32,43,54,65,76,87,98,1
 volatile uint8_t temp = 0;
 
 void victim_function_v1(uint8_t idx) {
+     idx_array[0] = 64;
      if (idx < idx_array_size) {
-         idx_array[0] = 64;
          temp &= publicarray2[publicarray[idx_array[idx] * idx]];
      }
 }
