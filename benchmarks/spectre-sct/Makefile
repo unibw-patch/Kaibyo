@@ -3,15 +3,15 @@ CFLAGS=-m32 -masm=intel -fomit-frame-pointer  -fno-stack-protector -static -no-p
 
 # Compilation
 
-all: spectre-pht spectre-pht.s
+all: spectre-sct spectre-sct
 
 .DEFAULT_GOAL := all
 
-spectre-pht : spectre-pht.c
+spectre-sct : spectre-sct.c
 	$(CC) $(CFLAGS) $< -o $@
 
-spectre-pht.s : spectre-pht.c
+spectre-sct.s : spectre-sct.c
 	$(CC) -S $(CFLAGS) $< -o $@
 
 clean :
-	rm spectre-pht spectre-pht.s
+	rm spectre-sct spectre-sct.s
