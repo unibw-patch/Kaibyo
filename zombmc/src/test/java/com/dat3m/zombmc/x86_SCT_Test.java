@@ -35,7 +35,7 @@ public class x86_SCT_Test {
     private ZomBMCOptions options;
     private Result expected;
 
-	@Parameterized.Parameters(name = "{index}: {0} bound={2}")
+	@Parameterized.Parameters(name = "{index}: {0} options={2}")
     public static Iterable<Object[]> data() throws IOException {        
         List<Object[]> data = new ArrayList<>();
 
@@ -46,15 +46,15 @@ public class x86_SCT_Test {
         ZomBMCOptions none = new ZomBMCOptions("secretarray", false, new ArrayList<Mitigation>(), s);
 
         // Unsafe under SC if CF speculation is enabled
-        Program p1 = new ParserAsmX86("victim").parse(new File(TEST_RESOURCE_PATH + "spectre-sct.s"));
+        Program p1 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct.s"));
         data.add(new Object[]{p1, sc, none, UNSAFE});
 
         // Safe under SC if CF speculation is stopped
-        Program p2 = new ParserAsmX86("victim").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence.s"));
+        Program p2 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence.s"));
         data.add(new Object[]{p2, sc, none, SAFE});
 
         // Unsafe under SRF even if CF speculation is stopped
-        Program p3 = new ParserAsmX86("victim").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence.s"));
+        Program p3 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence.s"));
         data.add(new Object[]{p3, srf, none, UNSAFE});
 
         return data;
