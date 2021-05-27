@@ -31,6 +31,7 @@ public class OptionsPane extends JPanel implements ActionListener {
 
     private final BoundField boundField;
     private final EntryField entryField;
+    private final SecretField secretField;
     
     private final JButton testButton;
     private final JButton clearButton;
@@ -45,6 +46,7 @@ public class OptionsPane extends JPanel implements ActionListener {
 
         boundField = new BoundField();
         entryField = new EntryField();
+        secretField = new SecretField();
         
         testButton = new TestButton();
         clearButton = new ClearButton();
@@ -59,6 +61,7 @@ public class OptionsPane extends JPanel implements ActionListener {
     private void bindListeners(){
 		boundField.addActionListener(this);
 		entryField.addActionListener(this);
+		secretField.addActionListener(this);
 		clearButton.addActionListener(this);
     }
 
@@ -78,7 +81,9 @@ public class OptionsPane extends JPanel implements ActionListener {
         );
 
         String entry = entryField.getText();
-        return new UiOptions(settings, entry);
+        String secret = secretField.getText();
+
+        return new UiOptions(settings, entry, secret);
     }
 
     private int getIconHeight(){
@@ -95,13 +100,15 @@ public class OptionsPane extends JPanel implements ActionListener {
         boundPane.add(boundField);
         JPanel entryPane = new EntryPane();
         entryPane.add(entryField);
+        JPanel secretPane = new SecretPane();
+        secretPane.add(secretField);
 
         // Inner borders
         Border emptyBorder = BorderFactory.createEmptyBorder();
 
         JSplitPane graphPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         graphPane.setDividerSize(0);
-        JComponent[] panes = { boundPane, entryPane, testButton, clearButton, graphPane, scrollConsole };
+        JComponent[] panes = { boundPane, entryPane, secretPane, testButton, clearButton, graphPane, scrollConsole };
         Iterator<JComponent> it = Arrays.asList(panes).iterator();
         JComponent current = iconPane;
         current.setBorder(emptyBorder);
