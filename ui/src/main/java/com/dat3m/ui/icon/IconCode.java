@@ -6,19 +6,15 @@ import java.net.URL;
 
 public enum IconCode {
 
-    DAT3M, DARTAGNAN, PORTHOS, ZOMBMC;
+    DAT3M, ZOMBMC;
 
     @Override
     public String toString(){
         switch(this){
             case DAT3M:
                 return "Dat3M";
-            case DARTAGNAN:
-                return "Dartagnan";
-            case PORTHOS:
-                return "Porthos";
             case ZOMBMC:
-                return "ZOM-B-MC";
+                return "ZomBMC";
         }
         return super.toString();
     }
@@ -27,10 +23,6 @@ public enum IconCode {
         switch(this){
             case DAT3M:
                 return getResource("/dat3m.png");
-            case DARTAGNAN:
-                return getResource("/dartagnan.jpg");
-            case PORTHOS:
-                return getResource("/porthos.jpg");
             case ZOMBMC:
                 return getResource("/zombmc.jpg");
         }

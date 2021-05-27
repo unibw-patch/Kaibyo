@@ -1,7 +1,5 @@
 package com.dat3m.ui.editor;
 
-import com.dat3m.ui.options.utils.ControlCode;
-import com.dat3m.ui.options.utils.Task;
 import com.google.common.collect.ImmutableMap;
 
 import javax.swing.*;
@@ -15,7 +13,6 @@ public class EditorsPane implements ActionListener {
 
     private final ImmutableMap<EditorCode, Editor> editors = ImmutableMap.of(
             EditorCode.PROGRAM, new Editor(EditorCode.PROGRAM, new JEditorPane(), "litmus", "pts", "bpl", "s"),
-            EditorCode.SOURCE_MM, new Editor(EditorCode.SOURCE_MM, new JEditorPane(), "cat"),
             EditorCode.TARGET_MM, new Editor(EditorCode.TARGET_MM, new JEditorPane(), "cat")
     );
 
@@ -69,19 +66,5 @@ public class EditorsPane implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        if(ControlCode.TASK.actionCommand().equals(event.getActionCommand())){
-            JComboBox<?> selector = (JComboBox<?>)event.getSource();
-            if(selector.getModel().getSelectedItem().equals(Task.PORTABILITY)){
-                mmPane.setTopComponent(editors.get(EditorCode.SOURCE_MM));
-                mmPane.setDividerSize(2);
-                mmPane.setDividerLocation(0.5);
-                menuImporter.add(editors.get(EditorCode.SOURCE_MM).getImporterItem(), 1);
-                menuExporter.add(editors.get(EditorCode.SOURCE_MM).getExporterItem(), 1);
-            } else {
-                mmPane.remove(editors.get(EditorCode.SOURCE_MM));
-                menuImporter.remove(editors.get(EditorCode.SOURCE_MM).getImporterItem());
-                menuExporter.remove(editors.get(EditorCode.SOURCE_MM).getExporterItem());
-            }
-        }
     }
 }

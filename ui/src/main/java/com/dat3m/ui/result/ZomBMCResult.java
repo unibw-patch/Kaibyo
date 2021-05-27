@@ -11,12 +11,11 @@ import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.utils.Graph;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.ui.utils.UiOptions;
-import com.dat3m.ui.utils.Utils;
 import com.dat3m.zombmc.utils.Result;
 import com.dat3m.zombmc.utils.options.ZomBMCOptions;
 import com.microsoft.z3.Context;
 
-public class ZomBMCResult implements Dat3mResult {
+public class ZomBMCResult {
 
     private final Program program;
     private final Wmm wmm;
@@ -41,26 +40,15 @@ public class ZomBMCResult implements Dat3mResult {
     }
 
     private void run(){
-        if(validate()){
-         	Context ctx = new Context();
-         	ArrayList<Mitigation> mitigations = new ArrayList<>();
-//         	mitigations.add(Mitigation.LFENCE);
-//         	mitigations.add(Mitigation.NOBRANCHSPECULATION);
-			ZomBMCOptions zombmcO = new ZomBMCOptions("secret", true, mitigations, options.getSettings());
-         	Result result = testMemorySafety(ctx, program, wmm, zombmcO);
-            StringBuilder sb = new StringBuilder();
-            sb.append(result).append("\n");
-            verdict = sb.toString();
-        }
-    }
-
-    private boolean validate(){
-        Arch target = program.getArch() == null ? options.getTarget() : program.getArch();
-        if(target == null) {
-            Utils.showError("Missing target architecture.");
-            return false;
-        }
-        program.setArch(target);
-        return true;
+    	program.setArch(Arch.NONE);
+     	Context ctx = new Context();
+     	ArrayList<Mitigation> mitigations = new ArrayList<>();
+//      mitigations.add(Mitigation.LFENCE);
+//      mitigations.add(Mitigation.NOBRANCHSPECULATION);
+		ZomBMCOptions zombmcO = new ZomBMCOptions("secretarray", true, mitigations, options.getSettings());
+     	Result result = testMemorySafety(ctx, program, wmm, zombmcO);
+        StringBuilder sb = new StringBuilder();
+        sb.append(result).append("\n");
+        verdict = sb.toString();
     }
 }
