@@ -30,8 +30,8 @@ public class OptionsPane extends JPanel implements ActionListener {
     private final JLabel iconPane;
 
     private final BoundField boundField;
-    private final EntryField entryField;
-    private final SecretField secretField;
+    private final GenericField entryField;
+    private final GenericField secretField;
     
     private final JButton testButton;
     private final JButton clearButton;
@@ -45,8 +45,8 @@ public class OptionsPane extends JPanel implements ActionListener {
         iconPane = new JLabel(IconHelper.getIcon(IconCode.ZOMBMC, height), JLabel.CENTER);
 
         boundField = new BoundField();
-        entryField = new EntryField();
-        secretField = new SecretField();
+        entryField = new GenericField("main");
+        secretField = new GenericField("secret");
         
         testButton = new TestButton();
         clearButton = new ClearButton();
@@ -96,11 +96,11 @@ public class OptionsPane extends JPanel implements ActionListener {
         scrollConsole.setMaximumSize(new Dimension(OPTWIDTH, 120));
         scrollConsole.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        JPanel boundPane = new BoundPane();
+        JPanel boundPane = new GenericPane("Bound");
         boundPane.add(boundField);
-        JPanel entryPane = new EntryPane();
+        JPanel entryPane = new GenericPane("Entry Method");
         entryPane.add(entryField);
-        JPanel secretPane = new SecretPane();
+        JPanel secretPane = new GenericPane("Secret");
         secretPane.add(secretField);
 
         // Inner borders

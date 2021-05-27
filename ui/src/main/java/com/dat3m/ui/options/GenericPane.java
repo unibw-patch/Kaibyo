@@ -7,10 +7,10 @@ import java.awt.FlowLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class EntryPane extends JPanel {
+public class GenericPane extends JPanel {
 
-	public EntryPane() {
+	public GenericPane(String name) {
         super(new FlowLayout(LEFT));
-        add(new JLabel("Entry Method: "));
+        add(new JLabel(name + ": "));
 	}
 }

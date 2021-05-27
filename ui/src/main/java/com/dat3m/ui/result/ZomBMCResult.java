@@ -43,8 +43,6 @@ public class ZomBMCResult {
     	program.setArch(Arch.NONE);
      	Context ctx = new Context();
      	ArrayList<Mitigation> mitigations = new ArrayList<>();
-//      mitigations.add(Mitigation.LFENCE);
-//      mitigations.add(Mitigation.NOBRANCHSPECULATION);
 		ZomBMCOptions zombmcO = new ZomBMCOptions(options.getSecret(), true, mitigations, options.getSettings());
      	Result result = testMemorySafety(ctx, program, wmm, zombmcO);
         StringBuilder sb = new StringBuilder();
