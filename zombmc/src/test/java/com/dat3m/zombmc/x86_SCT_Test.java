@@ -43,7 +43,7 @@ public class x86_SCT_Test {
         Wmm sc = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/sc.cat"));
         Wmm srf = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/srf.cat"));
 		
-        ZomBMCOptions none = new ZomBMCOptions("secretarray", false, new ArrayList<Mitigation>(), s);
+        ZomBMCOptions none = new ZomBMCOptions("secretarray", false, new ArrayList<Mitigation>(), s, -1);
 
         // Unsafe under SC if CF speculation is enabled
         Program p1 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct.s"));

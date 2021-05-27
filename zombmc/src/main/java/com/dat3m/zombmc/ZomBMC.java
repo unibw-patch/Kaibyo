@@ -77,9 +77,11 @@ public class ZomBMC {
         program.compile(Arch.NONE, options.getMitigations(), 0);
 
         Solver solver = ctx.mkSolver();
-//        Params p = ctx.mkParams();
-//		p.add("timeout", 30000);
-//		solver.setParameters(p);
+        if(options.getTimeout() > 0) {
+            Params p = ctx.mkParams();
+    		p.add("timeout", options.getTimeout()*1000);
+    		solver.setParameters(p);        	
+        }
 
 		solver.add(program.encodeSCF(ctx, options.getMitigations()));
 		if(options.getMitigations().contains(NOBRANCHSPECULATION)) {

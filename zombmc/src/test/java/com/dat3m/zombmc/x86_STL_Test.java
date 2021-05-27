@@ -41,7 +41,7 @@ public class x86_STL_Test {
 
         Settings s = new Settings(Mode.KNASTER, Alias.CFIS, 1, false);
         Wmm stl = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/stl.cat"));
-		ZomBMCOptions none = new ZomBMCOptions("secretarray", false, new ArrayList<Mitigation>(), s);
+		ZomBMCOptions none = new ZomBMCOptions("secretarray", false, new ArrayList<Mitigation>(), s, -1);
         
         for(int i = 1; i <= 13; i++) {
         	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-stl.s"));

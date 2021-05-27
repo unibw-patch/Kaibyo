@@ -43,9 +43,9 @@ public class x86_PHT_Test {
 
         Settings s1 = new Settings(Mode.KNASTER, Alias.NONE, 1, false);
         Wmm sc = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/sc.cat"));
-		ZomBMCOptions none = new ZomBMCOptions("secretarray", true, new ArrayList<Mitigation>(), s1);
-		ZomBMCOptions ns = new ZomBMCOptions("secretarray", true, Collections.singletonList(Mitigation.NOBRANCHSPECULATION), s1);
-		ZomBMCOptions slh = new ZomBMCOptions("secretarray", true, Collections.singletonList(Mitigation.SLH), s1);
+		ZomBMCOptions none = new ZomBMCOptions("secretarray", true, new ArrayList<Mitigation>(), s1, -1);
+		ZomBMCOptions ns = new ZomBMCOptions("secretarray", true, Collections.singletonList(Mitigation.NOBRANCHSPECULATION), s1, -1);
+		ZomBMCOptions slh = new ZomBMCOptions("secretarray", true, Collections.singletonList(Mitigation.SLH), s1, -1);
         
         for(int i = 1; i <= 15; i++) {
         	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht.s"));

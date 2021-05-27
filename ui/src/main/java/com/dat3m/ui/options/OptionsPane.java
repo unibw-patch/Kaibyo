@@ -29,6 +29,7 @@ public class OptionsPane extends JPanel implements ActionListener {
 	
     private final JLabel iconPane;
 
+    private final TimeoutField timeoutField;
     private final BoundField boundField;
     private final GenericField entryField;
     private final GenericField secretField;
@@ -46,9 +47,10 @@ public class OptionsPane extends JPanel implements ActionListener {
         int height = Math.min(getIconHeight(), (int) Math.round(Toolkit.getDefaultToolkit().getScreenSize().getHeight()) * 7 / 18);
         iconPane = new JLabel(IconHelper.getIcon(IconCode.ZOMBMC, height), JLabel.CENTER);
 
+        timeoutField = new TimeoutField();
         boundField = new BoundField();
         entryField = new GenericField("main");
-        secretField = new GenericField("secret");
+        secretField = new GenericField("secretarray");
         seButton = new JRadioButton();
         onlySpecLeak = new JRadioButton();
         
@@ -63,6 +65,7 @@ public class OptionsPane extends JPanel implements ActionListener {
     }
 
     private void bindListeners(){
+    	timeoutField.addActionListener(this);
 		boundField.addActionListener(this);
 		entryField.addActionListener(this);
 		secretField.addActionListener(this);
@@ -86,7 +89,7 @@ public class OptionsPane extends JPanel implements ActionListener {
                 Integer.parseInt(boundField.getText())
         );
 
-        return new UiOptions(settings, entryField.getText(), secretField.getText(), seButton.isSelected(), onlySpecLeak.isSelected());
+        return new UiOptions(settings, Integer.valueOf(timeoutField.getText()), entryField.getText(), secretField.getText(), seButton.isSelected(), onlySpecLeak.isSelected());
     }
 
     private int getIconHeight(){
@@ -99,6 +102,8 @@ public class OptionsPane extends JPanel implements ActionListener {
         scrollConsole.setMaximumSize(new Dimension(OPTWIDTH, 120));
         scrollConsole.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
+        JPanel timeoutPane = new GenericPane("Timeout (secs):");
+        timeoutPane.add(timeoutField);
         JPanel boundPane = new GenericPane("Bound:");
         boundPane.add(boundField);
         JPanel entryPane = new GenericPane("Entry Method:");
@@ -115,7 +120,7 @@ public class OptionsPane extends JPanel implements ActionListener {
 
         JSplitPane graphPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         graphPane.setDividerSize(0);
-        JComponent[] panes = { boundPane, entryPane, secretPane, specExecPane, specLeakPane, testButton, clearButton, graphPane, scrollConsole };
+        JComponent[] panes = { timeoutPane, boundPane, entryPane, secretPane, specExecPane, specLeakPane, testButton, clearButton, graphPane, scrollConsole };
         Iterator<JComponent> it = Arrays.asList(panes).iterator();
         JComponent current = iconPane;
         current.setBorder(emptyBorder);

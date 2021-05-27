@@ -59,9 +59,9 @@ public class ZombmcTest {
         		String secret = "secret";
         		boolean onlySpeculative = true;
         		
-        		ZomBMCOptions noneO = new ZomBMCOptions(secret, onlySpeculative, new ArrayList<Mitigation>(), s);
-        		ZomBMCOptions lfenceO = new ZomBMCOptions(secret, onlySpeculative, Collections.singletonList(Mitigation.LFENCE), s);
-        		ZomBMCOptions slhO = new ZomBMCOptions(secret, onlySpeculative, Collections.singletonList(Mitigation.SLH), s);
+        		ZomBMCOptions noneO = new ZomBMCOptions(secret, onlySpeculative, new ArrayList<Mitigation>(), s, -1);
+        		ZomBMCOptions lfenceO = new ZomBMCOptions(secret, onlySpeculative, Collections.singletonList(Mitigation.LFENCE), s, -1);
+        		ZomBMCOptions slhO = new ZomBMCOptions(secret, onlySpeculative, Collections.singletonList(Mitigation.SLH), s, -1);
         		
         		// v05 has an input dependent loop thus we cannot prove it correct
         		if(i != 5) {
@@ -86,7 +86,7 @@ public class ZombmcTest {
     		boolean onlySpeculative = false;
     		ArrayList<Mitigation> mitigations = new ArrayList<Mitigation>();
     		mitigations.add(NOBRANCHSPECULATION);
-    		ZomBMCOptions options = new ZomBMCOptions(secret, onlySpeculative, mitigations, s);
+    		ZomBMCOptions options = new ZomBMCOptions(secret, onlySpeculative, mitigations, s, -1);
     		    		
     		switch(i) {
     		case 1:

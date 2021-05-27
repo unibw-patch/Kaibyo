@@ -46,7 +46,7 @@ public class ZomBMCResult {
      	if(!options.speculate()) {
      		mitigations.add(Mitigation.NOBRANCHSPECULATION);
      	}
-		ZomBMCOptions zombmcOptions = new ZomBMCOptions(options.getSecret(), options.specLeak(), mitigations, options.getSettings());
+		ZomBMCOptions zombmcOptions = new ZomBMCOptions(options.getSecret(), options.specLeak(), mitigations, options.getSettings(), options.getTimeout());
      	Result result = testMemorySafety(ctx, program, wmm, zombmcOptions);
         StringBuilder sb = new StringBuilder();
         sb.append(result).append("\n");

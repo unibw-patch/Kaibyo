@@ -25,6 +25,7 @@ public class ZomBMCOptions extends BaseOptions {
 	public static String ONLYSPECULATIVESTRING = "branch_speculation_error";
 	public static String LFENCESTRING = "lfence";
 	public static String SLHSTRING = "slh";
+	public static String TIMEOUT = "timeout";
 	
     protected Set<String> supportedFormats = ImmutableSet.copyOf(Arrays.asList("bpl", "s"));
     
@@ -35,6 +36,7 @@ public class ZomBMCOptions extends BaseOptions {
     private boolean lfence = false;
     private boolean slh = false;
     private String entry = "main";
+    private int timoeut = -1;
     
     public ZomBMCOptions(){
         super();
@@ -72,22 +74,24 @@ public class ZomBMCOptions extends BaseOptions {
         addOption(slhOption);
     }
 
-    public ZomBMCOptions(String secret, boolean onlySpeculative, List<Mitigation> mitigations, Settings settings){
+    public ZomBMCOptions(String secret, boolean onlySpeculative, List<Mitigation> mitigations, Settings settings, int timeout){
         this.secret = secret;
         this.branchSpeculation = !mitigations.contains(NOBRANCHSPECULATION);
         this.onlySpeculative = onlySpeculative;
         this.lfence = mitigations.contains(LFENCE);
         this.slh = mitigations.contains(SLH);
         this.settings = settings;
+        this.timoeut= timeout;
     }
 	
-    public ZomBMCOptions(int read_from, boolean onlySpeculative, List<Mitigation> mitigations, Settings settings){
+    public ZomBMCOptions(int read_from, boolean onlySpeculative, List<Mitigation> mitigations, Settings settings, int timeout){
         this.read_from = read_from;
         this.branchSpeculation = !mitigations.contains(NOBRANCHSPECULATION);
         this.onlySpeculative = onlySpeculative;
         this.lfence = mitigations.contains(LFENCE);
         this.slh = mitigations.contains(SLH);
         this.settings = settings;
+        this.timoeut= timeout;
     }
 	
     public void parse(String[] args) throws ParseException, RuntimeException {
@@ -137,6 +141,10 @@ public class ZomBMCOptions extends BaseOptions {
         return slh;
     }
     
+    public int getTimeout(){
+        return timoeut;
+    }
+    
     public List<Mitigation> getMitigations() {
         List<Mitigation> mitigations = new ArrayList<Mitigation>();
         if(!branchSpeculation) {
@@ -156,6 +164,7 @@ public class ZomBMCOptions extends BaseOptions {
 		return 
 				SECRETSTRING + ": " + secret + ", " + 
 				ONLYSPECULATIVESTRING + ": " + onlySpeculative + 
-				", mitigations: " + getMitigations();
+				", mitigations: " + getMitigations() + ", " +
+				TIMEOUT + ": " + timoeut;
     }
 }
