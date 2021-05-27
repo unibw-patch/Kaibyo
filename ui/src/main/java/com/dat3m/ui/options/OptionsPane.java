@@ -32,6 +32,8 @@ public class OptionsPane extends JPanel implements ActionListener {
     private final BoundField boundField;
     private final GenericField entryField;
     private final GenericField secretField;
+    private final JRadioButton seButton;
+    private final JRadioButton onlySpecLeak;
     
     private final JButton testButton;
     private final JButton clearButton;
@@ -47,6 +49,8 @@ public class OptionsPane extends JPanel implements ActionListener {
         boundField = new BoundField();
         entryField = new GenericField("main");
         secretField = new GenericField("secret");
+        seButton = new JRadioButton();
+        onlySpecLeak = new JRadioButton();
         
         testButton = new TestButton();
         clearButton = new ClearButton();
@@ -62,6 +66,8 @@ public class OptionsPane extends JPanel implements ActionListener {
 		boundField.addActionListener(this);
 		entryField.addActionListener(this);
 		secretField.addActionListener(this);
+		seButton.addActionListener(this);
+		onlySpecLeak.addActionListener(this);
 		clearButton.addActionListener(this);
     }
 
@@ -80,10 +86,7 @@ public class OptionsPane extends JPanel implements ActionListener {
                 Integer.parseInt(boundField.getText())
         );
 
-        String entry = entryField.getText();
-        String secret = secretField.getText();
-
-        return new UiOptions(settings, entry, secret);
+        return new UiOptions(settings, entryField.getText(), secretField.getText(), seButton.isSelected(), onlySpecLeak.isSelected());
     }
 
     private int getIconHeight(){
@@ -96,19 +99,23 @@ public class OptionsPane extends JPanel implements ActionListener {
         scrollConsole.setMaximumSize(new Dimension(OPTWIDTH, 120));
         scrollConsole.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        JPanel boundPane = new GenericPane("Bound");
+        JPanel boundPane = new GenericPane("Bound:");
         boundPane.add(boundField);
-        JPanel entryPane = new GenericPane("Entry Method");
+        JPanel entryPane = new GenericPane("Entry Method:");
         entryPane.add(entryField);
-        JPanel secretPane = new GenericPane("Secret");
+        JPanel secretPane = new GenericPane("Secret:");
         secretPane.add(secretField);
-
+        JPanel specExecPane = new GenericPane("Enable branch speculation");
+        specExecPane.add(seButton);
+        JPanel specLeakPane = new GenericPane("Only branch speculation leak");
+        specLeakPane.add(onlySpecLeak);
+        
         // Inner borders
         Border emptyBorder = BorderFactory.createEmptyBorder();
 
         JSplitPane graphPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         graphPane.setDividerSize(0);
-        JComponent[] panes = { boundPane, entryPane, secretPane, testButton, clearButton, graphPane, scrollConsole };
+        JComponent[] panes = { boundPane, entryPane, secretPane, specExecPane, specLeakPane, testButton, clearButton, graphPane, scrollConsole };
         Iterator<JComponent> it = Arrays.asList(panes).iterator();
         JComponent current = iconPane;
         current.setBorder(emptyBorder);

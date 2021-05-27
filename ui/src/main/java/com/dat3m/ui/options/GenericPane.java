@@ -11,6 +11,6 @@ public class GenericPane extends JPanel {
 
 	public GenericPane(String name) {
         super(new FlowLayout(LEFT));
-        add(new JLabel(name + ": "));
+        add(new JLabel(name));
 	}
 }
