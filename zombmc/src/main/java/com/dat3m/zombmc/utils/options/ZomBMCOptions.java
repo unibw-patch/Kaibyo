@@ -23,6 +23,7 @@ public class ZomBMCOptions extends BaseOptions {
 	public static String SECRETEVENTSTRING = "read_from";
 	public static String BRANCHSPECULATIONSTRING = "branch_speculation";
 	public static String ONLYSPECULATIVESTRING = "branch_speculation_error";
+	public static String ALIASSPECULATIONSTRING = "alias_speculation";
 	public static String LFENCESTRING = "lfence";
 	public static String SLHSTRING = "slh";
 	public static String TIMEOUT = "timeout";
@@ -31,10 +32,11 @@ public class ZomBMCOptions extends BaseOptions {
     
     private String secret = "spectre_secret";
     private int read_from = -1;
-    private boolean branchSpeculation = false;
-    private boolean onlySpeculative = true;
-    private boolean lfence = false;
-    private boolean slh = false;
+    private boolean branchSpeculation;
+    private boolean onlySpeculative;
+    private boolean aliasSpeculation;
+    private boolean lfence;
+    private boolean slh;
     private String entry = "main";
     private int timoeut = -1;
     
@@ -82,8 +84,14 @@ public class ZomBMCOptions extends BaseOptions {
         this.slh = mitigations.contains(SLH);
         this.settings = settings;
         this.timoeut= timeout;
+        this.aliasSpeculation = false;
     }
 	
+    public ZomBMCOptions(String secret, boolean onlySpeculative, boolean aliasSpeculation, List<Mitigation> mitigations, Settings settings, int timeout){
+    	this(secret, onlySpeculative, mitigations, settings, timeout);
+    	this.aliasSpeculation = aliasSpeculation; 
+    }
+    
     public ZomBMCOptions(int read_from, boolean onlySpeculative, List<Mitigation> mitigations, Settings settings, int timeout){
         this.read_from = read_from;
         this.branchSpeculation = !mitigations.contains(NOBRANCHSPECULATION);
@@ -92,6 +100,7 @@ public class ZomBMCOptions extends BaseOptions {
         this.slh = mitigations.contains(SLH);
         this.settings = settings;
         this.timoeut= timeout;
+        this.aliasSpeculation = false;
     }
 	
     public void parse(String[] args) throws ParseException, RuntimeException {
@@ -109,6 +118,7 @@ public class ZomBMCOptions extends BaseOptions {
     	}
     	branchSpeculation = cmd.hasOption(BRANCHSPECULATIONSTRING);
     	onlySpeculative = cmd.hasOption(ONLYSPECULATIVESTRING);
+    	aliasSpeculation = cmd.hasOption(ALIASSPECULATIONSTRING);
     	lfence = cmd.hasOption(LFENCESTRING);
     	slh = cmd.hasOption(SLHSTRING);
     }
@@ -125,8 +135,12 @@ public class ZomBMCOptions extends BaseOptions {
         return read_from;
     }
 
-    public boolean getbranchSpeculativeOption(){
+    public boolean getBranchSpeculativeOption(){
         return branchSpeculation;
+    }
+
+    public boolean getAliasSpeculativeOption(){
+        return aliasSpeculation;
     }
 
     public boolean getOnlySpeculativeOption(){
@@ -165,6 +179,7 @@ public class ZomBMCOptions extends BaseOptions {
 				SECRETSTRING + ": " + secret + ", " + 
 				ONLYSPECULATIVESTRING + ": " + onlySpeculative + 
 				", mitigations: " + getMitigations() + ", " +
+				ALIASSPECULATIONSTRING + ": " + aliasSpeculation + ", " +
 				TIMEOUT + ": " + timoeut;
     }
 }

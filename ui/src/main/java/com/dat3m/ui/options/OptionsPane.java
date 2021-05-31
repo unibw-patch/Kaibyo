@@ -35,6 +35,7 @@ public class OptionsPane extends JPanel implements ActionListener {
     private final GenericField secretField;
     private final JRadioButton seButton;
     private final JRadioButton onlySpecLeak;
+    private final JRadioButton aliasButton;
     
     private final JButton testButton;
     private final JButton clearButton;
@@ -53,6 +54,7 @@ public class OptionsPane extends JPanel implements ActionListener {
         secretField = new GenericField("secretarray");
         seButton = new JRadioButton();
         onlySpecLeak = new JRadioButton();
+        aliasButton = new JRadioButton();
         
         testButton = new TestButton();
         clearButton = new ClearButton();
@@ -71,6 +73,7 @@ public class OptionsPane extends JPanel implements ActionListener {
 		secretField.addActionListener(this);
 		seButton.addActionListener(this);
 		onlySpecLeak.addActionListener(this);
+		aliasButton.addActionListener(this);
 		clearButton.addActionListener(this);
     }
 
@@ -89,7 +92,7 @@ public class OptionsPane extends JPanel implements ActionListener {
                 Integer.parseInt(boundField.getText())
         );
 
-        return new UiOptions(settings, Integer.valueOf(timeoutField.getText()), entryField.getText(), secretField.getText(), seButton.isSelected(), onlySpecLeak.isSelected());
+        return new UiOptions(settings, Integer.valueOf(timeoutField.getText()), entryField.getText(), secretField.getText(), seButton.isSelected(), onlySpecLeak.isSelected(), aliasButton.isSelected());
     }
 
     private int getIconHeight(){
@@ -114,13 +117,15 @@ public class OptionsPane extends JPanel implements ActionListener {
         specExecPane.add(seButton);
         JPanel specLeakPane = new GenericPane("Only branch speculation leak");
         specLeakPane.add(onlySpecLeak);
+        JPanel specAliasPane = new GenericPane("Enable alias speculation");
+        specAliasPane.add(aliasButton);
         
         // Inner borders
         Border emptyBorder = BorderFactory.createEmptyBorder();
 
         JSplitPane graphPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         graphPane.setDividerSize(0);
-        JComponent[] panes = { timeoutPane, boundPane, entryPane, secretPane, specExecPane, specLeakPane, testButton, clearButton, graphPane, scrollConsole };
+        JComponent[] panes = { timeoutPane, boundPane, entryPane, secretPane, specExecPane, specLeakPane, specAliasPane, testButton, clearButton, graphPane, scrollConsole };
         Iterator<JComponent> it = Arrays.asList(panes).iterator();
         JComponent current = iconPane;
         current.setBorder(emptyBorder);

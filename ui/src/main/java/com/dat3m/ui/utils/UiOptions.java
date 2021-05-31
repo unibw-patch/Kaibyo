@@ -9,15 +9,17 @@ public class UiOptions {
 	private final String secret;
 	private boolean enable_branch_speculation;
 	private boolean only_branch_speculation_leak;
+	private boolean enable_alias_speculation;
 	private int timeout;
 
-	public UiOptions(Settings settings, int timeout, String entry, String secret, boolean enable_branch_speculation, boolean only_branch_speculation_leak) {
+	public UiOptions(Settings settings, int timeout, String entry, String secret, boolean enable_branch_speculation, boolean only_branch_speculation_leak, boolean enable_alias_speculation) {
 		this.settings = settings;
 		this.timeout = timeout;
 		this.entry = entry;
 		this.secret = secret;
 		this.enable_branch_speculation = enable_branch_speculation;
-		this.only_branch_speculation_leak = only_branch_speculation_leak ;
+		this.only_branch_speculation_leak = only_branch_speculation_leak;
+		this.enable_alias_speculation = enable_alias_speculation;
 	}
 	
 	public int getTimeout() {
@@ -32,12 +34,16 @@ public class UiOptions {
 		return secret;
 	}
 
-	public boolean speculate() {
+	public boolean speculateBranch() {
 		return enable_branch_speculation;
 	}
 
 	public boolean specLeak() {
 		return only_branch_speculation_leak;
+	}
+
+	public boolean speculateAlias() {
+		return enable_alias_speculation;
 	}
 
 	public Settings getSettings(){

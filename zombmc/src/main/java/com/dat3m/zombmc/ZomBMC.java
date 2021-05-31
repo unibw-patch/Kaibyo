@@ -20,10 +20,14 @@ import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.parsers.program.ParserAsmX86;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.event.Event;
+import com.dat3m.dartagnan.program.event.MemEvent;
 import com.dat3m.dartagnan.utils.printer.Printer;
 import com.dat3m.dartagnan.wmm.Wmm;
+import com.dat3m.dartagnan.wmm.utils.Tuple;
+import com.dat3m.dartagnan.wmm.utils.Utils;
 import com.dat3m.zombmc.utils.Result;
 import com.dat3m.zombmc.utils.options.ZomBMCOptions;
+import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Params;
 import com.microsoft.z3.Solver;
@@ -42,7 +46,7 @@ public class ZomBMC {
             System.exit(1);
             return;
         }
-    	if(options.getOnlySpeculativeOption() && !options.getbranchSpeculativeOption()) {
+    	if(options.getOnlySpeculativeOption() && !options.getBranchSpeculativeOption()) {
     		System.out.println("\"" + ONLYSPECULATIVESTRING + "\" option requires \"" + BRANCHSPECULATIONSTRING + "\" option");
     		System.exit(1);
             return;
@@ -89,11 +93,20 @@ public class ZomBMC {
 				solver.add(ctx.mkNot(e.se()));
 	        }			
 		}
-
+		
         solver.add(wmm.encode(program, ctx, options.getSettings()));
         solver.add(wmm.consistent(program, ctx));
         solver.push();
         solver.add(encodeLeakage(program, wmm, options, ctx));
+
+		if(!options.getAliasSpeculativeOption() && wmm.getRelationRepository().getRelation("srf").isUsed()) {
+			for(Tuple t : wmm.getRelationRepository().getRelation("srf").getMaxTupleSet()) {
+				MemEvent m1 = (MemEvent) t.getFirst();
+				MemEvent m2 = (MemEvent) t.getSecond();
+				BoolExpr sameAddress = ctx.mkEq(m1.getMemAddressExpr(), m2.getMemAddressExpr());
+				solver.add(ctx.mkEq(Utils.alias(m1, m2, ctx), sameAddress));
+			}
+		}
 
         switch(solver.check()) {
         	case SATISFIABLE:

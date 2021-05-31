@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Init;
+import com.dat3m.dartagnan.program.event.MemEvent;
 import com.dat3m.dartagnan.program.memory.Address;
 import com.dat3m.dartagnan.program.utils.EType;
 import com.dat3m.dartagnan.wmm.Wmm;
@@ -20,26 +21,32 @@ import com.microsoft.z3.Context;
 
 public class Encodings {
 	
-    public static BoolExpr encodeLeakage(Program p, Wmm wmm, ZomBMCOptions options, Context ctx) {    	
-    	BoolExpr enc = ctx.mkFalse();
+    public static BoolExpr encodeLeakage(Program p, Wmm wmm, ZomBMCOptions options, Context ctx) {
+    	BoolExpr enc = ctx.mkTrue();
+    	BoolExpr or = ctx.mkFalse();
+    	String rel = wmm.toString().contains("srf") ? "srf" : "rf";
     	List<Event> writes = options.getReadFrom() == -1 ? getSecretInit(p, options.getSecretOption()) : 
     		p.getCache().getEvents(FilterBasic.get(EType.WRITE)).stream().filter(e -> e.getOId() == options.getReadFrom()).collect(Collectors.toList());
     	for(Event r : p.getCache().getEvents(FilterMinus.get(FilterBasic.get(EType.READ), FilterBasic.get(EType.STACK)))){
     		for(Event w : writes) {
-    			if(!wmm.getRelationRepository().getRelation("rf").getMaxTupleSet().contains(new Tuple(w,r))) {
+    			if(!wmm.getRelationRepository().getRelation(rel).getMaxTupleSet().contains(new Tuple(w,r))) {
     				continue;
     			}
+    			MemEvent m1 = (MemEvent)w;
+    			MemEvent m2 = (MemEvent)r;
+    			BoolExpr sameAddress = ctx.mkEq(m1.getMemAddressExpr(), m2.getMemAddressExpr());
+    			enc = ctx.mkAnd(enc, ctx.mkEq(Utils.alias(w, r, ctx), sameAddress));
     			// We use the AND to avoid cases where r.se() is not constrained anywhere else 
     			// (e.g. speculation execution if off) and the solver can make it trivially true 
     			// without affecting the execution of the instruction
     			BoolExpr exec = options.getOnlySpeculativeOption() ? ctx.mkAnd(r.se(), r.exec()) : r.exec();
-    			enc = ctx.mkOr(enc, ctx.mkAnd(exec, Utils.edge("rf", w, r, ctx)));
+    			or = ctx.mkOr(or, ctx.mkAnd(exec, Utils.edge(rel, w, r, ctx)));
     		}
     	}
-    	if(enc.isFalse()) {
+    	if(or.isFalse()) {
     		throw new RuntimeException("The program does not contain secrets");
     	}
-    	return enc;
+    	return ctx.mkAnd(enc, or);
     }
 
     public static List<Event> getSecretInit(Program p, String secret) {
