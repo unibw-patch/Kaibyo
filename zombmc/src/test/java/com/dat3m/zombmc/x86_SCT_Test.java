@@ -43,19 +43,24 @@ public class x86_SCT_Test {
         Wmm sc = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/sc.cat"));
         Wmm srf = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/srf.cat"));
 		
-        ZomBMCOptions none = new ZomBMCOptions("secretarray", false, true, new ArrayList<Mitigation>(), s, -1);
-
+        ZomBMCOptions noAliasSpec = new ZomBMCOptions("secretarray", false, false, new ArrayList<Mitigation>(), s, -1);
+        ZomBMCOptions aliasSpec = new ZomBMCOptions("secretarray", false, true, new ArrayList<Mitigation>(), s, -1);
+        
         // Unsafe under SC if CF speculation is enabled
         Program p1 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct.s"));
-        data.add(new Object[]{p1, sc, none, UNSAFE});
+        data.add(new Object[]{p1, sc, noAliasSpec, UNSAFE});
 
         // Safe under SC if CF speculation is stopped
-        Program p2 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence.s"));
-        data.add(new Object[]{p2, sc, none, SAFE});
+        Program p2 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-pht-lfence.s"));
+        data.add(new Object[]{p2, sc, noAliasSpec, SAFE});
 
         // Unsafe under SRF even if CF speculation is stopped
-        Program p3 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence.s"));
-        data.add(new Object[]{p3, srf, none, UNSAFE});
+        Program p3 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-pht-lfence.s"));
+        data.add(new Object[]{p3, srf, aliasSpec, UNSAFE});
+
+        // Safe under SRF if both speculations are stopped
+        Program p4 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfences.s"));
+        data.add(new Object[]{p4, srf, aliasSpec, SAFE});
 
         return data;
     }
