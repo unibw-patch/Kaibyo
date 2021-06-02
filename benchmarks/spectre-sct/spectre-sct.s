@@ -80,11 +80,11 @@ victim_function_v1:
 	.cfi_def_cfa_offset 8
 	mov	eax, DWORD PTR [esp+8]
 	mov	BYTE PTR [esp], al
-	mov	BYTE PTR idx_array, 64
 	movzx	edx, BYTE PTR [esp]
 	mov	eax, DWORD PTR idx_array_size
 	cmp	edx, eax
 	jnb	.L3
+	mov	BYTE PTR idx_array, 64
 	movzx	eax, BYTE PTR [esp]
 	movzx	eax, BYTE PTR idx_array[eax]
 	movzx	edx, al
