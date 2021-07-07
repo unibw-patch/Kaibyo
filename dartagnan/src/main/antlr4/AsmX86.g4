@@ -16,12 +16,17 @@ lbl
    : GLOB global
    | TYPE vardef
    | SIZE sizedef
+   | FILE filename
    | LABEL COLON
    | slabel COLON? expressionlist?
    ;
 
 global
    : NAME
+   ;
+
+filename
+   : STRING
    ;
 
 vardef
@@ -415,6 +420,10 @@ TYPE
    
 SIZE
    : '.' S I Z E
+   ;
+   
+FILE
+   : '.' F I L E
    ;
    
 LABEL

@@ -176,6 +176,7 @@ public class ZomBMCOptions extends BaseOptions {
     @Override
     public String toString() {
 		return 
+				"bound: " + getSettings().getBound() + ", " +
 				SECRETSTRING + ": " + secret + ", " + 
 				ONLYSPECULATIVESTRING + ": " + onlySpeculative + 
 				", mitigations: " + getMitigations() + ", " +

@@ -31,7 +31,6 @@ public class ParserAsmX86 implements ParserInterface {
         CharStream charStream = CharStreams.fromStream(stream);
         Program program = parse(charStream);
         stream.close();
-        program.setName(file.getName() + " - " + entry);
         return program;
     }
 

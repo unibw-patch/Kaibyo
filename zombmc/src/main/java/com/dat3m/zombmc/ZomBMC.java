@@ -9,7 +9,9 @@ import static com.dat3m.zombmc.utils.options.ZomBMCOptions.BRANCHSPECULATIONSTRI
 import static com.dat3m.zombmc.utils.options.ZomBMCOptions.ONLYSPECULATIVESTRING;
 import static com.microsoft.z3.Status.SATISFIABLE;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -80,7 +82,7 @@ public class ZomBMC {
     public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, ZomBMCOptions options) {
     	program.unroll(options.getSettings().getBound(), 0);
         program.compile(Arch.NONE, options.getMitigations(), 0);
-
+        
         Solver solver = ctx.mkSolver();
         if(options.getTimeout() > 0) {
             Params p = ctx.mkParams();
@@ -111,16 +113,20 @@ public class ZomBMC {
     		}
         }
 
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(System.getenv().get("DAT3M_HOME") + "/output/" + program.getName() + ".smt2"));
+	        writer.write(ctx.benchmarkToSMTString(program.getName(), "ALL", "unknown", "", solver.getAssertions(), ctx.mkTrue()));
+	        writer.close();
+	        System.out.println("Wrote in " + System.getenv().get("DAT3M_HOME") + "/output/" + program.getName() + ".smt2");
+		} catch (IOException ignore) {}
+
         switch(solver.check()) {
         	case SATISFIABLE:
-            	solver.add(program.encodeNoBoundEventExec(ctx));
-    			return solver.check() == SATISFIABLE ? UNSAFE : Result.UNKNOWN;
+        		return UNSAFE;
         	case UNSATISFIABLE:
-            	solver.pop();
-    			solver.add(ctx.mkNot(program.encodeNoBoundEventExec(ctx)));
-    			return solver.check() == SATISFIABLE ? Result.UNKNOWN : SAFE;
+        		return SAFE;
         	default:
-        		return solver.getReasonUnknown().equals("canceled") ? TIMEOUT : Result.UNKNOWN;
+        		return Result.UNKNOWN;
         }
     }
 }

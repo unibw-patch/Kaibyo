@@ -52,37 +52,37 @@ public class x86_SCT_Test {
         Program p2;
         Program p3;
 
-        // None speculation
-        p1 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct.s"));
-        data.add(new Object[]{p1, srf, nobranch_noalias, SAFE});
-        p2 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-pht.s"));
-        data.add(new Object[]{p2, srf, nobranch_noalias, SAFE});
-        p3 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-both.s"));
-        data.add(new Object[]{p3, srf, nobranch_noalias, SAFE});
+//        // None speculation
+//        p1 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct.s"));
+//        data.add(new Object[]{p1, srf, nobranch_noalias, SAFE});
+//        p2 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-pht.s"));
+//        data.add(new Object[]{p2, srf, nobranch_noalias, SAFE});
+//        p3 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-both.s"));
+//        data.add(new Object[]{p3, srf, nobranch_noalias, SAFE});
         
-        // CF speculation
-        p1 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct.s"));
-        data.add(new Object[]{p1, srf, branch_noalias, UNSAFE});
-        p2 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-pht.s"));
-        data.add(new Object[]{p2, srf, branch_noalias, SAFE});
-        p3 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-both.s"));
-        data.add(new Object[]{p3, srf, branch_noalias, SAFE});
+//        // CF speculation
+//        p1 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct.s"));
+//        data.add(new Object[]{p1, srf, branch_noalias, UNSAFE});
+//        p2 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-pht.s"));
+//        data.add(new Object[]{p2, srf, branch_noalias, SAFE});
+//        p3 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-both.s"));
+//        data.add(new Object[]{p3, srf, branch_noalias, SAFE});
         
         // Alias speculation
         p1 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct.s"));
         data.add(new Object[]{p1, srf, nobranch_alias, UNSAFE});
-        p2 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-pht.s"));
-        data.add(new Object[]{p2, srf, nobranch_alias, UNSAFE});
+//        p2 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-pht.s"));
+//        data.add(new Object[]{p2, srf, nobranch_alias, UNSAFE});
         p3 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-both.s"));
         data.add(new Object[]{p3, srf, nobranch_alias, SAFE});
 
-        // Both speculations
-        p1 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct.s"));
-        data.add(new Object[]{p1, srf, branch_alias, UNSAFE});
-        p2 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-pht.s"));
-        data.add(new Object[]{p2, srf, branch_alias, UNSAFE});
-        p3 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-both.s"));
-        data.add(new Object[]{p3, srf, branch_alias, SAFE});
+//        // Both speculations
+//        p1 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct.s"));
+//        data.add(new Object[]{p1, srf, branch_alias, UNSAFE});
+//        p2 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-pht.s"));
+//        data.add(new Object[]{p2, srf, branch_alias, UNSAFE});
+//        p3 = new ParserAsmX86("victim_function_v1").parse(new File(TEST_RESOURCE_PATH + "spectre-sct-lfence-both.s"));
+//        data.add(new Object[]{p3, srf, branch_alias, SAFE});
 
         return data;
     }
@@ -94,7 +94,7 @@ public class x86_SCT_Test {
         this.expected = expected;
     }
 
-    @Test(timeout = 60000)
+    @Test(timeout = 30000)
     public void litmus() {
         Context ctx = new Context();
 		assertEquals(expected, testMemorySafety(ctx, program, wmm, options));

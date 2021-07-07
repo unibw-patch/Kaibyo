@@ -61,6 +61,8 @@ import com.dat3m.dartagnan.program.event.Local;
 import com.dat3m.dartagnan.program.event.Store;
 import com.dat3m.dartagnan.program.memory.Address;
 import com.dat3m.dartagnan.program.memory.Location;
+import com.dat3m.dartagnan.program.utils.EType;
+import com.dat3m.dartagnan.wmm.filter.FilterBasic;
 
 public class VisitorAsmX86
         extends AsmX86BaseVisitor<Object>
@@ -68,6 +70,7 @@ public class VisitorAsmX86
 
     private ProgramBuilder programBuilder;
     private int currenThread = 0;
+    private String file = "unknown.c";
     private String entry = "main";
     private Set<String> arrays = new HashSet<>();
     
@@ -137,7 +140,13 @@ public class VisitorAsmX86
 				}
 			}
 		}
-		return programBuilder.build();
+		Program program = programBuilder.build();
+		String tag = "";
+		if(!program.getCache().getEvents(FilterBasic.get(EType.FENCE)).isEmpty()) {
+			tag = "-lfence";
+		}
+		program.setName(file + "-" + entry + tag);
+		return program;
 	}
 	
 	@Override
@@ -499,4 +508,11 @@ public class VisitorAsmX86
 	public IConst visitNumber(AsmX86Parser.NumberContext ctx) {
 		return new IConst(ctx.getText(), PRECISION);
 	}
+	
+	@Override
+	public Object visitFilename(AsmX86Parser.FilenameContext ctx) {
+		file = ctx.getText().replace("\"", "");
+		return visitChildren(ctx);
+	}
+
 }

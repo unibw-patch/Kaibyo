@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Init;
-import com.dat3m.dartagnan.program.event.MemEvent;
 import com.dat3m.dartagnan.program.memory.Address;
 import com.dat3m.dartagnan.program.utils.EType;
 import com.dat3m.dartagnan.wmm.Wmm;
@@ -32,10 +31,6 @@ public class Encodings {
     			if(!wmm.getRelationRepository().getRelation(rel).getMaxTupleSet().contains(new Tuple(w,r))) {
     				continue;
     			}
-    			MemEvent m1 = (MemEvent)w;
-    			MemEvent m2 = (MemEvent)r;
-    			BoolExpr sameAddress = ctx.mkEq(m1.getMemAddressExpr(), m2.getMemAddressExpr());
-    			enc = ctx.mkAnd(enc, ctx.mkEq(Utils.alias(w, r, ctx), sameAddress));
     			// We use the AND to avoid cases where r.se() is not constrained anywhere else 
     			// (e.g. speculation execution if off) and the solver can make it trivially true 
     			// without affecting the execution of the instruction

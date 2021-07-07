@@ -18,12 +18,10 @@ import org.junit.runners.Parameterized;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static com.dat3m.zombmc.utils.ResourceHelper.TEST_RESOURCE_PATH;
 import static com.dat3m.zombmc.utils.Result.SAFE;
-import static com.dat3m.zombmc.utils.Result.UNKNOWN;
 import static com.dat3m.zombmc.utils.Result.UNSAFE;
 import static com.dat3m.zombmc.utils.ResourceHelper.CAT_RESOURCE_PATH;
 import static com.dat3m.zombmc.ZomBMC.testMemorySafety;
@@ -37,35 +35,25 @@ public class x86_PHT_Test {
     private ZomBMCOptions options;
     private Result expected;
 
-	@Parameterized.Parameters(name = "{index}: {0} bound={2}")
+	@Parameterized.Parameters(name = "{index}: {0} {2}")
     public static Iterable<Object[]> data() throws IOException {        
         List<Object[]> data = new ArrayList<>();
 
         Settings s1 = new Settings(Mode.KNASTER, Alias.NONE, 1, false);
+        Settings s2 = new Settings(Mode.KNASTER, Alias.NONE, 2, false);
         Wmm sc = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/sc.cat"));
-		ZomBMCOptions none = new ZomBMCOptions("secretarray", true, new ArrayList<Mitigation>(), s1, -1);
-		ZomBMCOptions ns = new ZomBMCOptions("secretarray", true, Collections.singletonList(Mitigation.NOBRANCHSPECULATION), s1, -1);
-		ZomBMCOptions slh = new ZomBMCOptions("secretarray", true, Collections.singletonList(Mitigation.SLH), s1, -1);
-        
-        for(int i = 1; i <= 15; i++) {
-        	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht.s"));
-        	switch(i) {
-        	case 5:
-        		data.add(new Object[]{program, sc, ns, UNKNOWN});
-        		break;
-        	default:
-        		data.add(new Object[]{program, sc, ns, SAFE});
-        	}	
-        }
+		ZomBMCOptions noneBoth = new ZomBMCOptions("secretarray", false, new ArrayList<Mitigation>(), s1, -1);
+		ZomBMCOptions noneBoth2 = new ZomBMCOptions("secretarray", false, new ArrayList<Mitigation>(), s2, -1);
+		ZomBMCOptions noneSpec = new ZomBMCOptions("secretarray", true, new ArrayList<Mitigation>(), s1, -1);
 
         for(int i = 1; i <= 15; i++) {
         	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht.s"));
         	switch(i) {
         	case 5:
-        		data.add(new Object[]{program, sc, none, UNKNOWN});
+        		data.add(new Object[]{program, sc, noneBoth2, UNSAFE});
         		break;
         	default:
-        		data.add(new Object[]{program, sc, none, UNSAFE});
+        		data.add(new Object[]{program, sc, noneBoth, UNSAFE});
         	}
         }
 
@@ -73,26 +61,14 @@ public class x86_PHT_Test {
         	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht-lfence.s"));
         	switch(i) {
         	case 5:
-        		data.add(new Object[]{program, sc, none, UNKNOWN});
+        		// We cannot handle it because it has input dependent loop
         		break;
         	default:
-        		data.add(new Object[]{program, sc, none, SAFE});
+        		data.add(new Object[]{program, sc, noneSpec, SAFE});
         	}
 	
         }
         
-        for(int i = 1; i <= 15; i++) {
-        	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-pht.s"));
-        	switch(i) {
-        	case 5:
-        		data.add(new Object[]{program, sc, slh, UNKNOWN});
-        		break;
-        	default:
-        		data.add(new Object[]{program, sc, slh, SAFE});
-        	}
-	
-        }
-
         return data;
     }
     
