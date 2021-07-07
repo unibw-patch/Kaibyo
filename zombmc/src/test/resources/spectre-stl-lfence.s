@@ -133,6 +133,7 @@ victim_function_v3:
 	sub	eax, 1
 	and	eax, DWORD PTR [esp+4]
 	mov	edx, eax
+    lfence
 	mov	eax, edx
 	movzx	eax, BYTE PTR publicarray[eax]
 	movzx	eax, al
@@ -514,6 +515,7 @@ victim_function_v12:
 	add	esp, 4
 	.cfi_def_cfa_offset 4
 	mov	edx, eax
+    lfence
 	mov	eax, edx
 	movzx	eax, BYTE PTR publicarray[eax]
 	movzx	eax, al
