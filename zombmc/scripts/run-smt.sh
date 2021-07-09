@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TIMEOUT=3600
+TIMEOUT=5400
 
 TOOL=$1
 THISPATH="/Users/ponce/eclipse-workspace/zombmc/Dat3M/output/"
@@ -71,7 +71,7 @@ do
       fi
     else
       ## The file does not exists
-      rline=$rline", N/S"
+      rline=$rline", \ns"
       tline=$tline", "$TIMEOUT
     fi
 

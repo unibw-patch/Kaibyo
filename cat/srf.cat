@@ -1,4 +1,5 @@
-SC
+SC 
+(* In order execution + alias speculation *)
 
 (* Define co (and fr) *)
 include "cos.cat"

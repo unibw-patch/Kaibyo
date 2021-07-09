@@ -6,6 +6,7 @@ import com.microsoft.z3.BoolExpr;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Fence;
 import com.dat3m.dartagnan.program.event.MemEvent;
+import com.dat3m.dartagnan.program.memory.Address;
 import com.dat3m.dartagnan.wmm.filter.FilterBasic;
 import com.dat3m.dartagnan.wmm.filter.FilterMinus;
 import com.dat3m.dartagnan.wmm.utils.Tuple;
@@ -38,12 +39,22 @@ public class RelSRf extends RelRf {
 
             for(Event e1 : eventsInit){
                 for(Event e2 : eventsLoad){
+                    MemEvent w = (MemEvent) e1;
+                    MemEvent r = (MemEvent) e2;
+                    if(w.getAddress() instanceof Address && r.getAddress() instanceof Address && w.getAddress() != r.getAddress()) {
+                    	continue;
+                    }
                 	maxTupleSet.add(new Tuple(e1, e2));
                 }
             }
 
             for(Event e1 : eventsStore){
                 for(Event e2 : eventsLoad){
+                    MemEvent w = (MemEvent) e1;
+                    MemEvent r = (MemEvent) e2;
+                    if(w.getAddress() instanceof Address && r.getAddress() instanceof Address && w.getAddress() != r.getAddress()) {
+                    	continue;
+                    }
                     maxTupleSet.add(new Tuple(e1, e2));
                 }
             }
@@ -65,10 +76,10 @@ public class RelSRf extends RelRf {
             MemEvent r = (MemEvent) tuple.getSecond();
             BoolExpr edge = edge(term, w, r, ctx);
 
-            if(w.getSuccessors().stream().filter(e -> e.getCId() < r.getCId()).anyMatch(e -> e instanceof Fence)) {
-            	BoolExpr sameAddress = ctx.mkEq(w.getMemAddressExpr(), r.getMemAddressExpr());
-            	enc = ctx.mkAnd(enc, ctx.mkEq(Utils.alias(w, r, ctx), sameAddress));
-            }
+            boolean knownAddress = w.getSuccessors().stream().filter(e -> e.getCId() < r.getCId()).anyMatch(e -> e instanceof Fence) 
+            		|| (w.getAddress() instanceof Address && r.getAddress() instanceof Address);
+            
+            BoolExpr use = knownAddress ? ctx.mkEq(w.getMemAddressExpr(), r.getMemAddressExpr()) : Utils.alias(w, r, ctx);
             
             BoolExpr sameValue = ctx.mkEq(w.getMemValueExpr(), r.getMemValueExpr());
 
@@ -77,7 +88,8 @@ public class RelSRf extends RelRf {
             if(canAccNonInitMem && w.is(EType.INIT)){
                 memInitMap.put(r, ctx.mkOr(memInitMap.getOrDefault(r, ctx.mkFalse()), Utils.alias(w, r, ctx)));
             }
-            enc = ctx.mkAnd(enc, ctx.mkImplies(edge, ctx.mkAnd(w.exec(), r.exec(), Utils.alias(w, r, ctx), sameValue)));
+            
+            enc = ctx.mkAnd(enc, ctx.mkImplies(edge, ctx.mkAnd(w.exec(), r.exec(), use, sameValue)));
         }
 
         for(MemEvent r : edgeMap.keySet()){

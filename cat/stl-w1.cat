@@ -1,0 +1,14 @@
+SC
+
+(* Define co (and fr) *)
+include "cos.cat"
+
+(* All communication relations *)
+let com = (rf | fr | co)
+
+let win = [W] ; po ; [W] ; po ; [R]
+
+let ppo = (po \ W*R) | win | fencerel(lfence)
+
+(* Store-to-load Forwarding *)
+acyclic ppo | com
