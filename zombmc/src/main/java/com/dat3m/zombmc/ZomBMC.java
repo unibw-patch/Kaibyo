@@ -2,19 +2,12 @@ package com.dat3m.zombmc;
 
 import static com.dat3m.dartagnan.compiler.Mitigation.NOBRANCHSPECULATION;
 import static com.dat3m.zombmc.utils.Encodings.encodeLeakage;
-import static com.dat3m.zombmc.utils.Result.UNSAFE;
-import static com.dat3m.zombmc.utils.Result.SAFE;
-import static com.dat3m.zombmc.utils.Result.TIMEOUT;
 import static com.dat3m.zombmc.utils.options.ZomBMCOptions.BRANCHSPECULATIONSTRING;
 import static com.dat3m.zombmc.utils.options.ZomBMCOptions.ONLYSPECULATIVESTRING;
-import static com.microsoft.z3.Status.SATISFIABLE;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import org.apache.commons.cli.HelpFormatter;
 
 import com.dat3m.dartagnan.compiler.Arch;
@@ -24,7 +17,6 @@ import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.MemEvent;
 import com.dat3m.dartagnan.program.utils.EType;
-import com.dat3m.dartagnan.utils.printer.Printer;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.dartagnan.wmm.utils.Tuple;
 import com.dat3m.dartagnan.wmm.utils.Utils;
@@ -64,18 +56,8 @@ public class ZomBMC {
         Wmm mcm = new ParserCat().parse(new File(options.getTargetModelFilePath()));
 		Program p = new ParserAsmX86(options.getEntry()).parse(new File(options.getProgramFilePath()));		
         
-        if(options.print()) {
-        	System.out.println(new Printer().print(p));
-    		System.exit(1);
-            return;
-        }
-        
         Context ctx = new Context();
-        long t1 = System.currentTimeMillis();
-        Result result = testMemorySafety(ctx, p, mcm, options);
-        long t2 = System.currentTimeMillis();
-        System.out.println(result);
-        System.out.println("Solved in " + (new SimpleDateFormat("mm:ss:SS")).format(new Date(t2-t1)) + " (m:s:ms)");
+        testMemorySafety(ctx, p, mcm, options);
 		ctx.close();
     }
 
@@ -117,16 +99,10 @@ public class ZomBMC {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(System.getenv().get("DAT3M_HOME") + "/output/" + program.getName() + ".smt2"));
 	        writer.write(ctx.benchmarkToSMTString(program.getName(), "ALL", "unknown", "", solver.getAssertions(), ctx.mkTrue()));
 	        writer.close();
-	        System.out.println("Wrote in " + System.getenv().get("DAT3M_HOME") + "/output/" + program.getName() + ".smt2");
+	        System.out.println("Formula written in " + System.getenv().get("DAT3M_HOME") + "/output/" + program.getName() + ".smt2");
 		} catch (IOException ignore) {}
 
-        switch(solver.check()) {
-        	case SATISFIABLE:
-        		return UNSAFE;
-        	case UNSATISFIABLE:
-        		return SAFE;
-        	default:
-        		return Result.UNKNOWN;
-        }
+		// Dummy result, not currently used since the encoding is written to a file.
+		return Result.UNKNOWN;
     }
 }
