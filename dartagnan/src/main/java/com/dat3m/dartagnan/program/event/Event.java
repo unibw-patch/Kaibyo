@@ -263,7 +263,7 @@ public abstract class Event implements Comparable<Event> {
 			cfEnc = ctx.mkEq(cfVar, cfCond);
 			// If this event is speculatively executed, then one of the spec-conditions shall hold
 			// The other direction may not hold because the speculation can finish
-			cfEnc = ctx.mkAnd(cfEnc, ctx.mkEq(seVar, seCond));
+			cfEnc = ctx.mkAnd(cfEnc, ctx.mkImplies(seVar, seCond));
 			cfEnc = ctx.mkAnd(cfEnc, encodeSpecExec(ctx));
 			// Only conditional jumps can start speculation
 			cfEnc = ctx.mkAnd(cfEnc, ctx.mkNot(startSEVar));
