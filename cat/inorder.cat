@@ -1,0 +1,7 @@
+In-Order
+
+(* All communication relations *)
+let com = (co | rf | rf^-1;co)
+
+(* In-Order execution *)
+acyclic com | po

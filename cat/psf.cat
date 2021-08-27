@@ -1,0 +1,8 @@
+PSF
+
+(* All communication relations *)
+let scom = (co | srf | srf^-1;co)
+
+(* Predictive Store Forwarding *)
+(* i.e. in-order execution + alias speculation *)
+acyclic scom | po
