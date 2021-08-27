@@ -1,4 +1,4 @@
-PSF
+Predictive-Store-Forwarding
 
 (* All communication relations *)
 let scom = (co | srf | srf^-1;co)

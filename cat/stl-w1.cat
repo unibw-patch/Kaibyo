@@ -1,14 +1,14 @@
-SC
-
-(* Define co (and fr) *)
-include "cos.cat"
+Store-To-Load-Forwarding
 
 (* All communication relations *)
-let com = (rf | fr | co)
+let com = (co | rf | rf^-1;co)
+
+(* Speculative window of size 1 *)
 
 let win = [W] ; po ; [W] ; po ; [R]
 
-let ppo = (po \ W*R) | win | fencerel(lfence)
+(* Preserved Program Order *)
+let ppo = ((po \ W*R) | win | fencerel(lfence))
 
-(* Store-to-load Forwarding *)
-acyclic ppo | com
+(* Store-To-Load Forwarding *)
+acyclic  com | ppo
