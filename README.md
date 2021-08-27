@@ -31,7 +31,7 @@ mvn clean install
 
 Usage
 ======
-The input program must be given as a `.s` file, i.e. x86 assembly code with Intel syntax.
+The input program must be given as a `.s` file, i.e. x86 assembly code with Intel syntax (our examples for spectre PHT, STL and PSF can be found in DAT3M_HOME/benchmarks).
 
 The microarchitecture must be defined as a CAT file (see `DAT3M_HOME/cat` for examples).
 
