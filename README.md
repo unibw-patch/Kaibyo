@@ -26,7 +26,7 @@ export LD_LIBRARY_PATH=$DAT3M_HOME/lib/:$LD_LIBRARY_PATH
 
 To build the tool run
 ```
-mvn clean install -DskipTests
+mvn clean install
 ```
 
 Usage
