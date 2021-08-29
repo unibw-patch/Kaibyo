@@ -33,16 +33,9 @@ Thumbs.db
 # Builds #
 ##########
 dartagnan/target/
-porthos/target/
-ui/target/
-svcomp/target/
-zombmc/target/
+kaibyo/target/
 
 ##########
 # Boogie #
 ##########
 output/
-benchmarks/spectre/asm
-benchmarks/spectre/bc
-benchmarks/spectre/bpl
-
