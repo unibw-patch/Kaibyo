@@ -46,8 +46,9 @@ public class OptionsPane extends JPanel implements ActionListener {
         super(new GridLayout(1,0));
 
         int height = Math.min(getIconHeight(), (int) Math.round(Toolkit.getDefaultToolkit().getScreenSize().getHeight()) * 7 / 18);
-        iconPane = new JLabel(IconHelper.getIcon(IconCode.ZOMBMC, height), JLabel.CENTER);
-
+//        iconPane = new JLabel(IconHelper.getIcon(IconCode.ZOMBMC, height), JLabel.CENTER);
+        iconPane = new JLabel();
+        
         timeoutField = new TimeoutField();
         boundField = new BoundField();
         entryField = new GenericField("main");

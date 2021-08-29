@@ -1,9 +1,5 @@
 # ZomBMC
 
-<p align="center"> 
-<img src="ui/src/main/resources/zombmc.jpg" width="400">
-</p>
-
 ZomBMC is an extension of the [Dat3M](https://github.com/hernanponcedeleon/Dat3M) framework which allows to test software isolation of programs running on parametric microarchitectural models defined using the CAT language.
 
 Requirements
