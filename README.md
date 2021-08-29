@@ -42,7 +42,7 @@ java -jar kaibyo/target/kaibyo-2.0.7-jar-with-dependencies.jar -input <program f
 Options include:
 - `-unroll`: unrolling bound for the BMC.
 - `-entry`: Name of the entry function (default `main`)
-- `-sectey`: Name of the variable containing the secret (default `secret`)
+- `-sectet`: Name of the variable containing the secret (default `secret`)
 - `-branch_speculation`: It enables branch speculation.
 - `-branch_speculation_error`: It only looks for isolation violations along a transient control flow.
 - `-alias_speculation`: It enables alias branch speculation.
