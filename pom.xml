@@ -72,6 +72,6 @@
   <modules>
     <module>dartagnan</module>
     <module>ui</module>
-    <module>zombmc</module>
+    <module>kaibyo</module>
   </modules>
 </project>

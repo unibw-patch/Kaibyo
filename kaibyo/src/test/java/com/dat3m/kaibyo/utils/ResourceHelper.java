@@ -1,4 +1,4 @@
-package com.dat3m.zombmc.utils;
+package com.dat3m.kaibyo.utils;
 
 import com.dat3m.kaibyo.utils.Result;
 import com.google.common.collect.ImmutableMap;

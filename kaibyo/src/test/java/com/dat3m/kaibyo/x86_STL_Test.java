@@ -1,4 +1,4 @@
-package com.dat3m.zombmc;
+package com.dat3m.kaibyo;
 
 import com.dat3m.dartagnan.compiler.Mitigation;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
@@ -20,11 +20,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.dat3m.zombmc.utils.ResourceHelper.TEST_RESOURCE_PATH;
 import static com.dat3m.kaibyo.Kaibyo.testMemorySafety;
+import static com.dat3m.kaibyo.utils.ResourceHelper.CAT_RESOURCE_PATH;
+import static com.dat3m.kaibyo.utils.ResourceHelper.TEST_RESOURCE_PATH;
 import static com.dat3m.kaibyo.utils.Result.SAFE;
 import static com.dat3m.kaibyo.utils.Result.UNSAFE;
-import static com.dat3m.zombmc.utils.ResourceHelper.CAT_RESOURCE_PATH;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)

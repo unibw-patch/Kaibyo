@@ -1,4 +1,4 @@
-package com.dat3m.zombmc;
+package com.dat3m.kaibyo;
 
 import com.dat3m.dartagnan.compiler.Mitigation;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
@@ -20,11 +20,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.dat3m.zombmc.utils.ResourceHelper.TEST_RESOURCE_PATH;
+import static com.dat3m.kaibyo.utils.ResourceHelper.TEST_RESOURCE_PATH;
 import static com.dat3m.kaibyo.Kaibyo.testMemorySafety;
 import static com.dat3m.kaibyo.utils.Result.SAFE;
 import static com.dat3m.kaibyo.utils.Result.UNSAFE;
-import static com.dat3m.zombmc.utils.ResourceHelper.CAT_RESOURCE_PATH;
+import static com.dat3m.kaibyo.utils.ResourceHelper.CAT_RESOURCE_PATH;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
@@ -41,7 +41,7 @@ public class x86_PHT_Test {
 
         Settings s1 = new Settings(Mode.KNASTER, Alias.NONE, 1, false);
         Settings s2 = new Settings(Mode.KNASTER, Alias.NONE, 2, false);
-        Wmm sc = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/sc.cat"));
+        Wmm sc = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/inorder.cat"));
 		KaibyoOptions noneBoth = new KaibyoOptions("secretarray", false, new ArrayList<Mitigation>(), s1, -1);
 		KaibyoOptions noneBoth2 = new KaibyoOptions("secretarray", false, new ArrayList<Mitigation>(), s2, -1);
 		KaibyoOptions noneSpec = new KaibyoOptions("secretarray", true, new ArrayList<Mitigation>(), s1, -1);

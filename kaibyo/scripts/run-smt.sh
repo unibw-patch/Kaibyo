@@ -3,8 +3,8 @@
 TIMEOUT=5400
 
 TOOL=$1
-THISPATH="/Users/ponce/eclipse-workspace/zombmc/Dat3M/output/"
-FILES=`ls /Users/ponce/eclipse-workspace/zombmc/Dat3M/output/*.smt2 | sort -V`
+THISPATH="/Users/ponce/eclipse-workspace/kaibyo/Dat3M/output/"
+FILES=`ls /Users/ponce/eclipse-workspace/kaibyo/Dat3M/output/*.smt2 | sort -V`
 
 LOGFOLDER=$DAT3M_HOME/output/logs/$TOOL-$(date +%Y-%m-%d_%H:%M)
 mkdir -p $LOGFOLDER

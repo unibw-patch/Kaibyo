@@ -1,4 +1,4 @@
-package com.dat3m.zombmc;
+package com.dat3m.kaibyo;
 
 import com.dat3m.dartagnan.compiler.Mitigation;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
@@ -21,11 +21,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.dat3m.zombmc.utils.ResourceHelper.TEST_RESOURCE_PATH;
 import static com.dat3m.kaibyo.Kaibyo.testMemorySafety;
+import static com.dat3m.kaibyo.utils.ResourceHelper.CAT_RESOURCE_PATH;
+import static com.dat3m.kaibyo.utils.ResourceHelper.TEST_RESOURCE_PATH;
 import static com.dat3m.kaibyo.utils.Result.SAFE;
 import static com.dat3m.kaibyo.utils.Result.UNSAFE;
-import static com.dat3m.zombmc.utils.ResourceHelper.CAT_RESOURCE_PATH;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
@@ -41,7 +41,7 @@ public class x86_PSF_Test {
         List<Object[]> data = new ArrayList<>();
 
         Settings s = new Settings(Mode.KNASTER, Alias.CFIS, 1, false);
-        Wmm srf = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/srf.cat"));
+        Wmm srf = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/psf.cat"));
 		
         KaibyoOptions branch_noalias = new KaibyoOptions("secretarray", false, false, new ArrayList<Mitigation>(), s, -1);
         KaibyoOptions branch_alias = new KaibyoOptions("secretarray", false, true, new ArrayList<Mitigation>(), s, -1);

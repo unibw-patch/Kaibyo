@@ -1,8 +1,8 @@
 Build container
-docker build --tag zombmc .
+docker build --tag kaibyo .
 
 Run the container
-docker run --name zombmc -w /home/Dat3M/zombmc/scripts/ -it zombmc
+docker run --name kaibyo -w /home/Dat3M/kaibyo/scripts/ -it kaibyo
 
 Start the container
-docker start -i zombmc
+docker start -i kaibyo
