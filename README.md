@@ -1,10 +1,10 @@
-# ZomBMC
+# Kaibyo
 
 <p align="center"> 
 <img src="ui/src/main/resources/cat-ghost.png" width="400">
 </p>
 
-ZomBMC is an extension of the [Dat3M](https://github.com/hernanponcedeleon/Dat3M) framework which allows to test software isolation of programs running on parametric microarchitectural models defined using the CAT language.
+Kaibyo is an extension of the [Dat3M](https://github.com/hernanponcedeleon/Dat3M) framework which allows to test software isolation of programs running on parametric microarchitectural models defined using the CAT language.
 
 Requirements
 ======
@@ -37,7 +37,7 @@ The microarchitecture must be defined as a CAT file (see `DAT3M_HOME/cat` for ex
 
 For checking software isolation run:
 ```
-java -jar zombmc/target/zombmc-2.0.7-jar-with-dependencies.jar -input <program file> -cat <CAT file> [options]
+java -jar kaibyo/target/kaibyo-2.0.7-jar-with-dependencies.jar -input <program file> -cat <CAT file> [options]
 ```
 Options include:
 - `-unroll`: unrolling bound for the BMC.
