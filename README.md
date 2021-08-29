@@ -1,7 +1,7 @@
 # Kaibyo
 
 <p align="center"> 
-<img src="kaibyo/src/main/resources/cat-ghost.png" width="400">
+<img src="kaibyo/src/main/resources/cat-ghost.png" width="200">
 </p>
 
 Kaibyo is an extension of the [Dat3M](https://github.com/hernanponcedeleon/Dat3M) framework which allows to test software isolation of programs running on parametric microarchitectural models defined using the CAT language.
