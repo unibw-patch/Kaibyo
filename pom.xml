@@ -71,7 +71,6 @@
   </build>
   <modules>
     <module>dartagnan</module>
-    <module>ui</module>
     <module>kaibyo</module>
   </modules>
 </project>
