@@ -261,7 +261,7 @@ public abstract class Event implements Comparable<Event> {
 			cfCond = (cfCond == null) ? cond : ctx.mkOr(cfCond, cond);
 			seCond = (seCond == null) ? cond2 : ctx.mkOr(seCond, cond2);
 			cfEnc = ctx.mkEq(cfVar, cfCond);
-			// If this event is speculatively executed, then one of the spec-conditions shall hold
+			// If this event is speculatively executed, then one of the speculative conditions shall hold
 			// The other direction may not hold because the speculation can finish
 			cfEnc = ctx.mkAnd(cfEnc, ctx.mkImplies(seVar, seCond));
 			cfEnc = ctx.mkAnd(cfEnc, encodeSpecExec(ctx));
