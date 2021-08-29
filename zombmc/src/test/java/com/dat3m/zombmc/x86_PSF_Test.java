@@ -5,11 +5,11 @@ import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.parsers.program.ParserAsmX86;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.utils.Settings;
-import com.dat3m.zombmc.utils.Result;
-import com.dat3m.zombmc.utils.options.ZomBMCOptions;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.dartagnan.wmm.utils.Mode;
 import com.dat3m.dartagnan.wmm.utils.alias.Alias;
+import com.dat3m.kaibyo.utils.Result;
+import com.dat3m.kaibyo.utils.options.KaibyoOptions;
 import com.microsoft.z3.Context;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,10 +22,10 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.dat3m.zombmc.utils.ResourceHelper.TEST_RESOURCE_PATH;
-import static com.dat3m.zombmc.utils.Result.SAFE;
-import static com.dat3m.zombmc.utils.Result.UNSAFE;
+import static com.dat3m.kaibyo.Kaibyo.testMemorySafety;
+import static com.dat3m.kaibyo.utils.Result.SAFE;
+import static com.dat3m.kaibyo.utils.Result.UNSAFE;
 import static com.dat3m.zombmc.utils.ResourceHelper.CAT_RESOURCE_PATH;
-import static com.dat3m.zombmc.ZomBMC.testMemorySafety;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
@@ -33,7 +33,7 @@ public class x86_PSF_Test {
 
     private Program program;
     private Wmm wmm;
-    private ZomBMCOptions options;
+    private KaibyoOptions options;
     private Result expected;
 
 	@Parameterized.Parameters(name = "{index}: {0} options={2}")
@@ -43,10 +43,10 @@ public class x86_PSF_Test {
         Settings s = new Settings(Mode.KNASTER, Alias.CFIS, 1, false);
         Wmm srf = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/srf.cat"));
 		
-        ZomBMCOptions branch_noalias = new ZomBMCOptions("secretarray", false, false, new ArrayList<Mitigation>(), s, -1);
-        ZomBMCOptions branch_alias = new ZomBMCOptions("secretarray", false, true, new ArrayList<Mitigation>(), s, -1);
-        ZomBMCOptions nobranch_noalias = new ZomBMCOptions("secretarray", false, false, Collections.singletonList(Mitigation.NOBRANCHSPECULATION), s, -1);
-        ZomBMCOptions nobranch_alias = new ZomBMCOptions("secretarray", false, true, Collections.singletonList(Mitigation.NOBRANCHSPECULATION), s, -1);
+        KaibyoOptions branch_noalias = new KaibyoOptions("secretarray", false, false, new ArrayList<Mitigation>(), s, -1);
+        KaibyoOptions branch_alias = new KaibyoOptions("secretarray", false, true, new ArrayList<Mitigation>(), s, -1);
+        KaibyoOptions nobranch_noalias = new KaibyoOptions("secretarray", false, false, Collections.singletonList(Mitigation.NOBRANCHSPECULATION), s, -1);
+        KaibyoOptions nobranch_alias = new KaibyoOptions("secretarray", false, true, Collections.singletonList(Mitigation.NOBRANCHSPECULATION), s, -1);
         
         Program p1;
         Program p2;
@@ -87,7 +87,7 @@ public class x86_PSF_Test {
         return data;
     }
     
-    public x86_PSF_Test(Program program, Wmm wmm, ZomBMCOptions options, Result expected) {
+    public x86_PSF_Test(Program program, Wmm wmm, KaibyoOptions options, Result expected) {
         this.program = program;
         this.wmm = wmm;
         this.options = options;

@@ -1,4 +1,4 @@
-package com.dat3m.zombmc.utils;
+package com.dat3m.kaibyo.utils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,13 +14,13 @@ import com.dat3m.dartagnan.wmm.filter.FilterBasic;
 import com.dat3m.dartagnan.wmm.filter.FilterMinus;
 import com.dat3m.dartagnan.wmm.utils.Tuple;
 import com.dat3m.dartagnan.wmm.utils.Utils;
-import com.dat3m.zombmc.utils.options.ZomBMCOptions;
+import com.dat3m.kaibyo.utils.options.KaibyoOptions;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 
 public class Encodings {
 	
-    public static BoolExpr encodeLeakage(Program p, Wmm wmm, ZomBMCOptions options, Context ctx) {
+    public static BoolExpr encodeLeakage(Program p, Wmm wmm, KaibyoOptions options, Context ctx) {
     	BoolExpr enc = ctx.mkTrue();
     	BoolExpr or = ctx.mkFalse();
     	String rel = wmm.toString().contains("srf") ? "srf" : "rf";

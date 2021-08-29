@@ -9,11 +9,11 @@
     <version>2.0.7</version>
   </parent>
 
-  <groupId>com.dat3m.zombmc</groupId>
-  <artifactId>zombmc</artifactId>
+  <groupId>com.dat3m.kaibyo</groupId>
+  <artifactId>kaibyo</artifactId>
   <packaging>jar</packaging>
 
-  <name>zombmc</name>
+  <name>kaibyo</name>
 
   <dependencies>
     <dependency>
@@ -48,7 +48,7 @@
             <configuration>
               <archive>
                 <manifest>
-                  <mainClass>com.dat3m.zombmc.ZomBMC</mainClass>
+                  <mainClass>com.dat3m.kaibyo.Kaibyo</mainClass>
                 </manifest>
               </archive>
               <descriptorRefs>

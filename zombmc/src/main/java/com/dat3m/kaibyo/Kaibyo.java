@@ -1,9 +1,10 @@
-package com.dat3m.zombmc;
+package com.dat3m.kaibyo;
 
 import static com.dat3m.dartagnan.compiler.Mitigation.NOBRANCHSPECULATION;
-import static com.dat3m.zombmc.utils.Encodings.encodeLeakage;
-import static com.dat3m.zombmc.utils.options.ZomBMCOptions.BRANCHSPECULATIONSTRING;
-import static com.dat3m.zombmc.utils.options.ZomBMCOptions.ONLYSPECULATIVESTRING;
+import static com.dat3m.kaibyo.utils.Encodings.encodeLeakage;
+import static com.dat3m.kaibyo.utils.options.KaibyoOptions.BRANCHSPECULATIONSTRING;
+import static com.dat3m.kaibyo.utils.options.KaibyoOptions.ONLYSPECULATIVESTRING;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -20,18 +21,18 @@ import com.dat3m.dartagnan.program.utils.EType;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.dartagnan.wmm.utils.Tuple;
 import com.dat3m.dartagnan.wmm.utils.Utils;
-import com.dat3m.zombmc.utils.Result;
-import com.dat3m.zombmc.utils.options.ZomBMCOptions;
+import com.dat3m.kaibyo.utils.Result;
+import com.dat3m.kaibyo.utils.options.KaibyoOptions;
 import com.microsoft.z3.BoolExpr;
 import com.microsoft.z3.Context;
 import com.microsoft.z3.Params;
 import com.microsoft.z3.Solver;
 
-public class ZomBMC {
+public class Kaibyo {
 
     public static void main(String[] args) throws IOException {
 
-        ZomBMCOptions options = new ZomBMCOptions();
+        KaibyoOptions options = new KaibyoOptions();
         try {
             options.parse(args);
         }
@@ -61,7 +62,7 @@ public class ZomBMC {
 		ctx.close();
     }
 
-    public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, ZomBMCOptions options) {
+    public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, KaibyoOptions options) {
     	program.unroll(options.getSettings().getBound(), 0);
         program.compile(Arch.NONE, options.getMitigations(), 0);
         

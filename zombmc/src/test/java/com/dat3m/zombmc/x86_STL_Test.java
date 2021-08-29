@@ -5,11 +5,11 @@ import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.parsers.program.ParserAsmX86;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.utils.Settings;
-import com.dat3m.zombmc.utils.Result;
-import com.dat3m.zombmc.utils.options.ZomBMCOptions;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.dartagnan.wmm.utils.Mode;
 import com.dat3m.dartagnan.wmm.utils.alias.Alias;
+import com.dat3m.kaibyo.utils.Result;
+import com.dat3m.kaibyo.utils.options.KaibyoOptions;
 import com.microsoft.z3.Context;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.dat3m.zombmc.utils.ResourceHelper.TEST_RESOURCE_PATH;
-import static com.dat3m.zombmc.utils.Result.SAFE;
-import static com.dat3m.zombmc.utils.Result.UNSAFE;
+import static com.dat3m.kaibyo.Kaibyo.testMemorySafety;
+import static com.dat3m.kaibyo.utils.Result.SAFE;
+import static com.dat3m.kaibyo.utils.Result.UNSAFE;
 import static com.dat3m.zombmc.utils.ResourceHelper.CAT_RESOURCE_PATH;
-import static com.dat3m.zombmc.ZomBMC.testMemorySafety;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
@@ -32,7 +32,7 @@ public class x86_STL_Test {
 
     private Program program;
     private Wmm wmm;
-    private ZomBMCOptions options;
+    private KaibyoOptions options;
     private Result expected;
 
 	@Parameterized.Parameters(name = "{index}: {0} bound={2}")
@@ -42,8 +42,8 @@ public class x86_STL_Test {
         Settings s = new Settings(Mode.KNASTER, Alias.CFIS, 1, false);
         Settings s200 = new Settings(Mode.KNASTER, Alias.CFIS, 200, false);
         Wmm stl = new ParserCat().parse(new File(CAT_RESOURCE_PATH + "cat/stl.cat"));
-		ZomBMCOptions none = new ZomBMCOptions("secretarray", false, new ArrayList<Mitigation>(), s, -1);
-		ZomBMCOptions none200 = new ZomBMCOptions("secretarray", false, new ArrayList<Mitigation>(), s200, -1);
+		KaibyoOptions none = new KaibyoOptions("secretarray", false, new ArrayList<Mitigation>(), s, -1);
+		KaibyoOptions none200 = new KaibyoOptions("secretarray", false, new ArrayList<Mitigation>(), s200, -1);
         
         for(int i = 1; i <= 13; i++) {
         	Program program = new ParserAsmX86("victim_function_v" + i).parse(new File(TEST_RESOURCE_PATH + "spectre-stl.s"));
@@ -73,7 +73,7 @@ public class x86_STL_Test {
         return data;
     }
     
-    public x86_STL_Test(Program program, Wmm wmm, ZomBMCOptions options, Result expected) {
+    public x86_STL_Test(Program program, Wmm wmm, KaibyoOptions options, Result expected) {
         this.program = program;
         this.wmm = wmm;
         this.options = options;

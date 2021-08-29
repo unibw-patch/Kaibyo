@@ -1,4 +1,4 @@
-package com.dat3m.zombmc.utils.options;
+package com.dat3m.kaibyo.utils.options;
 
 import static com.dat3m.dartagnan.compiler.Mitigation.NOBRANCHSPECULATION;
 import static com.dat3m.dartagnan.wmm.utils.Mode.KNASTER;
@@ -15,7 +15,7 @@ import com.dat3m.dartagnan.compiler.Mitigation;
 import com.dat3m.dartagnan.utils.Settings;
 import com.google.common.collect.ImmutableSet;
 
-public class ZomBMCOptions extends Options {
+public class KaibyoOptions extends Options {
 
 	public static String ENTRYSTRING = "entry";
 	public static String SECRETSTRING = "secret";
@@ -39,7 +39,7 @@ public class ZomBMCOptions extends Options {
     private String entry = "main";
     private int timoeut = -1;
     
-    public ZomBMCOptions(){
+    public KaibyoOptions(){
         super();
         Option inputOption = new Option("input", true,
                 "Path to the file with input program");
@@ -79,7 +79,7 @@ public class ZomBMCOptions extends Options {
         addOption(onlySpeculativeOption);
     }
 
-    public ZomBMCOptions(String secret, boolean onlySpeculative, List<Mitigation> mitigations, Settings settings, int timeout){
+    public KaibyoOptions(String secret, boolean onlySpeculative, List<Mitigation> mitigations, Settings settings, int timeout){
         this.secret = secret;
         this.branchSpeculation = !mitigations.contains(NOBRANCHSPECULATION);
         this.onlySpeculative = onlySpeculative;
@@ -88,12 +88,12 @@ public class ZomBMCOptions extends Options {
         this.aliasSpeculation = false;
     }
 	
-    public ZomBMCOptions(String secret, boolean onlySpeculative, boolean aliasSpeculation, List<Mitigation> mitigations, Settings settings, int timeout){
+    public KaibyoOptions(String secret, boolean onlySpeculative, boolean aliasSpeculation, List<Mitigation> mitigations, Settings settings, int timeout){
     	this(secret, onlySpeculative, mitigations, settings, timeout);
     	this.aliasSpeculation = aliasSpeculation; 
     }
     
-    public ZomBMCOptions(int read_from, boolean onlySpeculative, List<Mitigation> mitigations, Settings settings, int timeout){
+    public KaibyoOptions(int read_from, boolean onlySpeculative, List<Mitigation> mitigations, Settings settings, int timeout){
         this.read_from = read_from;
         this.branchSpeculation = !mitigations.contains(NOBRANCHSPECULATION);
         this.onlySpeculative = onlySpeculative;

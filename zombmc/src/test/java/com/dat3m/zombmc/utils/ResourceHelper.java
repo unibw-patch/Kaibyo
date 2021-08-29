@@ -1,9 +1,10 @@
 package com.dat3m.zombmc.utils;
 
+import com.dat3m.kaibyo.utils.Result;
 import com.google.common.collect.ImmutableMap;
 
-import static com.dat3m.zombmc.utils.Result.SAFE;
-import static com.dat3m.zombmc.utils.Result.UNSAFE;
+import static com.dat3m.kaibyo.utils.Result.SAFE;
+import static com.dat3m.kaibyo.utils.Result.UNSAFE;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
