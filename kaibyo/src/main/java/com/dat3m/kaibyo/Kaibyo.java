@@ -18,6 +18,7 @@ import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.MemEvent;
 import com.dat3m.dartagnan.program.utils.EType;
+import com.dat3m.dartagnan.utils.printer.Printer;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.dartagnan.wmm.utils.Tuple;
 import com.dat3m.dartagnan.wmm.utils.Utils;
@@ -38,7 +39,7 @@ public class Kaibyo {
         }
         catch (Exception e){
         	System.out.println(e.getMessage());
-            new HelpFormatter().printHelp("Zom-B-MC", options);
+            new HelpFormatter().printHelp("Kaibyo", options);
             System.exit(1);
             return;
         }
@@ -63,6 +64,7 @@ public class Kaibyo {
     }
 
     public static Result testMemorySafety(Context ctx, Program program, Wmm wmm, KaibyoOptions options) {
+    	System.out.println(new Printer().print(program));
     	program.unroll(options.getSettings().getBound(), 0);
         program.compile(Arch.NONE, options.getMitigations(), 0);
         
